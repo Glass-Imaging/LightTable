@@ -114,10 +114,10 @@
 			isa = PBXGroup;
 			children = (
 				E51DB2DB27A9B0E10046EFFA /* ThumbnailLoader.swift */,
-				E51DB2DC27A9B0E10046EFFA /* LRUCache.swift */,
 				E51DB2DD27A9B0E10046EFFA /* DropUtils.swift */,
 				E51DB2DE27A9B0E10046EFFA /* ImageUtils.swift */,
 				E51DB2DF27A9B0E10046EFFA /* ImageLoder.swift */,
+				E51DB2DC27A9B0E10046EFFA /* LRUCache.swift */,
 				E51DB2E027A9B0E10046EFFA /* LinkedList.swift */,
 			);
 			path = Utilities;

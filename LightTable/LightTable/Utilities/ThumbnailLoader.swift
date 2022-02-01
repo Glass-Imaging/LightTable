@@ -14,17 +14,17 @@ import QuickLookThumbnailing
 class ThumbnailLoader: ObservableObject {
     @Published var image = NSImage()
 
-    // TODO: Use LRU Cache!
-    static var cache:Dictionary<URL, NSImage> = [:]
+    // LRU Cache for thumbnails, avoids flashing redraws in the browser, cache up to 1000 thumbnails
+    static var lruCache:LRUCache<URL> = LRUCache<URL>(1000)
 
     /// Tries to load a thumbnail for a given URL
     /// - Parameters:
     ///   - url: URL of the image
     ///   - maxSize: maximum size (width/height) aspect ratio preserved
     func loadThumbnail(url: URL, maxSize: Int) {
-        let cachedData = ThumbnailLoader.cache[url]
+        let cachedData = ThumbnailLoader.lruCache.get(url)
         if (cachedData != nil) {
-            image = cachedData!
+            image = (cachedData! as? NSImage)!
             return
         }
 
@@ -44,7 +44,7 @@ class ThumbnailLoader: ObservableObject {
                 return
             }
             DispatchQueue.main.async {
-                ThumbnailLoader.cache[url] = nsImage
+                ThumbnailLoader.lruCache.set(url, val: nsImage)
                 self.image = nsImage
             }
         }

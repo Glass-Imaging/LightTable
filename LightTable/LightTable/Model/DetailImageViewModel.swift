@@ -6,8 +6,6 @@
 //
 
 import Foundation
-
-import Foundation
 import Combine
 
 /// View model for FilesView
