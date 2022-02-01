@@ -11,6 +11,20 @@
 		E51DB2AE27A9ACAE0046EFFA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2AD27A9ACAE0046EFFA /* ContentView.swift */; };
 		E51DB2B027A9ACB00046EFFA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E51DB2AF27A9ACB00046EFFA /* Assets.xcassets */; };
 		E51DB2B327A9ACB00046EFFA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E51DB2B227A9ACB00046EFFA /* Preview Assets.xcassets */; };
+		E51DB2E727A9B0E20046EFFA /* SingleImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2D727A9B0E10046EFFA /* SingleImageViewModel.swift */; };
+		E51DB2E827A9B0E20046EFFA /* FileListing.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2D827A9B0E10046EFFA /* FileListing.swift */; };
+		E51DB2E927A9B0E20046EFFA /* DetailImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2D927A9B0E10046EFFA /* DetailImageViewModel.swift */; };
+		E51DB2EA27A9B0E20046EFFA /* ThumbnailLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2DB27A9B0E10046EFFA /* ThumbnailLoader.swift */; };
+		E51DB2EB27A9B0E20046EFFA /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2DC27A9B0E10046EFFA /* LRUCache.swift */; };
+		E51DB2EC27A9B0E20046EFFA /* DropUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2DD27A9B0E10046EFFA /* DropUtils.swift */; };
+		E51DB2ED27A9B0E20046EFFA /* ImageUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2DE27A9B0E10046EFFA /* ImageUtils.swift */; };
+		E51DB2EE27A9B0E20046EFFA /* ImageLoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2DF27A9B0E10046EFFA /* ImageLoder.swift */; };
+		E51DB2EF27A9B0E20046EFFA /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2E027A9B0E10046EFFA /* LinkedList.swift */; };
+		E51DB2F027A9B0E20046EFFA /* DetailImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2E227A9B0E10046EFFA /* DetailImageView.swift */; };
+		E51DB2F127A9B0E20046EFFA /* ImageBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2E327A9B0E10046EFFA /* ImageBrowser.swift */; };
+		E51DB2F227A9B0E20046EFFA /* SingleImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2E427A9B0E10046EFFA /* SingleImageView.swift */; };
+		E51DB2F327A9B0E20046EFFA /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2E527A9B0E10046EFFA /* ImageView.swift */; };
+		E51DB2F427A9B0E20046EFFA /* ThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2E627A9B0E10046EFFA /* ThumbnailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +34,20 @@
 		E51DB2AF27A9ACB00046EFFA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E51DB2B227A9ACB00046EFFA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E51DB2B427A9ACB00046EFFA /* LightTable.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LightTable.entitlements; sourceTree = "<group>"; };
+		E51DB2D727A9B0E10046EFFA /* SingleImageViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SingleImageViewModel.swift; sourceTree = "<group>"; };
+		E51DB2D827A9B0E10046EFFA /* FileListing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileListing.swift; sourceTree = "<group>"; };
+		E51DB2D927A9B0E10046EFFA /* DetailImageViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailImageViewModel.swift; sourceTree = "<group>"; };
+		E51DB2DB27A9B0E10046EFFA /* ThumbnailLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbnailLoader.swift; sourceTree = "<group>"; };
+		E51DB2DC27A9B0E10046EFFA /* LRUCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
+		E51DB2DD27A9B0E10046EFFA /* DropUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropUtils.swift; sourceTree = "<group>"; };
+		E51DB2DE27A9B0E10046EFFA /* ImageUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageUtils.swift; sourceTree = "<group>"; };
+		E51DB2DF27A9B0E10046EFFA /* ImageLoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageLoder.swift; sourceTree = "<group>"; };
+		E51DB2E027A9B0E10046EFFA /* LinkedList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
+		E51DB2E227A9B0E10046EFFA /* DetailImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailImageView.swift; sourceTree = "<group>"; };
+		E51DB2E327A9B0E10046EFFA /* ImageBrowser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageBrowser.swift; sourceTree = "<group>"; };
+		E51DB2E427A9B0E10046EFFA /* SingleImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SingleImageView.swift; sourceTree = "<group>"; };
+		E51DB2E527A9B0E10046EFFA /* ImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
+		E51DB2E627A9B0E10046EFFA /* ThumbnailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbnailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +82,9 @@
 			children = (
 				E51DB2AB27A9ACAE0046EFFA /* LightTableApp.swift */,
 				E51DB2AD27A9ACAE0046EFFA /* ContentView.swift */,
+				E51DB2D627A9B0E10046EFFA /* Model */,
+				E51DB2DA27A9B0E10046EFFA /* Utilities */,
+				E51DB2E127A9B0E10046EFFA /* Views */,
 				E51DB2AF27A9ACB00046EFFA /* Assets.xcassets */,
 				E51DB2B427A9ACB00046EFFA /* LightTable.entitlements */,
 				E51DB2B127A9ACB00046EFFA /* Preview Content */,
@@ -67,6 +98,41 @@
 				E51DB2B227A9ACB00046EFFA /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		E51DB2D627A9B0E10046EFFA /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				E51DB2D727A9B0E10046EFFA /* SingleImageViewModel.swift */,
+				E51DB2D827A9B0E10046EFFA /* FileListing.swift */,
+				E51DB2D927A9B0E10046EFFA /* DetailImageViewModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		E51DB2DA27A9B0E10046EFFA /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				E51DB2DB27A9B0E10046EFFA /* ThumbnailLoader.swift */,
+				E51DB2DC27A9B0E10046EFFA /* LRUCache.swift */,
+				E51DB2DD27A9B0E10046EFFA /* DropUtils.swift */,
+				E51DB2DE27A9B0E10046EFFA /* ImageUtils.swift */,
+				E51DB2DF27A9B0E10046EFFA /* ImageLoder.swift */,
+				E51DB2E027A9B0E10046EFFA /* LinkedList.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		E51DB2E127A9B0E10046EFFA /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E51DB2E227A9B0E10046EFFA /* DetailImageView.swift */,
+				E51DB2E327A9B0E10046EFFA /* ImageBrowser.swift */,
+				E51DB2E427A9B0E10046EFFA /* SingleImageView.swift */,
+				E51DB2E527A9B0E10046EFFA /* ImageView.swift */,
+				E51DB2E627A9B0E10046EFFA /* ThumbnailView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -139,7 +205,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E51DB2F327A9B0E20046EFFA /* ImageView.swift in Sources */,
+				E51DB2EC27A9B0E20046EFFA /* DropUtils.swift in Sources */,
 				E51DB2AE27A9ACAE0046EFFA /* ContentView.swift in Sources */,
+				E51DB2ED27A9B0E20046EFFA /* ImageUtils.swift in Sources */,
+				E51DB2E927A9B0E20046EFFA /* DetailImageViewModel.swift in Sources */,
+				E51DB2EE27A9B0E20046EFFA /* ImageLoder.swift in Sources */,
+				E51DB2F027A9B0E20046EFFA /* DetailImageView.swift in Sources */,
+				E51DB2E727A9B0E20046EFFA /* SingleImageViewModel.swift in Sources */,
+				E51DB2EA27A9B0E20046EFFA /* ThumbnailLoader.swift in Sources */,
+				E51DB2F227A9B0E20046EFFA /* SingleImageView.swift in Sources */,
+				E51DB2EB27A9B0E20046EFFA /* LRUCache.swift in Sources */,
+				E51DB2E827A9B0E20046EFFA /* FileListing.swift in Sources */,
+				E51DB2EF27A9B0E20046EFFA /* LinkedList.swift in Sources */,
+				E51DB2F427A9B0E20046EFFA /* ThumbnailView.swift in Sources */,
+				E51DB2F127A9B0E20046EFFA /* ImageBrowser.swift in Sources */,
 				E51DB2AC27A9ACAE0046EFFA /* LightTableApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
