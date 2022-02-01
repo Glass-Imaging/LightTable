@@ -7,15 +7,15 @@
 
 import SwiftUI
 
-class FolderNode : Hashable, Equatable, Identifiable {
+class Folder : Hashable, Equatable, Identifiable {
     let id:URL
-    // var children:FolderNode?
+    // var children:Folder?
 
     func url() -> URL {
         return id
     }
 
-    static func == (lhs: FolderNode, rhs: FolderNode) -> Bool {
+    static func == (lhs: Folder, rhs: Folder) -> Bool {
         return lhs.id == rhs.id
     }
 
@@ -29,7 +29,7 @@ class FolderNode : Hashable, Equatable, Identifiable {
 }
 
 struct FolderView: View {
-    var folder:FolderNode
+    var folder:Folder
     @State var open = false
 
     var body: some View {
@@ -47,7 +47,7 @@ struct FolderView: View {
 }
 
 struct ContentView: View {
-    @State var folders:[FolderNode] = []
+    @State var folders:[Folder] = []
     @State var fileListing = FileListing()
     @State var imageActive = false
 
@@ -112,16 +112,16 @@ func fileListingAt(url:URL) -> [URL] {
     }
 }
 
-func folderListingAt(url:URL) -> [FolderNode] {
+func folderListingAt(url:URL) -> [Folder] {
     let manager = FileManager.default
     do {
-        var entries:[FolderNode] = []
+        var entries:[Folder] = []
         let items = try manager.contentsOfDirectory(at: url,
                                                     includingPropertiesForKeys: nil,
                                                     options: .skipsSubdirectoryDescendants)
         for item in items {
             if (item.hasDirectoryPath) {
-                entries.append(FolderNode(url: item))
+                entries.append(Folder(url: item))
             }
         }
         return entries

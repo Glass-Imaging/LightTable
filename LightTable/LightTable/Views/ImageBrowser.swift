@@ -21,8 +21,12 @@ struct CheckToggleStyle: ToggleStyle {
     }
 }
 
-class SelectedFile: ObservableObject {
+class SelectedFile: ObservableObject, Equatable {
     @Published var file:URL? = nil
+
+    static func == (lhs: SelectedFile, rhs: SelectedFile) -> Bool {
+        return lhs.file == rhs.file
+    }
 }
 
 struct Thumbnail: View {
@@ -32,10 +36,7 @@ struct Thumbnail: View {
 
     var body: some View {
         Button(action: {
-             if (selectedFile.file != file) {
-                selectedFile.file = file
-                action()
-            }
+            action()
         }) {
             VStack {
                 ThumbnailView(withURL: file, maxSize: 200)
@@ -49,11 +50,12 @@ struct Thumbnail: View {
 
 struct ImageBrowser: View {
     @ObservedObject var fileListing:FileListing
+    @ObservedObject var selectedFile:SelectedFile = SelectedFile()
 
     @State var detailImageViewModel = DetailImageViewModel()
     @State var scrollViewHeight:CGFloat = 200
 
-    @ObservedObject var selectedFile:SelectedFile = SelectedFile()
+    @EnvironmentObject private var keyInputSubjectWrapper: KeyInputSubjectWrapper
 
     var body: some View {
         VSplitView {
@@ -68,8 +70,26 @@ struct ImageBrowser: View {
                     LazyHStack(alignment: .bottom) {
                         ForEach(fileListing.files, id: \.self) { file in
                             Thumbnail(file: file, selectedFile: selectedFile) {
-                                detailImageViewModel.showImage(atURL: file)
+                                updateSelection(selection: file)
                             }
+                        }
+                    }.onReceive(keyInputSubjectWrapper) {
+                        let inputKey = $0
+
+                        if (fileListing.files.isEmpty) {
+                            return
+                        }
+                        guard let currentSelection = selectedFile.file else {
+                            updateSelection(selection: fileListing.files[0])
+                            return
+                        }
+                        guard let index = fileListing.files.firstIndex(of: currentSelection) else {
+                            return
+                        }
+                        if (inputKey == .rightArrow && index < fileListing.files.count - 1) {
+                            updateSelection(selection: fileListing.files[index + 1])
+                        } else if (inputKey == .leftArrow && index > 0) {
+                            updateSelection(selection: fileListing.files[index - 1])
                         }
                     }
                 }
@@ -78,6 +98,17 @@ struct ImageBrowser: View {
         }
         .onReceive(fileListing.$files) { value in
             detailImageViewModel.hideImage()
+        }
+        .onChange(of: selectedFile.file) { newFile in
+            if (newFile != nil) {
+                detailImageViewModel.showImage(atURL: newFile!)
+            }
+        }
+    }
+
+    func updateSelection(selection: URL) {
+        if (selectedFile.file != selection) {
+            selectedFile.file = selection
         }
     }
 }
