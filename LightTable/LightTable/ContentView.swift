@@ -7,76 +7,42 @@
 
 import SwiftUI
 
-class FolderNode : Hashable, Equatable {
-    var url:URL
-    var children:FolderNode?
+class FolderNode : Hashable, Equatable, Identifiable {
+    let id:URL
+    // var children:FolderNode?
+
+    func url() -> URL {
+        return id
+    }
 
     static func == (lhs: FolderNode, rhs: FolderNode) -> Bool {
-        return lhs.url == rhs.url
+        return lhs.id == rhs.id
     }
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(url)
+        hasher.combine(id)
     }
 
     init(url:URL) {
-        self.url = url
+        self.id = url
     }
 }
 
-struct Folder: View {
-    @State var selected = false
+struct FolderView: View {
+    var folder:FolderNode
     @State var open = false
-    var text = ""
-    var action = {}
 
     var body: some View {
-        Button(action: {
-            self.action()
-            selected = !selected
-        }) {
-            HStack {
-                Button(action: {
-                    open = !open
-                }) {
-                    Image(systemName: open ? "chevron.down" : "chevron.right" )
-                }
-                .buttonStyle(PlainButtonStyle())
-
-                Image(systemName: "folder.fill")
-
-                Text(text).bold()
+        HStack {
+            Button(action: {
+                open = !open
+            }) {
+                Image(systemName: open ? "chevron.down" : "chevron.right" )
             }
+            .buttonStyle(PlainButtonStyle())
+
+            Label(folder.url().lastPathComponent, systemImage: "folder.fill")
         }
-        .buttonStyle(PlainButtonStyle())
-        .background(selected ? Color.gray : nil)
-    }
-}
-
-struct FolderTree: View {
-    @State var folders:[FolderNode] = []
-    @State var selectedFolders:[URL] = []
-
-    var action: (_ url: URL) -> Void
-
-    var body: some View {
-        List {
-            ForEach(folders, id: \.self) { folder in
-                Folder(text: folder.url.lastPathComponent, action: {
-                    let index = selectedFolders.firstIndex(of: folder.url)
-                    if (index != nil) {
-                        print("removing element at index", index!, selectedFolders[index!])
-                        selectedFolders.remove(at: index!)
-                    } else {
-                        action(folder.url)
-
-                        print("appending folder to the selected list", folder.url)
-                        selectedFolders.append(folder.url)
-                    }
-                })
-            }
-        }
-        .font(.largeTitle)
     }
 }
 
@@ -85,15 +51,26 @@ struct ContentView: View {
     @State var fileListing = FileListing()
     @State var imageActive = false
 
+    @State private var multiSelection = Set<URL>()
+
     var body: some View {
         NavigationView {
             HStack {
                 if (folders.count == 0) {
                     Text("Drop a folder here.")
                 } else {
-                    FolderTree(folders: folders) { url in
-                        fileListing.files = fileListingAt(url: url)
-                        imageActive = true
+                    VStack {
+                        Text("\(multiSelection.count) selections")
+
+                        List(folders, selection: $multiSelection) {
+                            FolderView(folder: $0)
+                        }
+                        .navigationTitle("Folders")
+                        .onChange(of: multiSelection) { newValue in
+                            if (newValue.first != nil) {
+                                fileListing.files = fileListingAt(url: newValue.first!)
+                                imageActive = true                            }
+                        }
                     }
                 }
 

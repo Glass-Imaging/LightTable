@@ -103,8 +103,8 @@
 		E51DB2D627A9B0E10046EFFA /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				E51DB2D727A9B0E10046EFFA /* SingleImageViewModel.swift */,
 				E51DB2D827A9B0E10046EFFA /* FileListing.swift */,
+				E51DB2D727A9B0E10046EFFA /* SingleImageViewModel.swift */,
 				E51DB2D927A9B0E10046EFFA /* DetailImageViewModel.swift */,
 			);
 			path = Model;
@@ -113,10 +113,10 @@
 		E51DB2DA27A9B0E10046EFFA /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				E51DB2DF27A9B0E10046EFFA /* ImageLoder.swift */,
 				E51DB2DB27A9B0E10046EFFA /* ThumbnailLoader.swift */,
 				E51DB2DD27A9B0E10046EFFA /* DropUtils.swift */,
 				E51DB2DE27A9B0E10046EFFA /* ImageUtils.swift */,
-				E51DB2DF27A9B0E10046EFFA /* ImageLoder.swift */,
 				E51DB2DC27A9B0E10046EFFA /* LRUCache.swift */,
 				E51DB2E027A9B0E10046EFFA /* LinkedList.swift */,
 			);
@@ -126,11 +126,11 @@
 		E51DB2E127A9B0E10046EFFA /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				E51DB2E227A9B0E10046EFFA /* DetailImageView.swift */,
 				E51DB2E327A9B0E10046EFFA /* ImageBrowser.swift */,
-				E51DB2E427A9B0E10046EFFA /* SingleImageView.swift */,
 				E51DB2E527A9B0E10046EFFA /* ImageView.swift */,
 				E51DB2E627A9B0E10046EFFA /* ThumbnailView.swift */,
+				E51DB2E227A9B0E10046EFFA /* DetailImageView.swift */,
+				E51DB2E427A9B0E10046EFFA /* SingleImageView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
