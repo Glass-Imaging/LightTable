@@ -48,7 +48,7 @@ struct FolderView: View {
 
 struct ContentView: View {
     @State var folders:[Folder] = []
-    @State var fileListing = FileListing()
+    @State var imageBrowserModel = ImageBrowserModel()
     @State var imageActive = false
 
     @State private var multiSelection = Set<URL>()
@@ -68,13 +68,14 @@ struct ContentView: View {
                         .navigationTitle("Folders")
                         .onChange(of: multiSelection) { newValue in
                             if (newValue.first != nil) {
-                                fileListing.files = fileListingAt(url: newValue.first!)
-                                imageActive = true                            }
+                                imageBrowserModel.files = fileListingAt(url: newValue.first!)
+                                imageActive = true
+                            }
                         }
                     }
                 }
 
-                NavigationLink(destination: ImageBrowser(fileListing: fileListing), isActive: $imageActive){}.hidden()
+                NavigationLink(destination: ImageBrowser(model: imageBrowserModel), isActive: $imageActive){}.hidden()
             }
         }
         .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)

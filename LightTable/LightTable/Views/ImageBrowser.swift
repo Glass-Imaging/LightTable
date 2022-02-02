@@ -21,17 +21,9 @@ struct CheckToggleStyle: ToggleStyle {
     }
 }
 
-class SelectedFile: ObservableObject, Equatable {
-    @Published var file:URL? = nil
-
-    static func == (lhs: SelectedFile, rhs: SelectedFile) -> Bool {
-        return lhs.file == rhs.file
-    }
-}
-
 struct Thumbnail: View {
     var file:URL
-    @ObservedObject var selectedFile:SelectedFile
+    @ObservedObject var model:ImageBrowserModel
     var action: () -> Void
 
     var body: some View {
@@ -44,18 +36,17 @@ struct Thumbnail: View {
             }
         }
         .buttonStyle(PlainButtonStyle())
-        .background(selectedFile.file == file ? Color.blue : nil)
+        .background(model.selection == file ? Color.blue : nil)
     }
 }
 
 struct ImageBrowser: View {
-    @ObservedObject var fileListing:FileListing
-    @ObservedObject var selectedFile:SelectedFile = SelectedFile()
+    @State var model:ImageBrowserModel
 
     @State var detailImageViewModel = DetailImageViewModel()
     @State var scrollViewHeight:CGFloat = 200
 
-    @EnvironmentObject private var keyInputSubjectWrapper: KeyInputSubjectWrapper
+    @State var commandKeyDown = false
 
     var body: some View {
         VSplitView {
@@ -63,52 +54,81 @@ struct ImageBrowser: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             ScrollView(.horizontal, showsIndicators: true) {
-                if (fileListing.files.count == 0) {
+                if (model.files.count == 0) {
                     Text("Select a folder with images")
                         .padding(100)
                 } else {
                     LazyHStack(alignment: .bottom) {
-                        ForEach(fileListing.files, id: \.self) { file in
-                            Thumbnail(file: file, selectedFile: selectedFile) {
-                                updateSelection(selection: file)
+                        ForEach(model.files, id: \.self) { file in
+                            Thumbnail(file: file, model: model) {
+                                if (commandKeyDown) {
+                                    print("Command-Click! :D")
+                                }
+                                model.updateSelection(selection: file)
                             }
-                        }
-                    }.onReceive(keyInputSubjectWrapper) {
-                        let inputKey = $0
-
-                        if (fileListing.files.isEmpty) {
-                            return
-                        }
-                        guard let currentSelection = selectedFile.file else {
-                            updateSelection(selection: fileListing.files[0])
-                            return
-                        }
-                        guard let index = fileListing.files.firstIndex(of: currentSelection) else {
-                            return
-                        }
-                        if (inputKey == .rightArrow && index < fileListing.files.count - 1) {
-                            updateSelection(selection: fileListing.files[index + 1])
-                        } else if (inputKey == .leftArrow && index > 0) {
-                            updateSelection(selection: fileListing.files[index - 1])
+                            .focusedSceneValue(\.focusedModel, $model)
                         }
                     }
+                    .background(KeyEventHandling(keyAction: { char in
+                        // model.processKey(key: KeyEquivalent(char))
+                    }, modifiersAction: { modifierFlags in
+                        print("Modifiers", modifierFlags, NSEvent.ModifierFlags.command, NSEvent.ModifierFlags.control)
+
+                        if (modifierFlags.contains(.command)) {
+                            print("in business!")
+                            commandKeyDown = true
+                        } else {
+                            commandKeyDown = false
+                        }
+                    }))
                 }
             }
             .frame(maxWidth: .infinity, minHeight: scrollViewHeight, maxHeight: scrollViewHeight)
         }
-        .onReceive(fileListing.$files) { value in
-            detailImageViewModel.hideImage()
+        .onReceive(model.$files) { value in
+            model.selection = nil
         }
-        .onChange(of: selectedFile.file) { newFile in
+        .onReceive(model.$selection) { newFile in
             if (newFile != nil) {
                 detailImageViewModel.showImage(atURL: newFile!)
+            } else {
+                detailImageViewModel.hideImage()
             }
         }
     }
 
-    func updateSelection(selection: URL) {
-        if (selectedFile.file != selection) {
-            selectedFile.file = selection
+    struct BrowserCommands: Commands {
+        @FocusedBinding(\.focusedModel) private var model: ImageBrowserModel?
+
+        var body: some Commands {
+            CommandMenu("Navigation") {
+                Button {
+                    model?.processKey(key: .leftArrow)
+                } label: {
+                    Text("Move Left")
+                }
+                .keyboardShortcut(.leftArrow, modifiers: [])
+                .disabled(model == nil)
+
+                Button {
+                    model?.processKey(key: .rightArrow)
+                } label: {
+                    Text("Move Right")
+                }
+                .keyboardShortcut(.rightArrow, modifiers: [])
+                .disabled(model == nil)
+            }
         }
+    }
+}
+
+extension FocusedValues {
+    var focusedModel: Binding<ImageBrowserModel>? {
+        get { self[FocusedImagerowserModelKey.self] }
+        set { self[FocusedImagerowserModelKey.self] = newValue }
+    }
+
+    private struct FocusedImagerowserModelKey: FocusedValueKey {
+        typealias Value = Binding<ImageBrowserModel>
     }
 }
