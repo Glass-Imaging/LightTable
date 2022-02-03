@@ -36,22 +36,36 @@ struct Thumbnail: View {
             }
         }
         .buttonStyle(PlainButtonStyle())
-        .background(model.selection == file ? Color.blue : nil)
+        .background(model.selection.contains(file) ? Color.blue : nil)
     }
 }
 
 struct ImageBrowser: View {
     @ObservedObject var model:ImageBrowserModel
 
-    @State var detailImageViewModel = DetailImageViewModel()
     @State var scrollViewHeight:CGFloat = 200
-
     @State var commandKeyDown = false
 
     var body: some View {
+        // We need a binding for .focusedSceneValue, although model as @ObservedObject is read only...
+        let modelBinding = Binding<ImageBrowserModel>(
+            get: { model },
+            set: { val in }
+        )
+
         VSplitView {
-            DetailImageView(viewModel: detailImageViewModel)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            HStack {
+                if (model.selection.count == 0) {
+                    Text("Make a selection.")
+                        .padding(100)
+                } else {
+                    ForEach(model.selection, id: \.self) { file in
+                        ImageView(withURL: file)
+                            .id(file)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             ScrollViewReader { scroller in
                 ScrollView(.horizontal, showsIndicators: true) {
@@ -64,11 +78,14 @@ struct ImageBrowser: View {
                                 Thumbnail(file: file, model: model) {
                                     if (commandKeyDown) {
                                         print("Command-Click! :D")
+                                        model.addToSelection(file: file)
+                                    } else {
+                                        model.updateSelection(file: file)
                                     }
-                                    model.updateSelection(selection: file)
+                                    print(model.selection)
                                 }
                                 .id(file)
-                                .focusedSceneValue(\.focusedModel, model.getBinding())
+                                .focusedSceneValue(\.focusedModel, modelBinding)
                             }
                         }
                         .background(KeyEventHandling(keyAction: { char in
@@ -77,7 +94,6 @@ struct ImageBrowser: View {
                             print("Modifiers", modifierFlags, NSEvent.ModifierFlags.command, NSEvent.ModifierFlags.control)
 
                             if (modifierFlags.contains(.command)) {
-                                print("in business!")
                                 commandKeyDown = true
                             } else {
                                 commandKeyDown = false
@@ -86,22 +102,19 @@ struct ImageBrowser: View {
                     }
                 }
                 .onReceive(model.$files) { newFiles in
-                    model.selection = nil
+                    model.selection = []
 
-                    // Wait for the ScrollView to stabilize
                     if (newFiles.count > 0) {
+                        // Wait for the ScrollView to stabilize
                         DispatchQueue.main.async {
                             scroller.scrollTo(newFiles[0])
                         }
                     }
                 }
                 .onReceive(model.$selection) { selection in
-                    guard let selection = selection else {
-                        detailImageViewModel.hideImage()
-                        return
+                    if (!selection.isEmpty) {
+                        scroller.scrollTo(selection[0])
                     }
-                    detailImageViewModel.showImage(atURL: selection)
-                    scroller.scrollTo(selection)
                 }
                 .frame(maxWidth: .infinity, minHeight: scrollViewHeight, maxHeight: scrollViewHeight)
             }
