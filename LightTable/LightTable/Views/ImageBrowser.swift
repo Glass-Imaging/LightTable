@@ -51,10 +51,10 @@ struct ImageBrowser: View {
 
     var body: some View {
         // We need a binding for .focusedSceneValue, although model as @ObservedObject is read only...
-//        let modelBinding = Binding<ImageBrowserModel>(
-//            get: { model },
-//            set: { val in }
-//        )
+        let modelBinding = Binding<ImageBrowserModel>(
+            get: { model },
+            set: { val in }
+        )
 
         VSplitView {
             HStack {
@@ -92,7 +92,7 @@ struct ImageBrowser: View {
                                     print(model.selection)
                                 }
                                 .id(file)
-                                // .focusedSceneValue(\.focusedModel, modelBinding)
+                                .focusedSceneValue(\.focusedBrowserModel, modelBinding)
                             }
                         }
                         .background(KeyEventHandling(keyAction: { char in
@@ -142,37 +142,26 @@ struct ImageBrowser: View {
     }
 
     struct BrowserCommands: Commands {
-        @FocusedBinding(\.focusedModel) private var model: ImageBrowserModel?
+        @FocusedBinding(\.focusedBrowserModel) private var model: ImageBrowserModel?
 
         var body: some Commands {
             CommandMenu("Navigation") {
-//                Button {
-//                    model?.processKey(key: .leftArrow)
-//                } label: {
-//                    Text("Move Left")
-//                }
-//                .keyboardShortcut(.leftArrow, modifiers: [])
-//                .disabled(model == nil)
-//
-//                Button {
-//                    model?.processKey(key: .rightArrow)
-//                } label: {
-//                    Text("Move Right")
-//                }
-//                .keyboardShortcut(.rightArrow, modifiers: [])
-//                .disabled(model == nil)
+                Button {
+                    _ = model?.processKey(key: .leftArrow)
+                } label: {
+                    Text("Move Left")
+                }
+                .keyboardShortcut(.leftArrow, modifiers: [])
+                .disabled(model == nil)
+
+                Button {
+                    _ = model?.processKey(key: .rightArrow)
+                } label: {
+                    Text("Move Right")
+                }
+                .keyboardShortcut(.rightArrow, modifiers: [])
+                .disabled(model == nil)
             }
         }
-    }
-}
-
-extension FocusedValues {
-    var focusedModel: Binding<ImageBrowserModel>? {
-        get { self[FocusedImagerowserModelKey.self] }
-        set { self[FocusedImagerowserModelKey.self] = newValue }
-    }
-
-    private struct FocusedImagerowserModelKey: FocusedValueKey {
-        typealias Value = Binding<ImageBrowserModel>
     }
 }

@@ -47,6 +47,7 @@ struct FolderView: View {
 }
 
 class NavigatorModel: ObservableObject {
+    @Published var parentFolder:URL? = nil
     @Published var folders:[Folder] = []
 }
 
@@ -55,17 +56,24 @@ struct ContentView: View {
     @StateObject private var navigatorModel = NavigatorModel()
 
     @State private var multiSelection = Set<URL>()
-
-    @State var imageActive = false
+    @State private var imageActive = false
 
     var body: some View {
+        // We need a binding for .focusedSceneValue, although model as @ObservedObject is read only...
+        let navigatorModelBinding = Binding<NavigatorModel>(
+            get: { navigatorModel },
+            set: { val in }
+        )
+
         NavigationView {
             HStack {
                 if (navigatorModel.folders.count == 0) {
                     Text("Drop a folder here.")
                 } else {
                     VStack {
-                        Text("\(multiSelection.count) selections")
+                        let directoryPath = navigatorModel.parentFolder != nil ? navigatorModel.parentFolder!.lastPathComponent : ""
+
+                        Label("\(directoryPath)", systemImage: "lightbulb.fill")
 
                         List(navigatorModel.folders, selection: $multiSelection) {
                             FolderView(folder: $0)
@@ -77,6 +85,14 @@ struct ContentView: View {
                                 imageActive = true
                             }
                         }
+                        .onReceive(navigatorModel.$folders) { folders in
+                            // Reset navigator's selection
+                            multiSelection = Set<URL>()
+
+                            // Reset image browser state
+                            imageBrowserModel.files = []
+                            imageBrowserModel.selection = []
+                        }
                     }
                 }
 
@@ -84,7 +100,27 @@ struct ContentView: View {
             }
         }
         .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
+        .focusedSceneValue(\.focusedNavigatorModel, navigatorModelBinding)
         .onDrop(of: ["public.file-url"], delegate: self)
+    }
+
+    struct ContentCommands: Commands {
+        @FocusedBinding(\.focusedNavigatorModel) private var model: NavigatorModel?
+
+        var body: some Commands {
+            CommandGroup(after: CommandGroupPlacement.newItem) {
+                Button("Open...") {
+                    var listing:[Folder] = []
+                    let selectedDirectory = NSOpenPanelDirectoryListing(files: &listing)
+                    if (listing.count > 0) {
+                        model?.parentFolder = selectedDirectory
+                        model?.folders = listing
+                    }
+                }
+                .keyboardShortcut("O", modifiers: .command)
+                .disabled(model == nil)
+            }
+        }
     }
 }
 
@@ -95,73 +131,11 @@ extension ContentView:DropDelegate {
             if let url = url {
                 DispatchQueue.main.async {
                     navigatorModel.folders = folderListingAt(url: url)
-                    multiSelection = Set<URL>()
                 }
             }
         }
         return true
     }
-}
-
-
-
-func fileListingAt(url:URL) -> [URL] {
-    let manager = FileManager.default
-    do {
-        var entries:[URL] = []
-        let items = try manager.contentsOfDirectory(at: url,
-                                                    includingPropertiesForKeys: nil,
-                                                    options: .skipsSubdirectoryDescendants)
-        for item in items {
-            let file_extension = item.pathExtension.lowercased()
-            if (file_extension == "jpg" || file_extension == "jpeg" || file_extension == "png") {
-                entries.append(item)
-            }
-        }
-        // Sort images alphabetically
-        return entries.sorted { a, b in
-            return a.lastPathComponent < b.lastPathComponent
-        }
-    } catch {
-        return []
-    }
-}
-
-func folderListingAt(url:URL) -> [Folder] {
-    let manager = FileManager.default
-    do {
-        var entries:[Folder] = []
-        let items = try manager.contentsOfDirectory(at: url,
-                                                    includingPropertiesForKeys: nil,
-                                                    options: .skipsSubdirectoryDescendants)
-        for item in items {
-            if (item.hasDirectoryPath) {
-                entries.append(Folder(url: item))
-            }
-        }
-        // Sort folders alphabetically
-        return entries.sorted { a, b in
-            return a.url().lastPathComponent < b.url().lastPathComponent
-        }
-    } catch {
-        return []
-    }
-}
-
-func selectDirectory(files:inout[Folder]) -> String {
-    var selection:String = ""
-    let panel = NSOpenPanel()
-    panel.canChooseFiles = false
-    panel.canChooseDirectories = true
-    panel.allowsMultipleSelection = false
-
-    if panel.runModal() == .OK {
-        selection = panel.url?.path ?? "<none>"
-        print("Path: ", selection)
-    }
-
-    files = folderListingAt(url:URL(fileURLWithPath: selection, isDirectory: true))
-    return selection
 }
 
 struct ContentView_Previews: PreviewProvider {

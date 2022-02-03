@@ -26,6 +26,8 @@
 		E51DB2F327A9B0E20046EFFA /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2E527A9B0E10046EFFA /* ImageView.swift */; };
 		E51DB2F427A9B0E20046EFFA /* ThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2E627A9B0E10046EFFA /* ThumbnailView.swift */; };
 		E56DF0CE27AC4F410087AB49 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = E56DF0CD27AC4F410087AB49 /* Atomic.swift */; };
+		E5A6F9C727AC8E4800D9D305 /* FocusedValues+LightTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9C627AC8E4800D9D305 /* FocusedValues+LightTable.swift */; };
+		E5A6F9C927AC9B6400D9D305 /* Filesystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9C827AC9B6400D9D305 /* Filesystem.swift */; };
 		E5CCE15E27A9EA3E00D6B42E /* KeyInputSubjectWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CCE15D27A9EA3E00D6B42E /* KeyInputSubjectWrapper.swift */; };
 		E5CCE16427AB4AC000D6B42E /* EventHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CCE16327AB4AC000D6B42E /* EventHandling.swift */; };
 /* End PBXBuildFile section */
@@ -52,6 +54,8 @@
 		E51DB2E527A9B0E10046EFFA /* ImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
 		E51DB2E627A9B0E10046EFFA /* ThumbnailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbnailView.swift; sourceTree = "<group>"; };
 		E56DF0CD27AC4F410087AB49 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
+		E5A6F9C627AC8E4800D9D305 /* FocusedValues+LightTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FocusedValues+LightTable.swift"; sourceTree = "<group>"; };
+		E5A6F9C827AC9B6400D9D305 /* Filesystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filesystem.swift; sourceTree = "<group>"; };
 		E5CCE15D27A9EA3E00D6B42E /* KeyInputSubjectWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyInputSubjectWrapper.swift; sourceTree = "<group>"; };
 		E5CCE16327AB4AC000D6B42E /* EventHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventHandling.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -88,6 +92,7 @@
 			children = (
 				E51DB2AB27A9ACAE0046EFFA /* LightTableApp.swift */,
 				E51DB2AD27A9ACAE0046EFFA /* ContentView.swift */,
+				E5A6F9C527AC8E1100D9D305 /* Support */,
 				E51DB2D627A9B0E10046EFFA /* Model */,
 				E51DB2DA27A9B0E10046EFFA /* Utilities */,
 				E51DB2E127A9B0E10046EFFA /* Views */,
@@ -128,6 +133,7 @@
 				E5CCE15D27A9EA3E00D6B42E /* KeyInputSubjectWrapper.swift */,
 				E5CCE16327AB4AC000D6B42E /* EventHandling.swift */,
 				E56DF0CD27AC4F410087AB49 /* Atomic.swift */,
+				E5A6F9C827AC9B6400D9D305 /* Filesystem.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -142,6 +148,14 @@
 				E51DB2E427A9B0E10046EFFA /* SingleImageView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		E5A6F9C527AC8E1100D9D305 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				E5A6F9C627AC8E4800D9D305 /* FocusedValues+LightTable.swift */,
+			);
+			path = Support;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -227,10 +241,12 @@
 				E51DB2EA27A9B0E20046EFFA /* ThumbnailLoader.swift in Sources */,
 				E51DB2F227A9B0E20046EFFA /* SingleImageView.swift in Sources */,
 				E51DB2EB27A9B0E20046EFFA /* LRUCache.swift in Sources */,
+				E5A6F9C727AC8E4800D9D305 /* FocusedValues+LightTable.swift in Sources */,
 				E51DB2E827A9B0E20046EFFA /* ImageBrowserModel.swift in Sources */,
 				E51DB2EF27A9B0E20046EFFA /* LinkedList.swift in Sources */,
 				E51DB2F427A9B0E20046EFFA /* ThumbnailView.swift in Sources */,
 				E5CCE16427AB4AC000D6B42E /* EventHandling.swift in Sources */,
+				E5A6F9C927AC9B6400D9D305 /* Filesystem.swift in Sources */,
 				E51DB2F127A9B0E20046EFFA /* ImageBrowser.swift in Sources */,
 				E51DB2AC27A9ACAE0046EFFA /* LightTableApp.swift in Sources */,
 			);
