@@ -103,6 +103,8 @@ extension ContentView:DropDelegate {
     }
 }
 
+
+
 func fileListingAt(url:URL) -> [URL] {
     let manager = FileManager.default
     do {
@@ -116,7 +118,10 @@ func fileListingAt(url:URL) -> [URL] {
                 entries.append(item)
             }
         }
-        return entries
+        // Sort images alphabetically
+        return entries.sorted { a, b in
+            return a.lastPathComponent < b.lastPathComponent
+        }
     } catch {
         return []
     }
@@ -134,13 +139,16 @@ func folderListingAt(url:URL) -> [Folder] {
                 entries.append(Folder(url: item))
             }
         }
-        return entries
+        // Sort folders alphabetically
+        return entries.sorted { a, b in
+            return a.url().lastPathComponent < b.url().lastPathComponent
+        }
     } catch {
         return []
     }
 }
 
-func selectDirectory(files:inout[URL]) -> String {
+func selectDirectory(files:inout[Folder]) -> String {
     var selection:String = ""
     let panel = NSOpenPanel()
     panel.canChooseFiles = false
@@ -152,7 +160,7 @@ func selectDirectory(files:inout[URL]) -> String {
         print("Path: ", selection)
     }
 
-    files = fileListingAt(url:URL(fileURLWithPath: selection, isDirectory: true))
+    files = folderListingAt(url:URL(fileURLWithPath: selection, isDirectory: true))
     return selection
 }
 

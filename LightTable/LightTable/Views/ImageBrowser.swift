@@ -46,12 +46,15 @@ struct ImageBrowser: View {
     @State var scrollViewHeight:CGFloat = 200
     @State var modifierFlags:NSEvent.ModifierFlags = NSEvent.ModifierFlags(rawValue: 0)
 
+    @State var selectImage = -1
+    @State var nextLocation:URL? = nil
+
     var body: some View {
         // We need a binding for .focusedSceneValue, although model as @ObservedObject is read only...
-        let modelBinding = Binding<ImageBrowserModel>(
-            get: { model },
-            set: { val in }
-        )
+//        let modelBinding = Binding<ImageBrowserModel>(
+//            get: { model },
+//            set: { val in }
+//        )
 
         VSplitView {
             HStack {
@@ -59,9 +62,13 @@ struct ImageBrowser: View {
                     Text("Make a selection.")
                         .padding(100)
                 } else {
-                    ForEach(model.selection, id: \.self) { file in
-                        ImageView(withURL: file)
-                            .id(file)
+                    if (selectImage >= 0 && selectImage < model.selection.count) {
+                        ImageView(withURL: model.selection[selectImage])
+                    } else {
+                        ForEach(model.selection, id: \.self) { file in
+                            ImageView(withURL: file)
+                                .id(file)
+                        }
                     }
                 }
             }
@@ -85,11 +92,24 @@ struct ImageBrowser: View {
                                     print(model.selection)
                                 }
                                 .id(file)
-                                .focusedSceneValue(\.focusedModel, modelBinding)
+                                // .focusedSceneValue(\.focusedModel, modelBinding)
                             }
                         }
                         .background(KeyEventHandling(keyAction: { char in
-                            // model.processKey(key: KeyEquivalent(char))
+                            if (char >= "1" && char <= "9") {
+                                let index = (char.wholeNumberValue! - Character("0").wholeNumberValue!) - 1;
+                                print("image number", index, model.selection.count)
+
+                                if (model.selection.count > 0 && model.selection.count > index) {
+                                    selectImage = index
+                                }
+                            } else if (KeyEquivalent(char) == .escape) {
+                                print("reset image number")
+                                selectImage = -1
+                            } else if (KeyEquivalent(char) == .leftArrow || KeyEquivalent(char) == .rightArrow) {
+                                nextLocation = model.processKey(key: KeyEquivalent(char))
+                                selectImage = -1
+                            }
                         }, modifiersAction: { flags in
                             modifierFlags = flags
                         }))
@@ -97,6 +117,7 @@ struct ImageBrowser: View {
                 }
                 .onReceive(model.$files) { newFiles in
                     model.selection = []
+                    selectImage = -1
 
                     if (newFiles.count > 0) {
                         // Wait for the ScrollView to stabilize
@@ -106,8 +127,13 @@ struct ImageBrowser: View {
                     }
                 }
                 .onReceive(model.$selection) { selection in
+                    selectImage = -1
+
                     if (!selection.isEmpty) {
-                        scroller.scrollTo(selection[selection.count-1])
+                        DispatchQueue.main.async {
+                            scroller.scrollTo(nextLocation != nil ? nextLocation : selection[selection.count-1])
+                            nextLocation = nil
+                        }
                     }
                 }
                 .frame(maxWidth: .infinity, minHeight: scrollViewHeight)
@@ -120,21 +146,21 @@ struct ImageBrowser: View {
 
         var body: some Commands {
             CommandMenu("Navigation") {
-                Button {
-                    model?.processKey(key: .leftArrow)
-                } label: {
-                    Text("Move Left")
-                }
-                .keyboardShortcut(.leftArrow, modifiers: [])
-                .disabled(model == nil)
-
-                Button {
-                    model?.processKey(key: .rightArrow)
-                } label: {
-                    Text("Move Right")
-                }
-                .keyboardShortcut(.rightArrow, modifiers: [])
-                .disabled(model == nil)
+//                Button {
+//                    model?.processKey(key: .leftArrow)
+//                } label: {
+//                    Text("Move Left")
+//                }
+//                .keyboardShortcut(.leftArrow, modifiers: [])
+//                .disabled(model == nil)
+//
+//                Button {
+//                    model?.processKey(key: .rightArrow)
+//                } label: {
+//                    Text("Move Right")
+//                }
+//                .keyboardShortcut(.rightArrow, modifiers: [])
+//                .disabled(model == nil)
             }
         }
     }

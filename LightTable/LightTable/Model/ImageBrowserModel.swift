@@ -100,42 +100,55 @@ class ImageBrowserModel: ObservableObject {
         return result
     }
 
-    func processKey(key: KeyEquivalent) {
+    func processKey(key: KeyEquivalent) -> URL? {
         if (key == .rightArrow || key == .leftArrow) {
             if (files.isEmpty) {
-                return
+                return nil
             }
             if (selection.isEmpty && !files.isEmpty) {
                 updateSelection(file: files[0])
-                return
+                return selection[0]
             }
             if (key == .rightArrow) {
                 if selection.count > 1 {
                     var indices = selectionIndices()
-                    if (indices.max()! < files.count - 1) {
+                    let min = indices.min()
+                    let max = indices.max()
+                    let step = max! - min! + 1
+                    print("step", step)
+                    if (indices.max()! < files.count - step) {
                         for i in 0 ..< indices.count {
-                            indices[i] += 1
+                            indices[i] += step
                         }
                         selection = indicesToFiles(indices: indices)
                     }
+                    return files[indices.max()!]
                 } else {
-                    let index = largestSelectionIndex()
+                    let index = selectionIndices().max()!
                     updateSelection(file: files[index < files.count - 1  ? index + 1 : index])
+                    return selection[0]
                 }
             } else if (key == .leftArrow) {
                 if selection.count > 1 {
                     var indices = selectionIndices()
-                    if (indices.min()! > 0) {
+                    let min = indices.min()
+                    let max = indices.max()
+                    let step = max! - min! + 1
+                    print("step", step)
+                    if (indices.min()! >= step) {
                         for i in 0 ..< indices.count {
-                            indices[i] -= 1
+                            indices[i] -= step
                         }
                         selection = indicesToFiles(indices: indices)
                     }
+                    return files[indices.min()!]
                 } else {
-                    let index = lowestSelectionIndex()
+                    let index = selectionIndices().min()!
                     updateSelection(file: files[index > 0 ? index - 1 : index])
+                    return selection[0]
                 }
             }
         }
+        return nil
     }
 }
