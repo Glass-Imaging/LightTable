@@ -46,29 +46,34 @@ struct FolderView: View {
     }
 }
 
+class NavigatorModel: ObservableObject {
+    @Published var folders:[Folder] = []
+}
+
 struct ContentView: View {
-    @State var folders:[Folder] = []
-    @State var imageBrowserModel = ImageBrowserModel()
-    @State var imageActive = false
+    @StateObject private var imageBrowserModel = ImageBrowserModel()
+    @StateObject private var navigatorModel = NavigatorModel()
 
     @State private var multiSelection = Set<URL>()
+
+    @State var imageActive = false
 
     var body: some View {
         NavigationView {
             HStack {
-                if (folders.count == 0) {
+                if (navigatorModel.folders.count == 0) {
                     Text("Drop a folder here.")
                 } else {
                     VStack {
                         Text("\(multiSelection.count) selections")
 
-                        List(folders, selection: $multiSelection) {
+                        List(navigatorModel.folders, selection: $multiSelection) {
                             FolderView(folder: $0)
                         }
                         .navigationTitle("Folders")
                         .onChange(of: multiSelection) { newValue in
                             if (newValue.first != nil) {
-                                imageBrowserModel.files = fileListingAt(url: newValue.first!)
+                                imageBrowserModel.setFiles(files: fileListingAt(url: newValue.first!))
                                 imageActive = true
                             }
                         }
@@ -84,10 +89,14 @@ struct ContentView: View {
 }
 
 extension ContentView:DropDelegate {
+    @MainActor
     func performDrop(info: DropInfo) -> Bool {
         DropUtils.urlFromDropInfo(info) { url in
             if let url = url {
-                self.folders = folderListingAt(url: url)
+                DispatchQueue.main.async {
+                    navigatorModel.folders = folderListingAt(url: url)
+                    multiSelection = Set<URL>()
+                }
             }
         }
         return true

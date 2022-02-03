@@ -11,6 +11,23 @@ class ImageBrowserModel: ObservableObject {
     @Published var files:[URL] = []
     @Published var selection:URL? = nil
 
+    func getBinding() -> Binding<ImageBrowserModel> {
+        let binding = Binding(
+            get: { [weak self] in
+                self!
+            },
+            set: { [weak self] in
+                self? = $0
+            }
+        )
+        return binding
+    }
+
+    func setFiles(files: [URL]) {
+        self.files = files
+        self.selection = nil
+    }
+
     func updateSelection(selection: URL) {
         if (self.selection != selection) {
             self.selection = selection

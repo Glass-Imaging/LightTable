@@ -26,7 +26,7 @@
 		E51DB2F327A9B0E20046EFFA /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2E527A9B0E10046EFFA /* ImageView.swift */; };
 		E51DB2F427A9B0E20046EFFA /* ThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2E627A9B0E10046EFFA /* ThumbnailView.swift */; };
 		E5CCE15E27A9EA3E00D6B42E /* KeyInputSubjectWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CCE15D27A9EA3E00D6B42E /* KeyInputSubjectWrapper.swift */; };
-		E5CCE16227AA5F4D00D6B42E /* EventHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CCE16127AA5F4D00D6B42E /* EventHandling.swift */; };
+		E5CCE16427AB4AC000D6B42E /* EventHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CCE16327AB4AC000D6B42E /* EventHandling.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,7 +51,7 @@
 		E51DB2E527A9B0E10046EFFA /* ImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
 		E51DB2E627A9B0E10046EFFA /* ThumbnailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbnailView.swift; sourceTree = "<group>"; };
 		E5CCE15D27A9EA3E00D6B42E /* KeyInputSubjectWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyInputSubjectWrapper.swift; sourceTree = "<group>"; };
-		E5CCE16127AA5F4D00D6B42E /* EventHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EventHandling.swift; path = "../../../../LightTable Experiments/LightTable/LightTable/Utilities/EventHandling.swift"; sourceTree = "<group>"; };
+		E5CCE16327AB4AC000D6B42E /* EventHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventHandling.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,7 +124,7 @@
 				E51DB2DC27A9B0E10046EFFA /* LRUCache.swift */,
 				E51DB2E027A9B0E10046EFFA /* LinkedList.swift */,
 				E5CCE15D27A9EA3E00D6B42E /* KeyInputSubjectWrapper.swift */,
-				E5CCE16127AA5F4D00D6B42E /* EventHandling.swift */,
+				E5CCE16327AB4AC000D6B42E /* EventHandling.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -226,7 +226,7 @@
 				E51DB2E827A9B0E20046EFFA /* ImageBrowserModel.swift in Sources */,
 				E51DB2EF27A9B0E20046EFFA /* LinkedList.swift in Sources */,
 				E51DB2F427A9B0E20046EFFA /* ThumbnailView.swift in Sources */,
-				E5CCE16227AA5F4D00D6B42E /* EventHandling.swift in Sources */,
+				E5CCE16427AB4AC000D6B42E /* EventHandling.swift in Sources */,
 				E51DB2F127A9B0E20046EFFA /* ImageBrowser.swift in Sources */,
 				E51DB2AC27A9ACAE0046EFFA /* LightTableApp.swift in Sources */,
 			);
