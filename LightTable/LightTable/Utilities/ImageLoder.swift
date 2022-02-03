@@ -11,12 +11,11 @@ import SwiftUI
 /// Observable object responsible to load an image to be used by SwiftUI views
 class ImageLoader: ObservableObject {
     // LRU Cache for images, minimizes flashing redraws in the browser, cache up to 100 NSImage renderings
-    static var lruCache:LRUCache<URL> = LRUCache<URL>(100)
+    static var lruCache:LRUCache<URL> = LRUCache<URL>(10)
 
     var didChange = PassthroughSubject<NSImage, Never>()
     var data = NSImage() {
         didSet {
-            print("didChange")
             didChange.send(data)
         }
     }
@@ -37,18 +36,18 @@ class ImageLoader: ObservableObject {
     private func loadImage(fromURL url:URL) {
         let cachedData = ImageLoader.lruCache.get(url)
         if (cachedData != nil) {
-            print("Found the data!")
             DispatchQueue.main.async {
                 self.data = (cachedData! as? NSImage)!
             }
             return
         }
-        print("No data, loading...")
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data else { return }
+
+            // TODO: NSImage appears to be quite slow at this, run it on the loader thread
+            let image = NSImage(data: data)
+
             DispatchQueue.main.async {
-                // TODO: NSImage appears to be quite slow at this...
-                let image = NSImage(data: data)
                 ImageLoader.lruCache.set(url, val: image!)
                 self.data = image!
             }
