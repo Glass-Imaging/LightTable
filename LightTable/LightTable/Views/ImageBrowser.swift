@@ -44,7 +44,7 @@ struct ImageBrowser: View {
     @ObservedObject var model:ImageBrowserModel
 
     @State var scrollViewHeight:CGFloat = 200
-    @State var commandKeyDown = false
+    @State var modifierFlags:NSEvent.ModifierFlags = NSEvent.ModifierFlags(rawValue: 0)
 
     var body: some View {
         // We need a binding for .focusedSceneValue, although model as @ObservedObject is read only...
@@ -76,7 +76,7 @@ struct ImageBrowser: View {
                         LazyHStack(alignment: .bottom) {
                             ForEach(model.files, id: \.self) { file in
                                 Thumbnail(file: file, model: model) {
-                                    if (commandKeyDown) {
+                                    if (modifierFlags.contains(.command)) {
                                         print("Command-Click! :D")
                                         model.addToSelection(file: file)
                                     } else {
@@ -90,14 +90,8 @@ struct ImageBrowser: View {
                         }
                         .background(KeyEventHandling(keyAction: { char in
                             // model.processKey(key: KeyEquivalent(char))
-                        }, modifiersAction: { modifierFlags in
-                            print("Modifiers", modifierFlags, NSEvent.ModifierFlags.command, NSEvent.ModifierFlags.control)
-
-                            if (modifierFlags.contains(.command)) {
-                                commandKeyDown = true
-                            } else {
-                                commandKeyDown = false
-                            }
+                        }, modifiersAction: { flags in
+                            modifierFlags = flags
                         }))
                     }
                 }
@@ -113,10 +107,10 @@ struct ImageBrowser: View {
                 }
                 .onReceive(model.$selection) { selection in
                     if (!selection.isEmpty) {
-                        scroller.scrollTo(selection[0])
+                        scroller.scrollTo(selection[selection.count-1])
                     }
                 }
-                .frame(maxWidth: .infinity, minHeight: scrollViewHeight, maxHeight: scrollViewHeight)
+                .frame(maxWidth: .infinity, minHeight: scrollViewHeight)
             }
         }
     }

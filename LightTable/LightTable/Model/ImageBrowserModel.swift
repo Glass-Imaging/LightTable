@@ -50,23 +50,91 @@ class ImageBrowserModel: ObservableObject {
         selection.remove(at: index)
     }
 
+    func lowestSelectionIndex() -> Int {
+        var lowestIndex = files.count - 1
+        for file in selection {
+            guard let index = files.firstIndex(of: file) else {
+                // This should not happen...
+                continue
+            }
+            if index < lowestIndex {
+                lowestIndex = index
+            }
+        }
+        return lowestIndex
+    }
+
+    func largestSelectionIndex() -> Int {
+        var largestIndex = 0
+        for file in selection {
+            guard let index = files.firstIndex(of: file) else {
+                // This should not happen...
+                continue
+            }
+            if index > largestIndex {
+                largestIndex = index
+            }
+        }
+        return largestIndex
+    }
+
+    func selectionIndices() -> [Int] {
+        var result:[Int] = []
+        for file in selection {
+            guard let index = files.firstIndex(of: file) else {
+                // This should not happen...
+                continue
+            }
+            result.append(index)
+        }
+        return result
+    }
+
+    func indicesToFiles(indices:[Int]) -> [URL] {
+        var result:[URL] = []
+        for i in indices {
+            if i < files.count {
+                result.append(files[i])
+            }
+        }
+        return result
+    }
+
     func processKey(key: KeyEquivalent) {
         if (key == .rightArrow || key == .leftArrow) {
             if (files.isEmpty) {
                 return
             }
-            if (selection.isEmpty) {
+            if (selection.isEmpty && !files.isEmpty) {
                 updateSelection(file: files[0])
                 return
             }
-            guard let index = files.firstIndex(of: selection[0]) else {
-                // This should not happen...
-                return
-            }
-            if (key == .rightArrow && index < files.count - 1) {
-                updateSelection(file: files[index + 1])
-            } else if (key == .leftArrow && index > 0) {
-                updateSelection(file: files[index - 1])
+            if (key == .rightArrow) {
+                if selection.count > 1 {
+                    var indices = selectionIndices()
+                    if (indices.max()! < files.count - 1) {
+                        for i in 0 ..< indices.count {
+                            indices[i] += 1
+                        }
+                        selection = indicesToFiles(indices: indices)
+                    }
+                } else {
+                    let index = largestSelectionIndex()
+                    updateSelection(file: files[index < files.count - 1  ? index + 1 : index])
+                }
+            } else if (key == .leftArrow) {
+                if selection.count > 1 {
+                    var indices = selectionIndices()
+                    if (indices.min()! > 0) {
+                        for i in 0 ..< indices.count {
+                            indices[i] -= 1
+                        }
+                        selection = indicesToFiles(indices: indices)
+                    }
+                } else {
+                    let index = lowestSelectionIndex()
+                    updateSelection(file: files[index > 0 ? index - 1 : index])
+                }
             }
         }
     }
