@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-func NSOpenPanelDirectoryListing(files:inout[Folder]) -> URL? {
+func NSOpenPanelDirectoryListing(files:inout[URL]) -> URL? {
     let panel = NSOpenPanel()
     panel.canChooseFiles = false
     panel.canChooseDirectories = true
@@ -20,17 +20,29 @@ func NSOpenPanelDirectoryListing(files:inout[Folder]) -> URL? {
     return nil
 }
 
-func fileListingAt(url:URL) -> [URL] {
+func folderListingAt(url:URL) -> [URL] {
+    return fileListingAt(url: url) { entry in
+        return entry.hasDirectoryPath
+    }
+}
+
+func imageFileListingAt(url:URL) -> [URL] {
+    return fileListingAt(url: url) { entry in
+        let file_extension = entry.pathExtension.lowercased()
+        return file_extension == "jpg" || file_extension == "jpeg" || file_extension == "png"
+    }
+}
+
+func fileListingAt(url:URL, filter:(_ entry:URL) -> Bool) -> [URL] {
     let manager = FileManager.default
     do {
         var entries:[URL] = []
-        let items = try manager.contentsOfDirectory(at: url,
+        let directoryContent = try manager.contentsOfDirectory(at: url,
                                                     includingPropertiesForKeys: nil,
                                                     options: .skipsSubdirectoryDescendants)
-        for item in items {
-            let file_extension = item.pathExtension.lowercased()
-            if (file_extension == "jpg" || file_extension == "jpeg" || file_extension == "png") {
-                entries.append(item)
+        for entry in directoryContent {
+            if filter(entry) {
+                entries.append(entry)
             }
         }
         // Sort images alphabetically
@@ -41,25 +53,3 @@ func fileListingAt(url:URL) -> [URL] {
         return []
     }
 }
-
-func folderListingAt(url:URL) -> [Folder] {
-    let manager = FileManager.default
-    do {
-        var entries:[Folder] = []
-        let items = try manager.contentsOfDirectory(at: url,
-                                                    includingPropertiesForKeys: nil,
-                                                    options: .skipsSubdirectoryDescendants)
-        for item in items {
-            if (item.hasDirectoryPath) {
-                entries.append(Folder(url: item))
-            }
-        }
-        // Sort folders alphabetically
-        return entries.sorted { a, b in
-            return a.url().lastPathComponent < b.url().lastPathComponent
-        }
-    } catch {
-        return []
-    }
-}
-

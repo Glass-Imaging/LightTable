@@ -7,21 +7,7 @@
 
 import SwiftUI
 
-struct CheckToggleStyle: ToggleStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        Button {
-            configuration.isOn.toggle()
-        } label: {
-            Label {
-                configuration.label
-            } icon: { }
-        }
-        .buttonStyle(PlainButtonStyle())
-        .background(configuration.isOn ? Color.blue : nil)
-    }
-}
-
-struct Thumbnail: View {
+struct ThumbnailButtonView: View {
     var file:URL
     @ObservedObject var model:ImageBrowserModel
     var action: () -> Void
@@ -82,9 +68,9 @@ struct ImageBrowser: View {
                     } else {
                         LazyHStack(alignment: .bottom) {
                             ForEach(model.files, id: \.self) { file in
-                                Thumbnail(file: file, model: model) {
+                                ThumbnailButtonView(file: file, model: model) {
+                                    // Handle Command-Click mouse actions
                                     if (modifierFlags.contains(.command)) {
-                                        print("Command-Click! :D")
                                         model.addToSelection(file: file)
                                     } else {
                                         model.updateSelection(file: file)
@@ -96,17 +82,18 @@ struct ImageBrowser: View {
                             }
                         }
                         .background(KeyEventHandling(keyAction: { char in
-                            if (char >= "1" && char <= "9") {
-                                let index = (char.wholeNumberValue! - Character("0").wholeNumberValue!) - 1;
-                                print("image number", index, model.selection.count)
-
+                            if (char >= "0" && char <= "9") {
+                                // Single image selection mode
+                                let zero = Character("0")
+                                let index = char == zero ? 9 : (char.wholeNumberValue! - zero.wholeNumberValue!) - 1;
                                 if (model.selection.count > 0 && model.selection.count > index) {
                                     selectImage = index
                                 }
                             } else if (KeyEquivalent(char) == .escape) {
-                                print("reset image number")
+                                // Exit single image selection mode
                                 selectImage = -1
                             } else if (KeyEquivalent(char) == .leftArrow || KeyEquivalent(char) == .rightArrow) {
+                                // Keyboard navigation
                                 nextLocation = model.processKey(key: KeyEquivalent(char))
                                 selectImage = -1
                             }

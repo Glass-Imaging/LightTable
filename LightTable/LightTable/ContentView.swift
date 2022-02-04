@@ -7,29 +7,8 @@
 
 import SwiftUI
 
-class Folder : Hashable, Equatable, Identifiable {
-    let id:URL
-    // var children:Folder?
-
-    func url() -> URL {
-        return id
-    }
-
-    static func == (lhs: Folder, rhs: Folder) -> Bool {
-        return lhs.id == rhs.id
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-
-    init(url:URL) {
-        self.id = url
-    }
-}
-
 struct FolderView: View {
-    var folder:Folder
+    var folder:URL
     @State var open = false
 
     var body: some View {
@@ -41,14 +20,14 @@ struct FolderView: View {
             }
             .buttonStyle(PlainButtonStyle())
 
-            Label(folder.url().lastPathComponent, systemImage: "folder.fill")
+            Label(folder.lastPathComponent, systemImage: "folder.fill")
         }
     }
 }
 
 class NavigatorModel: ObservableObject {
     @Published var parentFolder:URL? = nil
-    @Published var folders:[Folder] = []
+    @Published var folders:[URL] = []
 }
 
 struct ContentView: View {
@@ -75,13 +54,13 @@ struct ContentView: View {
 
                         Label("\(directoryPath)", systemImage: "lightbulb.fill")
 
-                        List(navigatorModel.folders, selection: $multiSelection) {
+                        List(navigatorModel.folders, id:\.self, selection: $multiSelection) {
                             FolderView(folder: $0)
                         }
                         .navigationTitle("Folders")
                         .onChange(of: multiSelection) { newValue in
                             if (newValue.first != nil) {
-                                imageBrowserModel.setFiles(files: fileListingAt(url: newValue.first!))
+                                imageBrowserModel.setFiles(files: imageFileListingAt(url: newValue.first!))
                                 imageActive = true
                             }
                         }
@@ -110,7 +89,7 @@ struct ContentView: View {
         var body: some Commands {
             CommandGroup(after: CommandGroupPlacement.newItem) {
                 Button("Open...") {
-                    var listing:[Folder] = []
+                    var listing:[URL] = []
                     let selectedDirectory = NSOpenPanelDirectoryListing(files: &listing)
                     if (listing.count > 0) {
                         model?.parentFolder = selectedDirectory
