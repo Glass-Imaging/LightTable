@@ -1,6 +1,6 @@
 //
-//  FileListing.swift
-//  PhotoBrowser
+//  ImageBrowserModel.swift
+//  LightTable
 //
 //  Created by Fabio Riccardi on 1/31/22.
 //
@@ -115,7 +115,7 @@ class ImageBrowserModel: ObservableObject {
                     let min = indices.min()
                     let max = indices.max()
                     let step = max! - min! + 1
-                    print("step", step)
+
                     if (indices.max()! < files.count - step) {
                         for i in 0 ..< indices.count {
                             indices[i] += step
@@ -134,7 +134,7 @@ class ImageBrowserModel: ObservableObject {
                     let min = indices.min()
                     let max = indices.max()
                     let step = max! - min! + 1
-                    print("step", step)
+
                     if (indices.min()! >= step) {
                         for i in 0 ..< indices.count {
                             indices[i] -= step

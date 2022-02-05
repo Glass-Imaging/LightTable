@@ -1,6 +1,6 @@
 //
 //  ImageLoder.swift
-//  PhotoBrowser
+//  LightTable
 //
 //  Created by Fabio Riccardi on 1/30/22.
 //

@@ -1,6 +1,6 @@
 //
 //  ImageUtils.swift
-//  SimpleImageViewer
+//  LightTable
 //
 //  Created by Gualtiero Frigerio on 09/02/21.
 //

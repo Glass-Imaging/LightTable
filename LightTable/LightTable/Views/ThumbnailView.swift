@@ -1,6 +1,6 @@
 //
 //  ThumbnailView.swift
-//  ThumbnailView
+//  LightTable
 //
 //  Created by Gualtiero Frigerio on 23/08/21.
 //

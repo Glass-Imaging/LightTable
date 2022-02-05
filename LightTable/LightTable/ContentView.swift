@@ -75,7 +75,7 @@ struct ContentView: View {
                     }
                 }
 
-                NavigationLink(destination: ImageBrowser(model: imageBrowserModel), isActive: $imageActive){}.hidden()
+                NavigationLink(destination: ImageBrowserView(model: imageBrowserModel), isActive: $imageActive){}.hidden()
             }
         }
         .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
