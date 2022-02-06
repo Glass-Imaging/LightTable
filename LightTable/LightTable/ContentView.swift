@@ -59,18 +59,23 @@ struct ContentView: View {
                         }
                         .navigationTitle("Folders")
                         .onChange(of: multiSelection) { newValue in
-                            if (newValue.first != nil) {
-                                imageBrowserModel.setFiles(files: imageFileListingAt(url: newValue.first!))
-                                imageActive = true
+                            var directories:[URL] = []
+
+                            for entry in multiSelection {
+                                print("entry", entry)
+                                directories.append(entry)
                             }
+
+                            imageBrowserModel.setDirectories(directories: directories)
+
+                            imageActive = !directories.isEmpty
                         }
                         .onReceive(navigatorModel.$folders) { folders in
                             // Reset navigator's selection
                             multiSelection = Set<URL>()
 
                             // Reset image browser state
-                            imageBrowserModel.files = []
-                            imageBrowserModel.selection = []
+                            imageBrowserModel.reset()
                         }
                     }
                 }

@@ -20,43 +20,46 @@ struct ThumbnailScrollView: View {
             set: { val in }
         )
 
-        ScrollViewReader { scroller in
-            ScrollView(.horizontal, showsIndicators: true) {
-                if (model.files.count == 0) {
-                    Text("Select a folder with images")
-                        .padding(100)
-                } else {
-                    LazyHStack(alignment: .bottom) {
-                        ForEach(model.files, id: \.self) { file in
-                            ThumbnailButtonView(file: file, model: model) {
-                                // Handle Command-Click mouse actions
-                                if (modifierFlags.contains(.command)) {
-                                    model.addToSelection(file: file)
-                                } else {
-                                    model.updateSelection(file: file)
+        if (model.files.count == 0) {
+            Text("Select a folder with images")
+                .padding(100)
+                .frame(height: 200)
+        } else {
+            ScrollViewReader { scroller in
+                ScrollView([.vertical, .horizontal], showsIndicators: true) {
+                    VStack(alignment: .leading) {
+                        ForEach(model.files, id: \.self) { listing in
+                            HStack(alignment: .bottom) {
+                                ForEach(listing, id: \.self) { file in
+                                    ThumbnailButtonView(file: file, model: model) {
+                                        // Handle Command-Click mouse actions
+                                        if (modifierFlags.contains(.command)) {
+                                            model.addToSelection(file: file)
+                                        } else {
+                                            model.updateSelection(file: file)
+                                        }
+                                    }
+                                    .id(file)
+                                    .focusedSceneValue(\.focusedBrowserModel, modelBinding)
                                 }
                             }
-                            .id(file)
-                            .focusedSceneValue(\.focusedBrowserModel, modelBinding)
                         }
                     }
                 }
-            }
-            .onReceive(model.$files) { newFiles in
-                model.selection = []
-
-                if (newFiles.count > 0) {
-                    // Wait for the ScrollView to stabilize
-                    DispatchQueue.main.async {
-                        scroller.scrollTo(newFiles[0])
+                .onReceive(model.$files) { newFiles in
+                    if (newFiles.count > 0) {
+                        // Wait for the ScrollView to stabilize
+                        DispatchQueue.main.async {
+                            scroller.scrollTo(newFiles[0])
+                        }
                     }
                 }
-            }
-            .onReceive(model.$selection) { selection in
-                if (!selection.isEmpty) {
-                    DispatchQueue.main.async {
-                        scroller.scrollTo(nextLocation != nil ? nextLocation : selection[selection.count-1])
-                        nextLocation = nil
+                .onReceive(model.$selection) { selection in
+                    if (!selection.isEmpty) {
+                        DispatchQueue.main.async {
+                            scroller.scrollTo(nextLocation != nil ? nextLocation : selection[selection.count-1])
+                            nextLocation = nil
+                        }
                     }
                 }
             }

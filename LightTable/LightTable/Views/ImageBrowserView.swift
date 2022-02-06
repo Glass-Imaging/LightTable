@@ -41,39 +41,43 @@ struct ImageBrowserView: View {
     // Height of the ThumbnailScrollerPanel, modified by the PaneDivider
     @State var scrollViewHeight:CGFloat = 200
 
+    let minPaneSize:CGFloat = 200
+
     var body: some View {
-        VStack {
-            ImageListView(model: model, imageFilter: $imageViewFilter)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        GeometryReader { geometry in
+            VStack {
+                ImageListView(model: model, imageFilter: $imageViewFilter)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            PaneDivider { offset in
-                DispatchQueue.main.async {
-                    scrollViewHeight -= offset
-                }
-            }
-
-            ThumbnailScrollView(model: model, modifierFlags: $modifierFlags, nextLocation: $nextLocation)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .frame(height: max(scrollViewHeight, 0))
-                .background(KeyEventHandling(keyAction: { char in
-                    if (char >= "0" && char <= "9") {
-                        // Single image selection mode
-                        let zero = Character("0")
-                        let index = char == zero ? 9 : (char.wholeNumberValue! - zero.wholeNumberValue!) - 1;
-                        if (model.selection.count > 0 && model.selection.count > index) {
-                            imageViewFilter = index
-                        }
-                    } else if (KeyEquivalent(char) == .escape) {
-                        // Exit single image selection mode
-                        imageViewFilter = -1
-                    } else if (KeyEquivalent(char) == .leftArrow || KeyEquivalent(char) == .rightArrow) {
-                        // Keyboard navigation
-                        nextLocation = model.processKey(key: KeyEquivalent(char))
-                        imageViewFilter = -1
+                PaneDivider { offset in
+                    DispatchQueue.main.async {
+                        scrollViewHeight = max(min(scrollViewHeight - offset, geometry.size.height - minPaneSize), minPaneSize)
                     }
-                }, modifiersAction: { flags in
-                    modifierFlags = flags
-                }))
+                }
+
+                ThumbnailScrollView(model: model, modifierFlags: $modifierFlags, nextLocation: $nextLocation)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(height: max(scrollViewHeight, 0))
+                    .background(KeyEventHandling(keyAction: { char in
+                        if (char >= "0" && char <= "9") {
+                            // Single image selection mode
+                            let zero = Character("0")
+                            let index = char == zero ? 9 : (char.wholeNumberValue! - zero.wholeNumberValue!) - 1;
+                            if (model.selection.count > 0 && model.selection.count > index) {
+                                imageViewFilter = index
+                            }
+                        } else if (KeyEquivalent(char) == .escape) {
+                            // Exit single image selection mode
+                            imageViewFilter = -1
+                        } else if (KeyEquivalent(char) == .leftArrow || KeyEquivalent(char) == .rightArrow) {
+                            // Keyboard navigation
+                            nextLocation = model.processKey(key: KeyEquivalent(char))
+                            imageViewFilter = -1
+                        }
+                    }, modifiersAction: { flags in
+                        modifierFlags = flags
+                    }))
+            }
         }
         .onReceive(model.$files) { _ in
             imageViewFilter = -1

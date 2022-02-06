@@ -8,20 +8,59 @@
 import SwiftUI
 
 class ImageBrowserModel: ObservableObject {
-    @Published var files:[URL] = []
+    @Published var directories:[URL] = []
+    @Published var files:[[URL]] = []
     @Published var selection:[URL] = []
 
-    func setFiles(files: [URL]) {
-        self.files = files
-        selection = []
+    func setDirectories(directories: [URL]) {
+        // Check removed directories
+        for d in self.directories {
+            if (!directories.contains(d)) {
+                print("removing directory", d)
+                removeDirectory(directory: d)
+            }
+        }
+        // Check for added directories
+        for d in directories {
+            if (!self.directories.contains(d)) {
+                print("adding directory", d)
+                addDirectory(directory: d)
+            }
+        }
     }
 
-    func getSelection() -> URL? {
-        if (selection.isEmpty) {
-            return nil
-        } else {
-            return selection[0]
+    func addDirectory(directory: URL) {
+        if (!directories.contains(directory)) {
+            let fileListing = imageFileListingAt(url: directory)
+            directories.append(directory)
+            files.append(fileListing)
         }
+    }
+
+    func removeDirectory(directory: URL) {
+        guard let index = directories.firstIndex(of: directory) else {
+            return
+        }
+
+        // Remove selections
+        for file in files[index] {
+            guard let fileIndex = selection.firstIndex(of: file) else {
+                continue
+            }
+            selection.remove(at: fileIndex)
+        }
+
+        // Remove files
+        files.remove(at: index)
+
+        // Remove the directory entry
+        directories.remove(at: index)
+    }
+
+    func reset() {
+        directories = []
+        files = []
+        selection = []
     }
 
     func isSelcted(file: URL) -> Bool {
@@ -53,7 +92,7 @@ class ImageBrowserModel: ObservableObject {
     func lowestSelectionIndex() -> Int {
         var lowestIndex = files.count - 1
         for file in selection {
-            guard let index = files.firstIndex(of: file) else {
+            guard let index = files[0].firstIndex(of: file) else {
                 // This should not happen...
                 continue
             }
@@ -67,7 +106,7 @@ class ImageBrowserModel: ObservableObject {
     func largestSelectionIndex() -> Int {
         var largestIndex = 0
         for file in selection {
-            guard let index = files.firstIndex(of: file) else {
+            guard let index = files[0].firstIndex(of: file) else {
                 // This should not happen...
                 continue
             }
@@ -81,7 +120,7 @@ class ImageBrowserModel: ObservableObject {
     func selectionIndices() -> [Int] {
         var result:[Int] = []
         for file in selection {
-            guard let index = files.firstIndex(of: file) else {
+            guard let index = files[0].firstIndex(of: file) else {
                 // This should not happen...
                 continue
             }
@@ -94,7 +133,7 @@ class ImageBrowserModel: ObservableObject {
         var result:[URL] = []
         for i in indices {
             if i < files.count {
-                result.append(files[i])
+                result.append(files[0][i])
             }
         }
         return result
@@ -106,7 +145,7 @@ class ImageBrowserModel: ObservableObject {
                 return nil
             }
             if (selection.isEmpty && !files.isEmpty) {
-                updateSelection(file: files[0])
+                updateSelection(file: files[0][0])
                 return selection[0]
             }
             if (key == .rightArrow) {
@@ -122,10 +161,10 @@ class ImageBrowserModel: ObservableObject {
                         }
                         selection = indicesToFiles(indices: indices)
                     }
-                    return files[indices.max()!]
+                    return files[0][indices.max()!]
                 } else {
                     let index = selectionIndices().max()!
-                    updateSelection(file: files[index < files.count - 1  ? index + 1 : index])
+                    updateSelection(file: files[0][index < files.count - 1  ? index + 1 : index])
                     return selection[0]
                 }
             } else if (key == .leftArrow) {
@@ -141,10 +180,10 @@ class ImageBrowserModel: ObservableObject {
                         }
                         selection = indicesToFiles(indices: indices)
                     }
-                    return files[indices.min()!]
+                    return files[0][indices.min()!]
                 } else {
                     let index = selectionIndices().min()!
-                    updateSelection(file: files[index > 0 ? index - 1 : index])
+                    updateSelection(file: files[0][index > 0 ? index - 1 : index])
                     return selection[0]
                 }
             }
