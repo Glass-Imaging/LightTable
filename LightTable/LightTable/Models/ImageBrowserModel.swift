@@ -89,102 +89,173 @@ class ImageBrowserModel: ObservableObject {
         selection.remove(at: index)
     }
 
-    func lowestSelectionIndex() -> Int {
-        var lowestIndex = files.count - 1
-        for file in selection {
-            guard let index = files[0].firstIndex(of: file) else {
-                // This should not happen...
-                continue
+    func lowestSelectionIndex(directory:Int) -> Int {
+        if (directory < directories.count) {
+            var lowestIndex = files[directory].count - 1
+            for file in selection {
+                guard let index = files[directory].firstIndex(of: file) else {
+                    // This should not happen...
+                    continue
+                }
+                if index < lowestIndex {
+                    lowestIndex = index
+                }
             }
-            if index < lowestIndex {
-                lowestIndex = index
-            }
+            return lowestIndex
         }
-        return lowestIndex
+        return -1
     }
 
-    func largestSelectionIndex() -> Int {
-        var largestIndex = 0
-        for file in selection {
-            guard let index = files[0].firstIndex(of: file) else {
-                // This should not happen...
-                continue
+    func largestSelectionIndex(directory:Int) -> Int {
+        if (directory < directories.count) {
+            var largestIndex = 0
+            for file in selection {
+                guard let index = files[directory].firstIndex(of: file) else {
+                    // This should not happen...
+                    continue
+                }
+                if index > largestIndex {
+                    largestIndex = index
+                }
             }
-            if index > largestIndex {
-                largestIndex = index
-            }
+            return largestIndex
         }
-        return largestIndex
+        return -1
     }
 
-    func selectionIndices() -> [Int] {
-        var result:[Int] = []
-        for file in selection {
-            guard let index = files[0].firstIndex(of: file) else {
-                // This should not happen...
-                continue
+    func selectionIndices(directory:Int) -> [(Int, Int)] { // selection index, file index
+        var result:[(Int, Int)] = []
+        if (directory < directories.count) {
+            for i in 0..<selection.count {
+                let file = selection[i]
+                guard let index = files[directory].firstIndex(of: file) else {
+                    // This should not happen...
+                    continue
+                }
+                result.append((i, index))
             }
-            result.append(index)
         }
         return result
     }
 
-    func indicesToFiles(indices:[Int]) -> [URL] {
+    func indicesToFiles(directory:Int, indices:[Int]) -> [URL] {
         var result:[URL] = []
-        for i in indices {
-            if i < files.count {
-                result.append(files[0][i])
+        if (directory < directories.count) {
+            for i in indices {
+                if i < files[directory].count {
+                    result.append(files[directory][i])
+                }
             }
         }
         return result
+    }
+
+    let sortTuple = { (a:(Int, Int), b:(Int, Int)) in // selection index, file index
+        return a.1 < b.1
     }
 
     func processKey(key: KeyEquivalent) -> URL? {
         if (key == .rightArrow || key == .leftArrow) {
-            if (files.isEmpty) {
+            if (files.isEmpty || files[0].isEmpty) {
                 return nil
             }
-            if (selection.isEmpty && !files.isEmpty) {
+            if (selection.isEmpty && !files[0].isEmpty) {
                 updateSelection(file: files[0][0])
                 return selection[0]
             }
-            if (key == .rightArrow) {
-                if selection.count > 1 {
-                    var indices = selectionIndices()
-                    let min = indices.min()
-                    let max = indices.max()
-                    let step = max! - min! + 1
+            if selection.isEmpty {
+                return nil
+            }
 
-                    if (indices.max()! < files.count - step) {
-                        for i in 0 ..< indices.count {
-                            indices[i] += step
-                        }
-                        selection = indicesToFiles(indices: indices)
-                    }
-                    return files[0][indices.max()!]
-                } else {
-                    let index = selectionIndices().max()!
-                    updateSelection(file: files[0][index < files.count - 1  ? index + 1 : index])
-                    return selection[0]
+            var directoryIndices:[[(Int, Int)]] = []  // selection index, file index
+            var directoryMax:[Int] = []
+            var directoryMin:[Int] = []
+            var selectionStep = 0
+
+            for d in 0 ..< directories.count {
+                if (files[d].isEmpty) {
+                    directoryMax.append(-1)
+                    directoryMin.append(-1)
+                    directoryIndices.append([])
+                    continue
                 }
-            } else if (key == .leftArrow) {
-                if selection.count > 1 {
-                    var indices = selectionIndices()
-                    let min = indices.min()
-                    let max = indices.max()
-                    let step = max! - min! + 1
+                let indices = selectionIndices(directory: d)
+                if (indices.isEmpty) {
+                    directoryMax.append(-1)
+                    directoryMin.append(-1)
+                    directoryIndices.append([])
+                    continue
+                }
+                let min = indices.min(by: sortTuple)
+                let max = indices.max(by: sortTuple)
+                let step = max!.1 - min!.1 + 1
 
-                    if (indices.min()! >= step) {
-                        for i in 0 ..< indices.count {
-                            indices[i] -= step
-                        }
-                        selection = indicesToFiles(indices: indices)
+                if (step > selectionStep) {
+                    selectionStep = step
+                }
+
+                directoryMax.append(max!.1)
+                directoryMin.append(min!.1)
+                directoryIndices.append(indices)
+            }
+
+            // See if the step size is compatible for all directories
+            for d in 0 ..< directories.count {
+                if (directoryIndices[d].isEmpty) {
+                    continue
+                }
+
+                if (key == .rightArrow) {
+                    if (directoryMax[d] >= files[d].count - selectionStep) {
+                        // never mind, we can't advance
+                        return nil
                     }
-                    return files[0][indices.min()!]
                 } else {
-                    let index = selectionIndices().min()!
-                    updateSelection(file: files[0][index > 0 ? index - 1 : index])
-                    return selection[0]
+                    if (directoryMin[d] < selectionStep) {
+                        // never mind, we can't advance
+                        return nil
+                    }
+                }
+            }
+
+            // Step sizes are compatible with all selections, modify selections in place
+            for d in 0 ..< directories.count {
+                if (directoryIndices[d].isEmpty) {
+                    continue
+                }
+                for i in 0 ..< directoryIndices[d].count {
+                    let index = directoryIndices[d][i]
+                    selection[index.0] = files[d][index.1 + (key == .rightArrow ? selectionStep : -selectionStep)]
+                }
+            }
+
+            if (key == .rightArrow) {
+                var globalMax:Int = 0
+                var directoryWithMax:Int = 0
+                for d in 0 ..< directories.count {
+                    if (directoryMax[d] > globalMax) {
+                        globalMax = directoryMax[d]
+                        directoryWithMax = d
+                    }
+                }
+
+                if (globalMax >= 0) {
+                    return files[directoryWithMax][globalMax + selectionStep]
+                }
+            } else {
+                var globalMin:Int = Int.max
+                var directoryWithMin:Int = 0
+                for d in 0 ..< directories.count {
+                    if (directoryMin[d] < globalMin) {
+                        globalMin = directoryMin[d]
+                        directoryWithMin = d
+                    }
+                }
+
+                if (globalMin >= 0) {
+                    let result = files[directoryWithMin][globalMin - selectionStep]
+                    print("result", result)
+                    return result
                 }
             }
         }

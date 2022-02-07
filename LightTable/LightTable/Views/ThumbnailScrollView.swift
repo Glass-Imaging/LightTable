@@ -50,13 +50,15 @@ struct ThumbnailScrollView: View {
                     if (newFiles.count > 0) {
                         // Wait for the ScrollView to stabilize
                         DispatchQueue.main.async {
-                            scroller.scrollTo(newFiles[0])
+                            print("scrolling to 1", newFiles[0][0])
+                            scroller.scrollTo(newFiles[0][0])
                         }
                     }
                 }
                 .onReceive(model.$selection) { selection in
                     if (!selection.isEmpty) {
                         DispatchQueue.main.async {
+                            print("scrolling to 2", nextLocation)
                             scroller.scrollTo(nextLocation != nil ? nextLocation : selection[selection.count-1])
                             nextLocation = nil
                         }

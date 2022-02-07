@@ -16,6 +16,7 @@ struct ThumbnailView: View {
     
     var body: some View {
         Image(nsImage: thumbnailLoader.image)
+            .frame(width: 200, height: 200)
     }
 }
 
