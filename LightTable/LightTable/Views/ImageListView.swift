@@ -66,15 +66,19 @@ struct ImageListView: View {
                 if (imageFilter >= 0 && imageFilter < model.selection.count) {
                     ImageView(withURL: model.selection[imageFilter], orientation: _orientation)
                 } else {
+                    let count = min(model.selection.count, 16)
+
                     switch (layout) {
                     case .Horizontal:
-                        ForEach(model.selection, id: \.self) { file in
+                        ForEach(0 ..< count, id: \.self) { index in
+                            let file = model.selection[index]
                             ImageView(withURL: file, orientation: _orientation)
                                 .id(file)
                         }
                     case .Vertical:
                         VStack {
-                            ForEach(model.selection, id: \.self) { file in
+                            ForEach(0 ..< count, id: \.self) { index in
+                                let file = model.selection[index]
                                 ImageView(withURL: file, orientation: _orientation)
                                     .id(file)
                             }
@@ -85,7 +89,8 @@ struct ImageListView: View {
                             VStack {
                                 let gridItemLayout:[GridItem] = gridLayout(count: model.selection.count)
                                 LazyHGrid(rows: gridItemLayout) {
-                                    ForEach(model.selection, id: \.self) { file in
+                                    ForEach(0 ..< count, id: \.self) { index in
+                                        let file = model.selection[index]
                                         ImageView(withURL: file, orientation: _orientation)
                                             .id(file)
                                     }.frame(width: geometry.size.width/gridScale.width, height: geometry.size.height/gridScale.height)
