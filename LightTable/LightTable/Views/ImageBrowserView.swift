@@ -13,6 +13,8 @@ struct ImageBrowserView: View {
     // Single view selection for ImageListView
     @State var imageViewFilter = -1
 
+    @State var imageViewLayout:ImageListLayout = .Horizontal
+
     // Keyboard modifier flags for multiple selection
     @State var modifierFlags:NSEvent.ModifierFlags = NSEvent.ModifierFlags(rawValue: 0)
 
@@ -59,7 +61,7 @@ struct ImageBrowserView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
-                ImageListView(model: model, orientation: $orientation, imageFilter: $imageViewFilter)
+                ImageListView(model: model, orientation: $orientation, imageFilter: $imageViewFilter, layout: $imageViewLayout)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                 PaneDivider { offset in
@@ -90,6 +92,15 @@ struct ImageBrowserView: View {
                             orientation = rotateRight()
                         } else if (char == "[") {
                             orientation = rotateLeft()
+                        } else if (char == "l" || char == "L") {
+                            switch (imageViewLayout) {
+                            case .Horizontal:
+                                imageViewLayout = .Vertical
+                            case .Vertical:
+                                imageViewLayout = .Grid
+                            case .Grid:
+                                imageViewLayout = .Horizontal
+                            }
                         }
                     }, modifiersAction: { flags in
                         modifierFlags = flags
