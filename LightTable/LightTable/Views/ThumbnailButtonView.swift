@@ -22,11 +22,11 @@ struct ThumbnailButtonView: View {
 
             VStack {
                 ThumbnailView(withURL: file, size: thumbnailSize)
-                    .border(selected ? Color.blue : Color.clear, width: 2)
+                    .border(selected ? Color.accentColor : Color.clear, width: 2)
                 Text(file.lastPathComponent)
                     .lineLimit(1)
                     .font(.caption)
-                    .background(selected ? Color.blue : nil)
+                    .background(selected ? Color.accentColor : nil)
                     .cornerRadius(3)
                     .frame(width: thumbnailSize, height: 20)
             }.frame(width: thumbnailSize, height: thumbnailSize + 20)

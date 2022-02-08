@@ -29,12 +29,12 @@ class ThumbnailLoader: ObservableObject {
         }
 
         let size = CGSize(width: maxSize, height: maxSize)
-        let scale = 1.0
+        let scale = 3.0 // High resolution thumbnail
         let request = QLThumbnailGenerator.Request(fileAt: url,
-                                                       size: size,
-                                                       scale: scale,
-                                                       representationTypes: .all)
-            
+                                                   size: size,
+                                                   scale: scale,
+                                                   representationTypes: [.thumbnail])
+
         let generator = QLThumbnailGenerator.shared
         generator.generateRepresentations(for: request) { (thumbnail, type, error) in
             guard let nsImage = thumbnail?.nsImage else {

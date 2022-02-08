@@ -10,9 +10,6 @@ import SwiftUI
 struct ImageBrowserView: View {
     @ObservedObject var model:ImageBrowserModel
 
-    let darkGray = Color(red: 33.0/255.0, green: 30.0/255.0, blue: 41.0/255.0)
-    let notSoDarkGray = Color(red: 44.0/255.0, green: 41.0/255.0, blue: 50.0/255.0)
-
     // Single view selection for ImageListView
     @State var imageViewFilter = -1
 
@@ -97,7 +94,7 @@ struct ImageBrowserView: View {
                     }, modifiersAction: { flags in
                         modifierFlags = flags
                     }))
-                    .background(notSoDarkGray)
+                    .background(.regularMaterial)
             }
         }
         .onReceive(model.$files) { _ in
