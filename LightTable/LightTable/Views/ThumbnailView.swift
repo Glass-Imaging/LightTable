@@ -9,14 +9,16 @@ import SwiftUI
 
 struct ThumbnailView: View {
     @ObservedObject var thumbnailLoader = ThumbnailLoader()
-    
-    init(withURL url: URL, maxSize: Int) {
-        thumbnailLoader.loadThumbnail(url: url, maxSize: maxSize)
+
+    private var size: CGFloat
+
+    init(withURL url: URL, size: CGFloat) {
+        self.size = size
+        thumbnailLoader.loadThumbnail(url: url, maxSize: size)
     }
     
     var body: some View {
         Image(nsImage: thumbnailLoader.image)
-            .frame(width: 200, height: 200)
     }
 }
 
@@ -24,6 +26,6 @@ fileprivate let testURL = URL(string: "")!
 
 struct ThumbnailView_Previews: PreviewProvider {
     static var previews: some View {
-        ThumbnailView(withURL: testURL, maxSize: 200)
+        ThumbnailView(withURL: testURL, size: 150)
     }
 }

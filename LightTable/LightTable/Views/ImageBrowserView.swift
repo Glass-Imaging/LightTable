@@ -7,27 +7,11 @@
 
 import SwiftUI
 
-struct ThumbnailButtonView: View {
-    var file:URL
-    @ObservedObject var model:ImageBrowserModel
-    var action: () -> Void
-
-    var body: some View {
-        Button(action: {
-            action()
-        }) {
-            VStack {
-                ThumbnailView(withURL: file, maxSize: 200)
-                Text(file.lastPathComponent)
-            }
-        }
-        .buttonStyle(PlainButtonStyle())
-        .background(model.selection.contains(file) ? Color.blue : nil)
-    }
-}
-
 struct ImageBrowserView: View {
     @ObservedObject var model:ImageBrowserModel
+
+    let darkGray = Color(red: 33.0/255.0, green: 30.0/255.0, blue: 41.0/255.0)
+    let notSoDarkGray = Color(red: 44.0/255.0, green: 41.0/255.0, blue: 50.0/255.0)
 
     // Single view selection for ImageListView
     @State var imageViewFilter = -1
@@ -41,12 +25,44 @@ struct ImageBrowserView: View {
     // Height of the ThumbnailScrollerPanel, modified by the PaneDivider
     @State var scrollViewHeight:CGFloat = 200
 
+    @State var orientation:Image.Orientation = .up
+
     let minPaneSize:CGFloat = 200
+
+    func rotateRight() -> Image.Orientation {
+        switch orientation {
+        case Image.Orientation.up:
+            return Image.Orientation.right
+        case Image.Orientation.right:
+            return Image.Orientation.down
+        case Image.Orientation.down:
+            return Image.Orientation.left
+        case Image.Orientation.left:
+            return Image.Orientation.up
+        default:
+            return orientation
+        }
+    }
+
+    func rotateLeft() -> Image.Orientation {
+        switch orientation {
+        case Image.Orientation.up:
+            return Image.Orientation.left
+        case Image.Orientation.right:
+            return Image.Orientation.up
+        case Image.Orientation.down:
+            return Image.Orientation.right
+        case Image.Orientation.left:
+            return Image.Orientation.down
+        default:
+            return orientation
+        }
+    }
 
     var body: some View {
         GeometryReader { geometry in
-            VStack {
-                ImageListView(model: model, imageFilter: $imageViewFilter)
+            VStack(spacing: 0) {
+                ImageListView(model: model, orientation: $orientation, imageFilter: $imageViewFilter)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                 PaneDivider { offset in
@@ -73,10 +89,15 @@ struct ImageBrowserView: View {
                             // Keyboard navigation
                             nextLocation = model.processKey(key: KeyEquivalent(char))
                             imageViewFilter = -1
+                        } else if (char == "]") {
+                            orientation = rotateRight()
+                        } else if (char == "[") {
+                            orientation = rotateLeft()
                         }
                     }, modifiersAction: { flags in
                         modifierFlags = flags
                     }))
+                    .background(notSoDarkGray)
             }
         }
         .onReceive(model.$files) { _ in

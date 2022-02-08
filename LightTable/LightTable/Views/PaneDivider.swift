@@ -12,9 +12,11 @@ struct PaneDivider: View {
 
     @GestureState private var isDragging = false // Will reset to false when dragging has ended
 
+    let reallyDarkGray = Color(red: 11.0/255.0, green: 10.0/255.0, blue: 14.0/255.0)
+
     var body: some View {
         Rectangle()
-            .frame(height:1).foregroundColor(Color.gray)
+            .frame(height:1).foregroundColor(reallyDarkGray)
             .onHover { inside in
                 if !isDragging {
                     if inside { NSCursor.resizeUpDown.push() }

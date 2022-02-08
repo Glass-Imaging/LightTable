@@ -21,7 +21,7 @@ class ThumbnailLoader: ObservableObject {
     /// - Parameters:
     ///   - url: URL of the image
     ///   - maxSize: maximum size (width/height) aspect ratio preserved
-    func loadThumbnail(url: URL, maxSize: Int) {
+    func loadThumbnail(url: URL, maxSize: CGFloat) {
         let cachedData = ThumbnailLoader.lruCache.get(url)
         if (cachedData != nil) {
             image = (cachedData! as? NSImage)!

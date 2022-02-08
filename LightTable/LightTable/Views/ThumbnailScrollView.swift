@@ -29,28 +29,28 @@ struct ThumbnailScrollView: View {
                 ScrollView([.vertical, .horizontal], showsIndicators: true) {
                     VStack(alignment: .leading) {
                         ForEach(model.files, id: \.self) { listing in
-                            HStack(alignment: .bottom) {
-                                ForEach(listing, id: \.self) { file in
-                                    ThumbnailButtonView(file: file, model: model) {
-                                        // Handle Command-Click mouse actions
-                                        if (modifierFlags.contains(.command)) {
-                                            model.addToSelection(file: file)
-                                        } else {
-                                            model.updateSelection(file: file)
+                            VStack(alignment: .leading) {
+                                LazyHStack(alignment: .bottom, spacing: 8) {
+                                    ForEach(listing, id: \.self) { file in
+                                        ThumbnailButtonView(file: file, model: model) {
+                                            // Handle Command-Click mouse actions
+                                            if (modifierFlags.contains(.command)) {
+                                                model.addToSelection(file: file)
+                                            } else {
+                                                model.updateSelection(file: file)
+                                            }
                                         }
+                                        .id(file)
+                                        .focusedSceneValue(\.focusedBrowserModel, modelBinding)
                                     }
-                                    .id(file)
-                                    .focusedSceneValue(\.focusedBrowserModel, modelBinding)
                                 }
                             }
                         }
                     }
                 }
                 .onReceive(model.$files) { newFiles in
-                    if (newFiles.count > 0) {
-                        // Wait for the ScrollView to stabilize
+                    if (model.files.isEmpty && !newFiles.isEmpty) {
                         DispatchQueue.main.async {
-                            print("scrolling to 1", newFiles[0][0])
                             scroller.scrollTo(newFiles[0][0])
                         }
                     }
@@ -58,9 +58,9 @@ struct ThumbnailScrollView: View {
                 .onReceive(model.$selection) { selection in
                     if (!selection.isEmpty) {
                         DispatchQueue.main.async {
-                            print("scrolling to 2", nextLocation)
-                            scroller.scrollTo(nextLocation != nil ? nextLocation : selection[selection.count-1])
-                            nextLocation = nil
+                            if (nextLocation != nil) {
+                                scroller.scrollTo(nextLocation)
+                            }
                         }
                     }
                 }
