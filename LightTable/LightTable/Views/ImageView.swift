@@ -13,28 +13,6 @@ struct ImageView: View {
     @Binding var orientation:Image.Orientation
     @State var image:NSImage = NSImage()
 
-    func orientationToDegrees(orientation:Image.Orientation) -> CGFloat {
-        switch orientation {
-        case Image.Orientation.up:
-            return 0
-        case Image.Orientation.right:
-            return 90
-        case Image.Orientation.down:
-            return 180
-        case Image.Orientation.left:
-            return 270
-        default:
-            return 0
-        }
-    }
-
-    func orientationToScale(orientation:Image.Orientation) -> CGFloat {
-        if (image.isValid && (orientation == Image.Orientation.right || orientation == Image.Orientation.left)) {
-            return image.size.height / image.size.width
-        }
-        return 1.0
-    }
-
     init(withURL url:URL, orientation:Binding<Image.Orientation>) {
         _orientation = orientation
         imageLoader.load(url:url)
@@ -42,10 +20,11 @@ struct ImageView: View {
 
     var body: some View {
         VStack {
-            if let cgImage = image.CGImage {
-                Image(cgImage, scale: 1, orientation: orientation, label: Text(""))
+            if let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) {
+                // NOTE: Without the orientation-specific Text label the orientation changes are not picked up
+                Image(cgImage, scale: 1, orientation: orientation, label: Text(String(describing: orientation)))
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
             }
         }
         .onReceive(imageLoader.didChange) { data in
@@ -59,13 +38,3 @@ struct ImageView: View {
 //        ImageView(withURL: URL(string:"")!, orientation: .up)
 //    }
 //}
-
-extension NSImage {
-    @objc var CGImage: CGImage? {
-       get {
-            guard let imageData = self.tiffRepresentation else { return nil }
-            guard let sourceData = CGImageSourceCreateWithData(imageData as CFData, nil) else { return nil }
-            return CGImageSourceCreateImageAtIndex(sourceData, 0, nil)
-       }
-    }
-}
