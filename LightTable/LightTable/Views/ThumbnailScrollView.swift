@@ -78,6 +78,7 @@ struct ThumbnailScrollView: View {
                         ThumbnailGrid(model: model, modifierFlags: _modifierFlags, nextLocation: _nextLocation)
                             .frame(minWidth: geometry.size.width, alignment: .leading)
                     }
+                    .background(Material.regular)
                     .frame(maxHeight: 200 * CGFloat(model.directories.count))
                     .coordinateSpace(name: "scroll")
                     .onReceive(model.$files) { newFiles in

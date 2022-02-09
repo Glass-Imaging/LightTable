@@ -150,8 +150,8 @@
 				E5E3D35427AE433D00BA332D /* ImageListView.swift */,
 				E5E3D35227AE401700BA332D /* PaneDivider.swift */,
 				E51DB2E627A9B0E10046EFFA /* ThumbnailView.swift */,
-				E5E3D35627AE438A00BA332D /* ThumbnailScrollView.swift */,
 				E5A6F9CC27B1E9CC00D9D305 /* ThumbnailButtonView.swift */,
+				E5E3D35627AE438A00BA332D /* ThumbnailScrollView.swift */,
 				E5A6F9D527B4489C00D9D305 /* FilesOutlineView.swift */,
 				E5A6F9D727B4496600D9D305 /* FolderDisclosure.swift */,
 			);

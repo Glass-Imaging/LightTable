@@ -50,8 +50,8 @@ func fileListingAt(url:URL, filter:(_ entry:URL) -> Bool) -> [URL] {
     do {
         var entries:[URL] = []
         let directoryContent = try manager.contentsOfDirectory(at: url,
-                                                    includingPropertiesForKeys: nil,
-                                                    options: .skipsSubdirectoryDescendants)
+                                                               includingPropertiesForKeys: nil,
+                                                               options: .skipsSubdirectoryDescendants)
         for entry in directoryContent {
             if filter(entry) {
                 entries.append(entry)

@@ -12,6 +12,21 @@ class NavigatorModel: ObservableObject {
     @Published var children:[URL] = []
 }
 
+func urlParents(url: URL) -> [URL] {
+    let rootPath = URL(string: "file:///")
+    var parents:[URL] = []
+    if (url.hasDirectoryPath) {
+        var current = url
+        repeat {
+            if (current != url) {
+                parents.append(current)
+            }
+            current = current.deletingLastPathComponent()
+        } while(current != rootPath)
+    }
+    return parents
+}
+
 struct LightTableView: View {
     @StateObject private var imageBrowserModel = ImageBrowserModel()
     @StateObject private var navigatorModel = NavigatorModel()
@@ -32,21 +47,23 @@ struct LightTableView: View {
                     Text("Drop a folder here.")
                 } else {
                     VStack {
-                        Button {
-                            var listing:[URL] = []
-                            let selectedDirectory = NSOpenPanelDirectoryListing(files: &listing)
-                            if (!listing.isEmpty) {
-                                navigatorModel.root = selectedDirectory
-                                navigatorModel.children = listing
+                        if let root = navigatorModel.root {
+                            let parents = urlParents(url: root)
+                            Menu(root.lastPathComponent) {
+                                ForEach(parents, id: \.self) { item in
+                                    Button(item.lastPathComponent, action: {
+                                        navigatorModel.root = item
+                                        navigatorModel.children = folderListingAt(url: item)
+                                    })
+                                }
                             }
-                        } label: {
-                            let directoryPath = navigatorModel.root != nil ? navigatorModel.root!.lastPathComponent : ""
-                            Label(directoryPath, systemImage: "folder.circle")
                         }
-                        .buttonStyle(PlainButtonStyle())
 
                         List(navigatorModel.children, id:\.self, selection: $multiSelection) { folder in
-                            FolderDisclosure(url: folder, selection: $multiSelection)
+                            FolderDisclosure(url: folder, selection: $multiSelection, doubleTapAction:{ url in
+                                navigatorModel.root = url
+                                navigatorModel.children = folderListingAt(url: url)
+                            })
                         }
                         .onChange(of: multiSelection) { newValue in
                             var directories:[URL] = []
