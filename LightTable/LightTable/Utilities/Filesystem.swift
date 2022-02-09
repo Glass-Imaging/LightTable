@@ -20,16 +20,28 @@ func NSOpenPanelDirectoryListing(files:inout[URL]) -> URL? {
     return nil
 }
 
+func isImage(file:URL) -> Bool {
+    let file_extension = file.pathExtension.lowercased()
+    return file_extension == "jpg" || file_extension == "jpeg" || file_extension == "png"
+}
+
 func folderListingAt(url:URL) -> [URL] {
+    var hasImages = false
+    return folderListingAt(url: url, hasImages: &hasImages)
+}
+
+func folderListingAt(url:URL, hasImages: inout Bool) -> [URL] {
     return fileListingAt(url: url) { entry in
+        if (!hasImages && isImage(file: entry)) {
+            hasImages = true
+        }
         return entry.hasDirectoryPath
     }
 }
 
 func imageFileListingAt(url:URL) -> [URL] {
     return fileListingAt(url: url) { entry in
-        let file_extension = entry.pathExtension.lowercased()
-        return file_extension == "jpg" || file_extension == "jpeg" || file_extension == "png"
+        return isImage(file:entry)
     }
 }
 
