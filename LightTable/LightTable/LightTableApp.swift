@@ -12,10 +12,10 @@ import Combine
 struct LightTableApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LightTableView()
         }
         .commands {
-            ContentView.ContentCommands()
+            LightTableView.ContentCommands()
 
             // ImageBrowser.BrowserCommands()
         }

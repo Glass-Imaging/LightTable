@@ -31,7 +31,9 @@ struct ThumbnailGrid: View {
                             .foregroundColor(Color.black)
                             .frame(height: 20)
 
-                        Text(model.directories[directoryIndex].lastPathComponent)
+                        let directoryInfo = "\(model.directories[directoryIndex].lastPathComponent) - \(model.files[directoryIndex].count) images"
+
+                        Text(directoryInfo)
                             .offset(x: max(scrollViewOffset, 0) + 3, y: 0)
                             .animation(.easeIn, value: scrollViewOffset)
                     }

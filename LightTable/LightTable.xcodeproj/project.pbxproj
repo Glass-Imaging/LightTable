@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E51DB2AC27A9ACAE0046EFFA /* LightTableApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2AB27A9ACAE0046EFFA /* LightTableApp.swift */; };
-		E51DB2AE27A9ACAE0046EFFA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2AD27A9ACAE0046EFFA /* ContentView.swift */; };
+		E51DB2AE27A9ACAE0046EFFA /* LightTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2AD27A9ACAE0046EFFA /* LightTableView.swift */; };
 		E51DB2B027A9ACB00046EFFA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E51DB2AF27A9ACB00046EFFA /* Assets.xcassets */; };
 		E51DB2B327A9ACB00046EFFA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E51DB2B227A9ACB00046EFFA /* Preview Assets.xcassets */; };
 		E51DB2E827A9B0E20046EFFA /* ImageBrowserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2D827A9B0E10046EFFA /* ImageBrowserModel.swift */; };
@@ -38,7 +38,7 @@
 /* Begin PBXFileReference section */
 		E51DB2A827A9ACAE0046EFFA /* LightTable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LightTable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E51DB2AB27A9ACAE0046EFFA /* LightTableApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightTableApp.swift; sourceTree = "<group>"; };
-		E51DB2AD27A9ACAE0046EFFA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E51DB2AD27A9ACAE0046EFFA /* LightTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightTableView.swift; sourceTree = "<group>"; };
 		E51DB2AF27A9ACB00046EFFA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E51DB2B227A9ACB00046EFFA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E51DB2B427A9ACB00046EFFA /* LightTable.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LightTable.entitlements; sourceTree = "<group>"; };
@@ -97,7 +97,7 @@
 			isa = PBXGroup;
 			children = (
 				E51DB2AB27A9ACAE0046EFFA /* LightTableApp.swift */,
-				E51DB2AD27A9ACAE0046EFFA /* ContentView.swift */,
+				E51DB2AD27A9ACAE0046EFFA /* LightTableView.swift */,
 				E51DB2D627A9B0E10046EFFA /* Models */,
 				E51DB2E127A9B0E10046EFFA /* Views */,
 				E5A6F9C527AC8E1100D9D305 /* Support */,
@@ -240,7 +240,7 @@
 				E51DB2F327A9B0E20046EFFA /* ImageView.swift in Sources */,
 				E51DB2EC27A9B0E20046EFFA /* DropUtils.swift in Sources */,
 				E5E3D35727AE438A00BA332D /* ThumbnailScrollView.swift in Sources */,
-				E51DB2AE27A9ACAE0046EFFA /* ContentView.swift in Sources */,
+				E51DB2AE27A9ACAE0046EFFA /* LightTableView.swift in Sources */,
 				E5E3D35327AE401700BA332D /* PaneDivider.swift in Sources */,
 				E51DB2ED27A9B0E20046EFFA /* ImageUtils.swift in Sources */,
 				E51DB2EE27A9B0E20046EFFA /* ImageLoder.swift in Sources */,

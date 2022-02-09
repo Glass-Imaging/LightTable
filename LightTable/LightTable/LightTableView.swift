@@ -12,7 +12,7 @@ class NavigatorModel: ObservableObject {
     @Published var children:[URL] = []
 }
 
-struct ContentView: View {
+struct LightTableView: View {
     @StateObject private var imageBrowserModel = ImageBrowserModel()
     @StateObject private var navigatorModel = NavigatorModel()
 
@@ -35,7 +35,7 @@ struct ContentView: View {
                         Button {
                             var listing:[URL] = []
                             let selectedDirectory = NSOpenPanelDirectoryListing(files: &listing)
-                            if (listing.count > 0) {
+                            if (!listing.isEmpty) {
                                 navigatorModel.root = selectedDirectory
                                 navigatorModel.children = listing
                             }
@@ -48,7 +48,6 @@ struct ContentView: View {
                         List(navigatorModel.children, id:\.self, selection: $multiSelection) { folder in
                             FolderDisclosure(url: folder, selection: $multiSelection)
                         }
-
                         .onChange(of: multiSelection) { newValue in
                             var directories:[URL] = []
 
@@ -84,12 +83,12 @@ struct ContentView: View {
         var body: some Commands {
             CommandGroup(after: CommandGroupPlacement.newItem) {
                 Button("Open...") {
-                    if (model != nil) {
+                    if let model = model {
                         var listing:[URL] = []
                         let selectedDirectory = NSOpenPanelDirectoryListing(files: &listing)
                         if (listing.count > 0) {
-                            model!.root = selectedDirectory
-                            model!.children = listing
+                            model.root = selectedDirectory
+                            model.children = listing
                         }
                     }
                 }
@@ -100,7 +99,7 @@ struct ContentView: View {
     }
 }
 
-extension ContentView:DropDelegate {
+extension LightTableView:DropDelegate {
     @MainActor
     func performDrop(info: DropInfo) -> Bool {
         DropUtils.urlFromDropInfo(info) { url in
@@ -117,6 +116,6 @@ extension ContentView:DropDelegate {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        LightTableView()
     }
 }
