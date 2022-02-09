@@ -40,6 +40,7 @@ struct ThumbnailScrollView: View {
 
                                     Text(model.directories[directoryIndex].lastPathComponent)
                                         .offset(x: max(scrollViewOffset, 0) + 3, y: 0)
+                                        .animation(.easeIn, value: scrollViewOffset)
                                 }
 
                                 LazyHStack(alignment: .bottom, spacing: 8) {
