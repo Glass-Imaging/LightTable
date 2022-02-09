@@ -18,7 +18,12 @@ struct ThumbnailView: View {
     }
     
     var body: some View {
-        Image(nsImage: thumbnailLoader.image)
+        if (thumbnailLoader.image.isValid) {
+            Image(nsImage: thumbnailLoader.image)
+        } else {
+            Image(systemName: "photo")
+                .font(Font.system(size: 100))
+        }
     }
 }
 
