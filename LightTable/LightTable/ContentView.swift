@@ -7,27 +7,9 @@
 
 import SwiftUI
 
-struct FolderView: View {
-    var folder:URL
-    @State var open = false
-
-    var body: some View {
-        HStack {
-            Button(action: {
-                open = !open
-            }) {
-                Image(systemName: open ? "chevron.down" : "chevron.right" )
-            }
-            .buttonStyle(PlainButtonStyle())
-
-            Label(folder.lastPathComponent, systemImage: "folder.fill")
-        }
-    }
-}
-
 class NavigatorModel: ObservableObject {
-    @Published var parentFolder:URL? = nil
-    @Published var folders:[URL] = []
+    @Published var root:URL? = nil
+    @Published var children:[URL] = []
 }
 
 struct ContentView: View {
@@ -46,18 +28,27 @@ struct ContentView: View {
 
         NavigationView {
             HStack {
-                if (navigatorModel.folders.count == 0) {
+                if (navigatorModel.children.count == 0) {
                     Text("Drop a folder here.")
                 } else {
                     VStack {
-                        let directoryPath = navigatorModel.parentFolder != nil ? navigatorModel.parentFolder!.lastPathComponent : ""
-
-                        Label("\(directoryPath)", systemImage: "lightbulb.fill")
-
-                        List(navigatorModel.folders, id:\.self, selection: $multiSelection) {
-                            FolderView(folder: $0)
+                        Button {
+                            var listing:[URL] = []
+                            let selectedDirectory = NSOpenPanelDirectoryListing(files: &listing)
+                            if (listing.count > 0) {
+                                navigatorModel.root = selectedDirectory
+                                navigatorModel.children = listing
+                            }
+                        } label: {
+                            let directoryPath = navigatorModel.root != nil ? navigatorModel.root!.lastPathComponent : ""
+                            Label(directoryPath, systemImage: "folder.circle")
                         }
-                        .navigationTitle("Folders")
+                        .buttonStyle(PlainButtonStyle())
+
+                        List(navigatorModel.children, id:\.self, selection: $multiSelection) { folder in
+                            FolderDisclosure(url: folder, selection: $multiSelection)
+                        }
+
                         .onChange(of: multiSelection) { newValue in
                             var directories:[URL] = []
 
@@ -69,7 +60,7 @@ struct ContentView: View {
 
                             imageActive = !directories.isEmpty
                         }
-                        .onReceive(navigatorModel.$folders) { folders in
+                        .onReceive(navigatorModel.$children) { children in
                             // Reset navigator's selection
                             multiSelection = Set<URL>()
 
@@ -93,11 +84,13 @@ struct ContentView: View {
         var body: some Commands {
             CommandGroup(after: CommandGroupPlacement.newItem) {
                 Button("Open...") {
-                    var listing:[URL] = []
-                    let selectedDirectory = NSOpenPanelDirectoryListing(files: &listing)
-                    if (listing.count > 0) {
-                        model?.parentFolder = selectedDirectory
-                        model?.folders = listing
+                    if (model != nil) {
+                        var listing:[URL] = []
+                        let selectedDirectory = NSOpenPanelDirectoryListing(files: &listing)
+                        if (listing.count > 0) {
+                            model!.root = selectedDirectory
+                            model!.children = listing
+                        }
                     }
                 }
                 .keyboardShortcut("O", modifiers: .command)
@@ -113,7 +106,8 @@ extension ContentView:DropDelegate {
         DropUtils.urlFromDropInfo(info) { url in
             if let url = url {
                 DispatchQueue.main.async {
-                    navigatorModel.folders = folderListingAt(url: url)
+                    navigatorModel.root = url
+                    navigatorModel.children = folderListingAt(url: url)
                 }
             }
         }
