@@ -21,8 +21,10 @@ struct ThumbnailView: View {
         if (thumbnailLoader.image.isValid) {
             Image(nsImage: thumbnailLoader.image)
         } else {
-            Image(systemName: "photo")
+            Image(systemName: "photo.artframe")
                 .font(Font.system(size: 100))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundColor(.secondary)
         }
     }
 }

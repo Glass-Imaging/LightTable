@@ -62,7 +62,6 @@ struct ContentView: View {
                             var directories:[URL] = []
 
                             for entry in multiSelection {
-                                print("entry", entry)
                                 directories.append(entry)
                             }
 

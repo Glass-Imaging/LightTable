@@ -16,14 +16,12 @@ class ImageBrowserModel: ObservableObject {
         // Check removed directories
         for d in self.directories {
             if (!directories.contains(d)) {
-                print("removing directory", d)
                 removeDirectory(directory: d)
             }
         }
         // Check for added directories
         for d in directories {
             if (!self.directories.contains(d)) {
-                print("adding directory", d)
                 addDirectory(directory: d)
             }
         }
@@ -254,7 +252,6 @@ class ImageBrowserModel: ObservableObject {
 
                 if (globalMin >= 0) {
                     let result = files[directoryWithMin][globalMin - selectionStep]
-                    print("result", result)
                     return result
                 }
             }
