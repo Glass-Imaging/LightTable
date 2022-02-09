@@ -24,21 +24,22 @@ struct ImageListView: View {
     @Binding var layout:ImageListLayout
 
     func gridLayout(count:Int) -> [GridItem] {
-        var gridItemLayout:[GridItem] = [GridItem(.flexible())]
+        let gridItem = GridItem(.flexible())
+        var gridItemLayout:[GridItem] = [gridItem]
 
         if (count > 2) {
-            gridItemLayout.append(GridItem(.flexible()))
+            gridItemLayout.append(gridItem)
         }
         if (count > 6) {
-            gridItemLayout.append(GridItem(.flexible()))
+            gridItemLayout.append(gridItem)
         }
         if (count > 12) {
-            gridItemLayout.append(GridItem(.flexible()))
+            gridItemLayout.append(gridItem)
         }
         return gridItemLayout
     }
 
-    func gridSize(count:Int) -> CGSize {
+    func gridSizeConstraints(count:Int) -> CGSize {
         if (count == 1) {
             return CGSize(width: 1, height: 1)
         } else if (count == 2) {
@@ -51,10 +52,9 @@ struct ImageListView: View {
             return CGSize(width: 3, height:3)
         } else if (count >= 10 && count <= 12) {
             return CGSize(width: 4, height:3)
-        } else if (count >= 13) {
+        } else /* if (count >= 13) */ {
             return CGSize(width: 4, height:4)
         }
-        return CGSize(width: 1, height: 1)
     }
 
     var body: some View {
@@ -84,7 +84,7 @@ struct ImageListView: View {
                             }
                         }
                     case .Grid:
-                        let gridScale = gridSize(count: model.selection.count)
+                        let gridConstraints = gridSizeConstraints(count: model.selection.count)
                         GeometryReader { geometry in
                             VStack {
                                 let gridItemLayout:[GridItem] = gridLayout(count: model.selection.count)
@@ -93,7 +93,8 @@ struct ImageListView: View {
                                         let file = model.selection[index]
                                         ImageView(withURL: file, orientation: _orientation)
                                             .id(file)
-                                    }.frame(width: geometry.size.width/gridScale.width, height: geometry.size.height/gridScale.height)
+                                    }.frame(width: geometry.size.width / gridConstraints.width,
+                                            height: geometry.size.height / gridConstraints.height)
                                 }
                             }
                         }

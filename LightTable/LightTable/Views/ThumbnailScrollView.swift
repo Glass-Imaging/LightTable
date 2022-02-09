@@ -13,6 +13,8 @@ struct ThumbnailScrollView: View {
     @Binding var modifierFlags:NSEvent.ModifierFlags
     @Binding var nextLocation:URL?
 
+    @State private var scrollViewOffset = CGFloat.zero
+
     var body: some View {
         // We need a binding for .focusedSceneValue, although model as @ObservedObject is read only...
         let modelBinding = Binding<ImageBrowserModel>(
@@ -28,10 +30,20 @@ struct ThumbnailScrollView: View {
             ScrollViewReader { scroller in
                 ScrollView([.vertical, .horizontal], showsIndicators: true) {
                     VStack(alignment: .leading) {
-                        ForEach(model.files, id: \.self) { listing in
+                        ForEach(0 ..< model.directories.count, id: \.self) { directoryIndex in
                             VStack(alignment: .leading) {
+                                // Directory name label
+                                ZStack(alignment: .leading) {
+                                    Rectangle()
+                                        .foregroundColor(Color.black)
+                                        .frame(height: 20)
+
+                                    Text(model.directories[directoryIndex].lastPathComponent)
+                                        .offset(x: max(scrollViewOffset, 0) + 3, y: 0)
+                                }
+
                                 LazyHStack(alignment: .bottom, spacing: 8) {
-                                    ForEach(listing, id: \.self) { file in
+                                    ForEach(model.files[directoryIndex], id: \.self) { file in
                                         ThumbnailButtonView(file: file, model: model) {
                                             // Handle Command-Click mouse actions
                                             if (modifierFlags.contains(.command)) {
@@ -47,7 +59,10 @@ struct ThumbnailScrollView: View {
                             }
                         }
                     }
+                    // Keep track of the ScrollView position
+                    .readingScrollView(from: "scroll", into: $scrollViewOffset)
                 }
+                .coordinateSpace(name: "scroll")
                 .onReceive(model.$files) { newFiles in
                     if (model.files.isEmpty && !newFiles.isEmpty) {
                         DispatchQueue.main.async {
@@ -57,8 +72,8 @@ struct ThumbnailScrollView: View {
                 }
                 .onReceive(model.$selection) { selection in
                     if (!selection.isEmpty) {
-                        DispatchQueue.main.async {
-                            if (nextLocation != nil) {
+                        if (nextLocation != nil) {
+                            DispatchQueue.main.async {
                                 scroller.scrollTo(nextLocation)
                             }
                         }
