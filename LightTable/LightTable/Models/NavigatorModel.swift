@@ -11,6 +11,8 @@ class NavigatorModel: ObservableObject {
     @Published var root:URL? = nil
     @Published var children:[URL] = []
 
+    @Published var multiSelection = Set<URL>()
+
     @Published var historyBack:[URL] = []
     @Published var historyForward:[URL] = []
 

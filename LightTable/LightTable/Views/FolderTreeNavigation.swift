@@ -33,7 +33,7 @@ struct FolderTreeNavigation: View {
 
                 Spacer()
 
-                let parents = urlParents(url: root)
+                let parents = parentFoldersList(url: root)
                 Menu(content: {
                     ForEach(parents, id: \.self) { item in
                         Button(action: {

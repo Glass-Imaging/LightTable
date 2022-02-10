@@ -8,6 +8,18 @@
 import SwiftUI
 import Combine
 
+func commandButton<M>(model: M?, label:String, key: KeyEquivalent, modifiers: EventModifiers = [], action: @escaping (_ model: M) -> Void) -> some View {
+    return Button {
+        if let model = model {
+            action(model)
+        }
+    } label: {
+        Text(label)
+    }
+    .keyboardShortcut(key, modifiers: modifiers)
+    .disabled(model == nil)
+}
+
 extension KeyEquivalent: Equatable {
     public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.character == rhs.character
