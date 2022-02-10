@@ -16,12 +16,12 @@ enum ImageListLayout {
 struct ImageListView: View {
     @ObservedObject var model:ImageBrowserModel
 
-    @Binding var orientation:Image.Orientation
+    // @Binding var orientation:Image.Orientation
 
     // If imageFilter > 0 only show the image indicated by imageFilter
-    @Binding var imageFilter:Int
+    // @Binding var imageFilter:Int
 
-    @Binding var layout:ImageListLayout
+    // @Binding var layout:ImageListLayout
 
     func gridLayout(count:Int) -> [GridItem] {
         let gridItem = GridItem(.flexible())
@@ -63,23 +63,23 @@ struct ImageListView: View {
                 Text("Make a selection.")
                     .padding(100)
             } else {
-                if (imageFilter >= 0 && imageFilter < model.selection.count) {
-                    ImageView(withURL: model.selection[imageFilter], orientation: _orientation)
+                if (model.imageViewSelection >= 0 && model.imageViewSelection < model.selection.count) {
+                    ImageView(withURL: model.selection[model.imageViewSelection], model: model)
                 } else {
                     let count = min(model.selection.count, 16)
 
-                    switch (layout) {
+                    switch (model.imageViewLayout) {
                     case .Horizontal:
                         ForEach(0 ..< count, id: \.self) { index in
                             let file = model.selection[index]
-                            ImageView(withURL: file, orientation: _orientation)
+                            ImageView(withURL: file, model: model)
                                 .id(file)
                         }
                     case .Vertical:
                         VStack {
                             ForEach(0 ..< count, id: \.self) { index in
                                 let file = model.selection[index]
-                                ImageView(withURL: file, orientation: _orientation)
+                                ImageView(withURL: file, model: model)
                                     .id(file)
                             }
                         }
@@ -91,7 +91,7 @@ struct ImageListView: View {
                                 LazyHGrid(rows: gridItemLayout) {
                                     ForEach(0 ..< count, id: \.self) { index in
                                         let file = model.selection[index]
-                                        ImageView(withURL: file, orientation: _orientation)
+                                        ImageView(withURL: file, model: model)
                                             .id(file)
                                     }.frame(width: geometry.size.width / gridConstraints.width,
                                             height: geometry.size.height / gridConstraints.height)

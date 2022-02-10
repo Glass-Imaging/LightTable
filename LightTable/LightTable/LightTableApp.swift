@@ -17,7 +17,7 @@ struct LightTableApp: App {
         .commands {
             LightTableView.ContentCommands()
 
-            // ImageBrowser.BrowserCommands()
+            ImageBrowserView.BrowserCommands()
         }
     }
 }

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FolderDisclosure: View {
+struct FolderTreeDisclosure: View {
     @State var url:URL
     @Binding var selection:Set<URL>
     @State var expanded = false
@@ -23,14 +23,17 @@ struct FolderDisclosure: View {
             DisclosureGroup(isExpanded: $expanded, content: {
                 if (expanded) {
                     ForEach(children, id: \.self) { item in
-                        FolderDisclosure(url: item, selection: _selection, doubleTapAction: doubleTapAction)
+                        FolderTreeDisclosure(url: item, selection: _selection, doubleTapAction: doubleTapAction)
                     }
                 }
             }, label: {
-                Label(url.lastPathComponent, systemImage: hasImages ? "plus.rectangle.on.folder.fill" : "folder.fill")
-                .onTapGesture(count: 2) {
-                    doubleTapAction(url)
+                VStack {
+                    Label(url.lastPathComponent, systemImage: hasImages ? "plus.rectangle.on.folder.fill" : "folder.fill")
                 }
+                // Breaks the List single click selection
+                // .onTapGesture(count: 2) {
+                //     doubleTapAction(url)
+                // }
             })
         }
     }

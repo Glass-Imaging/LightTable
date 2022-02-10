@@ -7,20 +7,13 @@
 
 import SwiftUI
 
-class NavigatorModel: ObservableObject {
-    @Published var root:URL? = nil
-    @Published var children:[URL] = []
-}
-
 func urlParents(url: URL) -> [URL] {
     let rootPath = URL(string: "file:///")
     var parents:[URL] = []
     if (url.hasDirectoryPath) {
         var current = url
         repeat {
-            if (current != url) {
-                parents.append(current)
-            }
+            parents.append(current)
             current = current.deletingLastPathComponent()
         } while(current != rootPath)
     }
@@ -42,27 +35,22 @@ struct LightTableView: View {
         )
 
         NavigationView {
-            HStack {
+            HStack(spacing: 0) {
                 if (navigatorModel.children.count == 0) {
                     Text("Drop a folder here.")
                 } else {
-                    VStack {
-                        if let root = navigatorModel.root {
-                            let parents = urlParents(url: root)
-                            Menu(root.lastPathComponent) {
-                                ForEach(parents, id: \.self) { item in
-                                    Button(item.lastPathComponent, action: {
-                                        navigatorModel.root = item
-                                        navigatorModel.children = folderListingAt(url: item)
-                                    })
-                                }
-                            }
-                        }
+                    VStack(alignment: .leading) {
+                        Spacer(minLength: 10)
+
+                        FolderTreeNavigation(navigatorModel: navigatorModel)
+
+                        Spacer()
+                        
+                        Divider()
 
                         List(navigatorModel.children, id:\.self, selection: $multiSelection) { folder in
-                            FolderDisclosure(url: folder, selection: $multiSelection, doubleTapAction:{ url in
-                                navigatorModel.root = url
-                                navigatorModel.children = folderListingAt(url: url)
+                            FolderTreeDisclosure(url: folder, selection: $multiSelection, doubleTapAction:{ url in
+                                navigatorModel.update(url: url)
                             })
                         }
                         .onChange(of: multiSelection) { newValue in
@@ -87,6 +75,7 @@ struct LightTableView: View {
                 }
 
                 NavigationLink(destination: ImageBrowserView(model: imageBrowserModel), isActive: $imageActive){}.hidden()
+                    .frame(width: 0, height: 0)
             }
         }
         .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
@@ -122,8 +111,7 @@ extension LightTableView:DropDelegate {
         DropUtils.urlFromDropInfo(info) { url in
             if let url = url {
                 DispatchQueue.main.async {
-                    navigatorModel.root = url
-                    navigatorModel.children = folderListingAt(url: url)
+                    navigatorModel.update(url: url)
                 }
             }
         }

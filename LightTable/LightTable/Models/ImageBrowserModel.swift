@@ -12,6 +12,18 @@ class ImageBrowserModel: ObservableObject {
     @Published var files:[[URL]] = []
     @Published var selection:[URL] = []
 
+    // Single Image view selection for ImageListView
+    @Published var imageViewSelection = -1
+
+    // Multipe Image View layout (Horizontal/Vertical/Grid)
+    @Published var imageViewLayout:ImageListLayout = .Horizontal
+
+    // Image View Orientation
+    @Published var orientation:Image.Orientation = .up
+
+    // Keyboard movement computed location with multiple selections
+    @Published var nextLocation:URL? = nil
+
     func setDirectories(directories: [URL]) {
         // Check removed directories
         for d in self.directories {
@@ -257,5 +269,60 @@ class ImageBrowserModel: ObservableObject {
             }
         }
         return nil
+    }
+
+    func switchLayout() {
+        switch (imageViewLayout) {
+        case .Horizontal:
+            imageViewLayout = .Vertical
+        case .Vertical:
+            imageViewLayout = .Grid
+        case .Grid:
+            imageViewLayout = .Horizontal
+        }
+    }
+
+    func rotateRight() {
+        switch orientation {
+        case Image.Orientation.up:
+            orientation = Image.Orientation.right
+        case Image.Orientation.right:
+            orientation = Image.Orientation.down
+        case Image.Orientation.down:
+            orientation = Image.Orientation.left
+        case Image.Orientation.left:
+            orientation = Image.Orientation.up
+        default:
+            print("Unexpected orientation: ", orientation)
+        }
+    }
+
+    func rotateLeft() {
+        switch orientation {
+        case Image.Orientation.up:
+            orientation = Image.Orientation.left
+        case Image.Orientation.right:
+            orientation = Image.Orientation.up
+        case Image.Orientation.down:
+            orientation = Image.Orientation.right
+        case Image.Orientation.left:
+            orientation = Image.Orientation.down
+        default:
+            print("Unexpected orientation: ", orientation)
+        }
+    }
+
+    func imageViewSelection(char:Character) {
+        if (char >= "0" && char <= "9") {
+            // Single image selection mode
+            let zero = Character("0")
+            let index = char == zero ? 9 : (char.wholeNumberValue! - zero.wholeNumberValue!) - 1;
+            if (selection.count > 0 && selection.count > index) {
+                imageViewSelection = index
+            }
+        } else if (KeyEquivalent(char) == "`") {
+            // Exit single image selection mode
+            imageViewSelection = -1
+        }
     }
 }

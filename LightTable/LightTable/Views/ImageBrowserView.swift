@@ -10,58 +10,15 @@ import SwiftUI
 struct ImageBrowserView: View {
     @ObservedObject var model:ImageBrowserModel
 
-    // Single view selection for ImageListView
-    @State var imageViewFilter = -1
-
-    @State var imageViewLayout:ImageListLayout = .Horizontal
-
-    // Keyboard modifier flags for multiple selection
-    @State var modifierFlags:NSEvent.ModifierFlags = NSEvent.ModifierFlags(rawValue: 0)
-
-    // Keyboard movement computed location with multiple selections
-    @State var nextLocation:URL? = nil
-
     // Height of the ThumbnailScrollerPanel, modified by the PaneDivider
     @State var scrollViewHeight:CGFloat = 200
 
-    @State var orientation:Image.Orientation = .up
-
     let minPaneSize:CGFloat = 200
-
-    func rotateRight() -> Image.Orientation {
-        switch orientation {
-        case Image.Orientation.up:
-            return Image.Orientation.right
-        case Image.Orientation.right:
-            return Image.Orientation.down
-        case Image.Orientation.down:
-            return Image.Orientation.left
-        case Image.Orientation.left:
-            return Image.Orientation.up
-        default:
-            return orientation
-        }
-    }
-
-    func rotateLeft() -> Image.Orientation {
-        switch orientation {
-        case Image.Orientation.up:
-            return Image.Orientation.left
-        case Image.Orientation.right:
-            return Image.Orientation.up
-        case Image.Orientation.down:
-            return Image.Orientation.right
-        case Image.Orientation.left:
-            return Image.Orientation.down
-        default:
-            return orientation
-        }
-    }
 
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
-                ImageListView(model: model, orientation: $orientation, imageFilter: $imageViewFilter, layout: $imageViewLayout)
+                ImageListView(model: model)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                 PaneDivider { offset in
@@ -69,51 +26,30 @@ struct ImageBrowserView: View {
                         scrollViewHeight = max(min(scrollViewHeight - offset, geometry.size.height - minPaneSize), minPaneSize)
                     }
                 }
-
-                ThumbnailScrollView(model: model, modifierFlags: $modifierFlags, nextLocation: $nextLocation)
+                ThumbnailScrollView(model: model)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .frame(height: max(scrollViewHeight, 0))
-                    .background(KeyEventHandling(keyAction: { char in
-                        if (char >= "0" && char <= "9") {
-                            // Single image selection mode
-                            let zero = Character("0")
-                            let index = char == zero ? 9 : (char.wholeNumberValue! - zero.wholeNumberValue!) - 1;
-                            if (model.selection.count > 0 && model.selection.count > index) {
-                                imageViewFilter = index
-                            }
-                        } else if (KeyEquivalent(char) == .escape) {
-                            // Exit single image selection mode
-                            imageViewFilter = -1
-                        } else if (KeyEquivalent(char) == .leftArrow || KeyEquivalent(char) == .rightArrow) {
-                            // Keyboard navigation
-                            nextLocation = model.processKey(key: KeyEquivalent(char))
-                            imageViewFilter = -1
-                        } else if (char == "]") {
-                            orientation = rotateRight()
-                        } else if (char == "[") {
-                            orientation = rotateLeft()
-                        } else if (char == "l" || char == "L") {
-                            switch (imageViewLayout) {
-                            case .Horizontal:
-                                imageViewLayout = .Vertical
-                            case .Vertical:
-                                imageViewLayout = .Grid
-                            case .Grid:
-                                imageViewLayout = .Horizontal
-                            }
-                        }
-                    }, modifiersAction: { flags in
-                        modifierFlags = flags
-                    }))
                     .background(.regularMaterial)
             }
         }
         .onReceive(model.$files) { _ in
-            imageViewFilter = -1
+            model.imageViewSelection = -1
         }
         .onReceive(model.$selection) { _ in
-            imageViewFilter = -1
+            model.imageViewSelection = -1
         }
+    }
+
+    static func commandButton(model: ImageBrowserModel?, label:String, key: KeyEquivalent, modifiers: EventModifiers = [], action: @escaping (_ model: ImageBrowserModel) -> Void) -> some View {
+        return Button {
+            if let model = model {
+                action(model)
+            }
+        } label: {
+            Text(label)
+        }
+        .keyboardShortcut(key, modifiers: modifiers)
+        .disabled(model == nil)
     }
 
     struct BrowserCommands: Commands {
@@ -121,20 +57,43 @@ struct ImageBrowserView: View {
 
         var body: some Commands {
             CommandMenu("Navigation") {
-                Button {
-                    _ = model?.processKey(key: .leftArrow)
-                } label: {
-                    Text("Move Left")
-                }
-                .keyboardShortcut(.leftArrow, modifiers: [])
-                .disabled(model == nil)
+                commandButton(model: model, label: "Move Left", key: .leftArrow, action: { model in
+                    model.nextLocation = model.processKey(key: .leftArrow)
+                })
+                commandButton(model: model, label: "Move Right", key: .rightArrow, action: { model in
+                    model.nextLocation = model.processKey(key: .rightArrow)
+                })
 
-                Button {
-                    _ = model?.processKey(key: .rightArrow)
-                } label: {
-                    Text("Move Right")
+                Divider()
+
+                commandButton(model: model, label: "Rotate Left", key: "[", action: { model in
+                    model.rotateLeft()
+                })
+                commandButton(model: model, label: "Rotate Right", key: "]", action: { model in
+                    model.rotateRight()
+                })
+
+                commandButton(model: model, label: "Toggle Layout", key: "L", action: { model in
+                    model.switchLayout()
+                })
+
+                Divider()
+
+                Menu("View Selection") {
+                    let zero = Character("0")
+                    ForEach(1...9, id: \.self) { index in
+                        let c = Character(UnicodeScalar(Int(zero.asciiValue!) + index)!)
+                        commandButton(model: model, label: "View " + String(c), key: KeyEquivalent(c), action: { model in
+                            model.imageViewSelection(char: c)
+                        })
+                    }
+                    commandButton(model: model, label: "View 10", key: "0", action: { model in
+                        model.imageViewSelection(char: "0")
+                    })
+                    commandButton(model: model, label: "Show All", key: "`", action: { model in
+                        model.imageViewSelection = -1
+                    })
                 }
-                .keyboardShortcut(.rightArrow, modifiers: [])
                 .disabled(model == nil)
             }
         }

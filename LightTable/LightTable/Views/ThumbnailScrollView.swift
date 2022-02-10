@@ -10,9 +10,6 @@ import SwiftUI
 struct ThumbnailGrid: View {
     @ObservedObject var model:ImageBrowserModel
 
-    @Binding var modifierFlags:NSEvent.ModifierFlags
-    @Binding var nextLocation:URL?
-
     @State private var scrollViewOffset = CGFloat.zero
 
     var body: some View {
@@ -40,9 +37,9 @@ struct ThumbnailGrid: View {
 
                     LazyHStack(alignment: .bottom, spacing: 8) {
                         ForEach(model.files[directoryIndex], id: \.self) { file in
-                            ThumbnailButtonView(file: file, model: model) {
+                            ThumbnailButtonView(file: file, model: model) { modifier in
                                 // Handle Command-Click mouse actions
-                                if (modifierFlags.contains(.command)) {
+                                if (modifier.contains(.command)) {
                                     model.addToSelection(file: file)
                                 } else {
                                     model.updateSelection(file: file)
@@ -63,11 +60,8 @@ struct ThumbnailGrid: View {
 struct ThumbnailScrollView: View {
     @ObservedObject var model:ImageBrowserModel
 
-    @Binding var modifierFlags:NSEvent.ModifierFlags
-    @Binding var nextLocation:URL?
-
     var body: some View {
-        if (model.files.count == 0) {
+        if (model.files.count == 0 || model.files[0].count == 0) {
             Text("Select a folder with images")
                 .padding(100)
                 .frame(height: 200)
@@ -75,7 +69,7 @@ struct ThumbnailScrollView: View {
             GeometryReader { geometry in
                 ScrollViewReader { scroller in
                     ScrollView([.vertical, .horizontal], showsIndicators: true) {
-                        ThumbnailGrid(model: model, modifierFlags: _modifierFlags, nextLocation: _nextLocation)
+                        ThumbnailGrid(model: model)
                             .frame(minWidth: geometry.size.width, alignment: .leading)
                     }
                     .background(Material.regular)
@@ -87,19 +81,19 @@ struct ThumbnailScrollView: View {
                                 DispatchQueue.main.async {
                                     scroller.scrollTo(newFiles[0][0])
                                 }
-                                nextLocation = nil
+                                model.nextLocation = nil
                             }
                         }
                     }
                     .onReceive(model.$selection) { selection in
                         if (!selection.isEmpty) {
-                            if (nextLocation != nil) {
+                            if (model.nextLocation != nil) {
                                 DispatchQueue.main.async {
                                     withAnimation(.linear) {
-                                        scroller.scrollTo(nextLocation)
+                                        scroller.scrollTo(model.nextLocation)
                                     }
                                 }
-                                nextLocation = nil
+                                model.nextLocation = nil
                             }
                         }
                     }

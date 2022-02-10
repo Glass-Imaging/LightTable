@@ -10,11 +10,12 @@ import SwiftUI
 
 struct ImageView: View {
     @ObservedObject var imageLoader = ImageLoader()
-    @Binding var orientation:Image.Orientation
     @State var image:NSImage = NSImage()
 
-    init(withURL url:URL, orientation:Binding<Image.Orientation>) {
-        _orientation = orientation
+    @ObservedObject var model:ImageBrowserModel
+
+    init(withURL url:URL, model:ImageBrowserModel) {
+        self.model = model
         imageLoader.load(url:url)
     }
 
@@ -22,7 +23,7 @@ struct ImageView: View {
         VStack {
             if let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) {
                 // NOTE: Without the orientation-specific Text label the orientation changes are not picked up
-                Image(cgImage, scale: 1, orientation: orientation, label: Text(String(describing: orientation)))
+                Image(cgImage, scale: 1, orientation: model.orientation, label: Text(String(describing: model.orientation)))
                     .resizable()
                     .scaledToFit()
             }

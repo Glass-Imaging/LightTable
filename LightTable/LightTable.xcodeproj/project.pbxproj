@@ -28,8 +28,9 @@
 		E5A6F9CD27B1E9CC00D9D305 /* ThumbnailButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9CC27B1E9CC00D9D305 /* ThumbnailButtonView.swift */; };
 		E5A6F9D127B3442900D9D305 /* ScrollViewOffsetModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9D027B3442900D9D305 /* ScrollViewOffsetModifier.swift */; };
 		E5A6F9D627B4489C00D9D305 /* FilesOutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9D527B4489C00D9D305 /* FilesOutlineView.swift */; };
-		E5A6F9D827B4496600D9D305 /* FolderDisclosure.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9D727B4496600D9D305 /* FolderDisclosure.swift */; };
-		E5CCE16427AB4AC000D6B42E /* EventHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CCE16327AB4AC000D6B42E /* EventHandling.swift */; };
+		E5A6F9D827B4496600D9D305 /* FolderTreeDisclosure.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9D727B4496600D9D305 /* FolderTreeDisclosure.swift */; };
+		E5A6F9DA27B4B29800D9D305 /* NavigatorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9D927B4B29800D9D305 /* NavigatorModel.swift */; };
+		E5A6F9DC27B4B30100D9D305 /* FolderTreeNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9DB27B4B30100D9D305 /* FolderTreeNavigation.swift */; };
 		E5E3D35327AE401700BA332D /* PaneDivider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E3D35227AE401700BA332D /* PaneDivider.swift */; };
 		E5E3D35527AE433D00BA332D /* ImageListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E3D35427AE433D00BA332D /* ImageListView.swift */; };
 		E5E3D35727AE438A00BA332D /* ThumbnailScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E3D35627AE438A00BA332D /* ThumbnailScrollView.swift */; };
@@ -59,8 +60,9 @@
 		E5A6F9CC27B1E9CC00D9D305 /* ThumbnailButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailButtonView.swift; sourceTree = "<group>"; };
 		E5A6F9D027B3442900D9D305 /* ScrollViewOffsetModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewOffsetModifier.swift; sourceTree = "<group>"; };
 		E5A6F9D527B4489C00D9D305 /* FilesOutlineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesOutlineView.swift; sourceTree = "<group>"; };
-		E5A6F9D727B4496600D9D305 /* FolderDisclosure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderDisclosure.swift; sourceTree = "<group>"; };
-		E5CCE16327AB4AC000D6B42E /* EventHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventHandling.swift; sourceTree = "<group>"; };
+		E5A6F9D727B4496600D9D305 /* FolderTreeDisclosure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTreeDisclosure.swift; sourceTree = "<group>"; };
+		E5A6F9D927B4B29800D9D305 /* NavigatorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigatorModel.swift; sourceTree = "<group>"; };
+		E5A6F9DB27B4B30100D9D305 /* FolderTreeNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTreeNavigation.swift; sourceTree = "<group>"; };
 		E5E3D35227AE401700BA332D /* PaneDivider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaneDivider.swift; sourceTree = "<group>"; };
 		E5E3D35427AE433D00BA332D /* ImageListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageListView.swift; sourceTree = "<group>"; };
 		E5E3D35627AE438A00BA332D /* ThumbnailScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailScrollView.swift; sourceTree = "<group>"; };
@@ -121,6 +123,7 @@
 			isa = PBXGroup;
 			children = (
 				E51DB2D827A9B0E10046EFFA /* ImageBrowserModel.swift */,
+				E5A6F9D927B4B29800D9D305 /* NavigatorModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -134,7 +137,6 @@
 				E51DB2DE27A9B0E10046EFFA /* ImageUtils.swift */,
 				E51DB2DC27A9B0E10046EFFA /* LRUCache.swift */,
 				E51DB2E027A9B0E10046EFFA /* LinkedList.swift */,
-				E5CCE16327AB4AC000D6B42E /* EventHandling.swift */,
 				E56DF0CD27AC4F410087AB49 /* Atomic.swift */,
 				E5A6F9C827AC9B6400D9D305 /* Filesystem.swift */,
 				E5A6F9CA27ACA70C00D9D305 /* KeyInputSubjectWrapper.swift */,
@@ -153,7 +155,8 @@
 				E5A6F9CC27B1E9CC00D9D305 /* ThumbnailButtonView.swift */,
 				E5E3D35627AE438A00BA332D /* ThumbnailScrollView.swift */,
 				E5A6F9D527B4489C00D9D305 /* FilesOutlineView.swift */,
-				E5A6F9D727B4496600D9D305 /* FolderDisclosure.swift */,
+				E5A6F9D727B4496600D9D305 /* FolderTreeDisclosure.swift */,
+				E5A6F9DB27B4B30100D9D305 /* FolderTreeNavigation.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -246,8 +249,10 @@
 				E51DB2EE27A9B0E20046EFFA /* ImageLoder.swift in Sources */,
 				E5A6F9CB27ACA70C00D9D305 /* KeyInputSubjectWrapper.swift in Sources */,
 				E5A6F9CD27B1E9CC00D9D305 /* ThumbnailButtonView.swift in Sources */,
+				E5A6F9DA27B4B29800D9D305 /* NavigatorModel.swift in Sources */,
 				E56DF0CE27AC4F410087AB49 /* Atomic.swift in Sources */,
-				E5A6F9D827B4496600D9D305 /* FolderDisclosure.swift in Sources */,
+				E5A6F9DC27B4B30100D9D305 /* FolderTreeNavigation.swift in Sources */,
+				E5A6F9D827B4496600D9D305 /* FolderTreeDisclosure.swift in Sources */,
 				E51DB2EA27A9B0E20046EFFA /* ThumbnailLoader.swift in Sources */,
 				E51DB2EB27A9B0E20046EFFA /* LRUCache.swift in Sources */,
 				E5A6F9D627B4489C00D9D305 /* FilesOutlineView.swift in Sources */,
@@ -255,7 +260,6 @@
 				E51DB2E827A9B0E20046EFFA /* ImageBrowserModel.swift in Sources */,
 				E51DB2EF27A9B0E20046EFFA /* LinkedList.swift in Sources */,
 				E51DB2F427A9B0E20046EFFA /* ThumbnailView.swift in Sources */,
-				E5CCE16427AB4AC000D6B42E /* EventHandling.swift in Sources */,
 				E5A6F9C927AC9B6400D9D305 /* Filesystem.swift in Sources */,
 				E51DB2F127A9B0E20046EFFA /* ImageBrowserView.swift in Sources */,
 				E5E3D35527AE433D00BA332D /* ImageListView.swift in Sources */,
