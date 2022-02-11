@@ -25,7 +25,7 @@ struct ThumbnailGrid: View {
                     // Directory name label
                     ZStack(alignment: .leading) {
                         Rectangle()
-                            .foregroundColor(Color.black)
+                            .foregroundColor(Color(red: 33.0/255, green: 29.0/255, blue: 39.0/255))
                             .frame(height: 20)
 
                         let directoryInfo = "\(model.directories[directoryIndex].lastPathComponent) - \(model.files[directoryIndex].count) images"

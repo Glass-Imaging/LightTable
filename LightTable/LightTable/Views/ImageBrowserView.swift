@@ -26,6 +26,7 @@ struct ImageBrowserView: View {
                         scrollViewHeight = max(min(scrollViewHeight - offset, geometry.size.height - minPaneSize), minPaneSize)
                     }
                 }
+
                 ThumbnailScrollView(model: model)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .frame(height: max(scrollViewHeight, 0))
