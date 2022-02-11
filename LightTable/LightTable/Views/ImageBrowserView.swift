@@ -64,10 +64,10 @@ struct ImageBrowserView: View {
 
                 Group {
                     commandButton(model: model, label: "Move Left", key: .leftArrow) { model in
-                        model.nextLocation = model.processKey(key: .leftArrow)
+                        model.processKey(key: .leftArrow)
                     }
                     commandButton(model: model, label: "Move Right", key: .rightArrow) { model in
-                        model.nextLocation = model.processKey(key: .rightArrow)
+                        model.processKey(key: .rightArrow)
                     }
                 }
 

@@ -83,15 +83,21 @@ class ImageBrowserModel: ObservableObject {
         // don't update the selection gratuitously
         if (!(selection.count == 1 && selection[0] == file)) {
             selection = [file]
+            nextLocation = file
         }
     }
 
     func addToSelection(file: URL) {
         guard let index = selection.firstIndex(of: file) else {
             selection.append(file)
+            nextLocation = file
             return
         }
+        // If the file is already in the selection, remove it
         selection.remove(at: index)
+        if nextLocation == file {
+            nextLocation = nil
+        }
     }
 
     func removeFromSelection(file: URL) {
@@ -99,6 +105,9 @@ class ImageBrowserModel: ObservableObject {
             return
         }
         selection.remove(at: index)
+        if nextLocation == file {
+            nextLocation = nil
+        }
     }
 
     func lowestSelectionIndex(directory:Int) -> Int {
@@ -166,7 +175,11 @@ class ImageBrowserModel: ObservableObject {
         return a.1 < b.1
     }
 
-    func processKey(key: KeyEquivalent) -> URL? {
+    func processKey(key: KeyEquivalent) {
+        nextLocation = processKey(key: key)
+    }
+
+    private func processKey(key: KeyEquivalent) -> URL? {
         if (key == .rightArrow || key == .leftArrow) {
             if (files.isEmpty || files[0].isEmpty) {
                 return nil

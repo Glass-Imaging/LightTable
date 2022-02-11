@@ -76,12 +76,9 @@ struct ThumbnailScrollView: View {
                     .frame(maxHeight: 200 * CGFloat(model.directories.count))
                     .coordinateSpace(name: "scroll")
                     .onReceive(model.$files) { newFiles in
-                        if (model.files.isEmpty) {
-                            if (!newFiles.isEmpty && !newFiles[0].isEmpty) {
-                                DispatchQueue.main.async {
-                                    scroller.scrollTo(newFiles[0][0])
-                                }
-                                model.nextLocation = nil
+                        if (newFiles.count == 1) {
+                            DispatchQueue.main.async {
+                                scroller.scrollTo(newFiles[0][0])
                             }
                         }
                     }
@@ -93,7 +90,6 @@ struct ThumbnailScrollView: View {
                                         scroller.scrollTo(model.nextLocation)
                                     }
                                 }
-                                model.nextLocation = nil
                             }
                         }
                     }
