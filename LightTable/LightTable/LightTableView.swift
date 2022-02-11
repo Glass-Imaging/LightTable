@@ -22,11 +22,9 @@ func parentFoldersList(url: URL) -> [URL] {
 
 func parentFolder(url: URL) -> URL {
     let rootPath = URL(string: "file:///")
-    if (url.hasDirectoryPath) {
-        let parent = url.deletingLastPathComponent()
-        if parent != rootPath {
-            return parent
-        }
+    let parent = url.deletingLastPathComponent()
+    if parent != rootPath {
+        return parent
     }
     return url
 }
