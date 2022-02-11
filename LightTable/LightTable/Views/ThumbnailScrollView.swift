@@ -10,7 +10,7 @@ import SwiftUI
 struct ThumbnailGrid: View {
     @ObservedObject var model:ImageBrowserModel
 
-    @State private var scrollViewOffset = CGFloat.zero
+    @State private var scrollViewOffset = CGPoint.zero
 
     var body: some View {
         // We need a binding for .focusedSceneValue, although model as @ObservedObject is read only...
@@ -25,13 +25,13 @@ struct ThumbnailGrid: View {
                     // Directory name label
                     ZStack(alignment: .leading) {
                         Rectangle()
-                            .foregroundColor(Color.black)
+                            .foregroundColor(Color(red: 33.0/255, green: 29.0/255, blue: 39.0/255))
                             .frame(height: 20)
 
                         let directoryInfo = "\(model.directories[directoryIndex].lastPathComponent) - \(model.files[directoryIndex].count) images"
 
                         Text(directoryInfo)
-                            .offset(x: max(scrollViewOffset, 0) + 3, y: 0)
+                            .offset(x: max(scrollViewOffset.x, 0) + 3, y: 0)
                             .animation(.easeIn, value: scrollViewOffset)
                     }
 
@@ -76,7 +76,7 @@ struct ThumbnailScrollView: View {
                     .frame(maxHeight: 200 * CGFloat(model.directories.count))
                     .coordinateSpace(name: "scroll")
                     .onReceive(model.$files) { newFiles in
-                        if (newFiles.count == 1) {
+                        if (newFiles.count == 1 && !newFiles[0].isEmpty) {
                             DispatchQueue.main.async {
                                 scroller.scrollTo(newFiles[0][0])
                             }

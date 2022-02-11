@@ -9,22 +9,25 @@ import SwiftUI
 
 // Preference key keeping track of the scroller position
 struct ViewOffsetKey: PreferenceKey {
-    typealias Value = CGFloat
-    static var defaultValue = CGFloat.zero
+    typealias Value = CGPoint
+    static var defaultValue = CGPoint.zero
     static func reduce(value: inout Value, nextValue: () -> Value) {
-        value += nextValue()
+        let next = nextValue()
+        value.x += next.x
+        value.y += next.y
     }
 }
 
 struct ScrollViewOffsetModifier: ViewModifier {
     let coordinateSpace: String
-    @Binding var offset:CGFloat
+    @Binding var offset:CGPoint
 
     func body(content: Content) -> some View {
         ZStack {
             content
             GeometryReader { proxy in
-                Color.clear.preference(key: ViewOffsetKey.self, value: -proxy.frame(in: .named("scroll")).origin.x)
+                let origin = proxy.frame(in: .named("scroll")).origin
+                Color.clear.preference(key: ViewOffsetKey.self, value: CGPoint(x: -origin.x, y: -origin.y))
             }
         }
         .onPreferenceChange(ViewOffsetKey.self) { value in
@@ -36,7 +39,7 @@ struct ScrollViewOffsetModifier: ViewModifier {
 }
 
 extension View {
-    func readingScrollView(from coordinateSpace: String, into binding: Binding<CGFloat>) -> some View {
+    func readingScrollView(from coordinateSpace: String, into binding: Binding<CGPoint>) -> some View {
         modifier(ScrollViewOffsetModifier(coordinateSpace: coordinateSpace, offset: binding))
     }
 }

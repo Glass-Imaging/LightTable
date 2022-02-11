@@ -50,11 +50,7 @@ struct LightTableView: View {
         )
 
         VStack {
-            if imageBrowserModel.fullScreen {
-                ImageListView(model: imageBrowserModel)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .focusedSceneValue(\.focusedBrowserModel, modelBinding)
-            } else {
+            ZStack {
                 NavigationView {
                     HStack(spacing: 0) {
                         FolderTreeNavigator(imageBrowserModel: imageBrowserModel, navigatorModel: navigatorModel)
@@ -67,6 +63,13 @@ struct LightTableView: View {
                 .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
                 .focusedSceneValue(\.focusedNavigatorModel, navigatorModelBinding)
                 .onDrop(of: ["public.file-url"], delegate: self)
+
+                if imageBrowserModel.fullScreen {
+                    ImageListView(model: imageBrowserModel)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .focusedSceneValue(\.focusedBrowserModel, modelBinding)
+                        .background(Color(red: 33.0/255.0, green: 29.0/255.0, blue: 40.0/255.0))
+                }
             }
         }
         .onChange(of: navigatorModel.multiSelection) { newValue in

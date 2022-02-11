@@ -26,6 +26,7 @@ struct ImageBrowserView: View {
                         scrollViewHeight = max(min(scrollViewHeight - offset, geometry.size.height - minPaneSize), minPaneSize)
                     }
                 }
+
                 ThumbnailScrollView(model: model)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .frame(height: max(scrollViewHeight, 0))
@@ -57,6 +58,22 @@ struct ImageBrowserView: View {
 
                     commandButton(model: model, label: "Toggle Layout", key: "L") { model in
                         model.switchLayout()
+                    }
+                }
+
+                Divider()
+
+                Group {
+                    commandButton(model: model, label: "Zoom In", key: "=", modifiers: .command) { model in
+                        model.viewScaleFactor += 1
+                    }
+                    commandButton(model: model, label: "Zoom Out", key: "-", modifiers: .command) { model in
+                        if (model.viewScaleFactor > 0) {
+                            model.viewScaleFactor -= 1
+                        }
+                    }
+                    commandButton(model: model, label: "Zoom To Fit", key: "=") { model in
+                        model.viewScaleFactor = 0
                     }
                 }
 

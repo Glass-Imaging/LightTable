@@ -26,6 +26,10 @@ class ImageBrowserModel: ObservableObject {
 
     @Published var fullScreen = false
 
+    @Published var viewScaleFactor:CGFloat = 0
+
+    @Published var viewOffset:CGPoint = CGPoint.zero
+
     func setDirectories(directories: [URL]) {
         // Check removed directories
         for d in self.directories {

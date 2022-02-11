@@ -16,13 +16,6 @@ enum ImageListLayout {
 struct ImageListView: View {
     @ObservedObject var model:ImageBrowserModel
 
-    // @Binding var orientation:Image.Orientation
-
-    // If imageFilter > 0 only show the image indicated by imageFilter
-    // @Binding var imageFilter:Int
-
-    // @Binding var layout:ImageListLayout
-
     func gridLayout(count:Int) -> [GridItem] {
         let gridItem = GridItem(.flexible())
         var gridItemLayout:[GridItem] = [gridItem]
