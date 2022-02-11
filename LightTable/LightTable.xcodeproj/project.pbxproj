@@ -30,7 +30,8 @@
 		E5A6F9D627B4489C00D9D305 /* FilesOutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9D527B4489C00D9D305 /* FilesOutlineView.swift */; };
 		E5A6F9D827B4496600D9D305 /* FolderTreeDisclosure.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9D727B4496600D9D305 /* FolderTreeDisclosure.swift */; };
 		E5A6F9DA27B4B29800D9D305 /* NavigatorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9D927B4B29800D9D305 /* NavigatorModel.swift */; };
-		E5A6F9DC27B4B30100D9D305 /* FolderTreeNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9DB27B4B30100D9D305 /* FolderTreeNavigation.swift */; };
+		E5A6F9DC27B4B30100D9D305 /* FolderTreeHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9DB27B4B30100D9D305 /* FolderTreeHeader.swift */; };
+		E5CA6BB427B5E0D3002D1039 /* FolderTreeNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CA6BB327B5E0D3002D1039 /* FolderTreeNavigator.swift */; };
 		E5E3D35327AE401700BA332D /* PaneDivider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E3D35227AE401700BA332D /* PaneDivider.swift */; };
 		E5E3D35527AE433D00BA332D /* ImageListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E3D35427AE433D00BA332D /* ImageListView.swift */; };
 		E5E3D35727AE438A00BA332D /* ThumbnailScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E3D35627AE438A00BA332D /* ThumbnailScrollView.swift */; };
@@ -62,7 +63,8 @@
 		E5A6F9D527B4489C00D9D305 /* FilesOutlineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesOutlineView.swift; sourceTree = "<group>"; };
 		E5A6F9D727B4496600D9D305 /* FolderTreeDisclosure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTreeDisclosure.swift; sourceTree = "<group>"; };
 		E5A6F9D927B4B29800D9D305 /* NavigatorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigatorModel.swift; sourceTree = "<group>"; };
-		E5A6F9DB27B4B30100D9D305 /* FolderTreeNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTreeNavigation.swift; sourceTree = "<group>"; };
+		E5A6F9DB27B4B30100D9D305 /* FolderTreeHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTreeHeader.swift; sourceTree = "<group>"; };
+		E5CA6BB327B5E0D3002D1039 /* FolderTreeNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTreeNavigator.swift; sourceTree = "<group>"; };
 		E5E3D35227AE401700BA332D /* PaneDivider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaneDivider.swift; sourceTree = "<group>"; };
 		E5E3D35427AE433D00BA332D /* ImageListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageListView.swift; sourceTree = "<group>"; };
 		E5E3D35627AE438A00BA332D /* ThumbnailScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailScrollView.swift; sourceTree = "<group>"; };
@@ -156,7 +158,8 @@
 				E5E3D35627AE438A00BA332D /* ThumbnailScrollView.swift */,
 				E5A6F9D527B4489C00D9D305 /* FilesOutlineView.swift */,
 				E5A6F9D727B4496600D9D305 /* FolderTreeDisclosure.swift */,
-				E5A6F9DB27B4B30100D9D305 /* FolderTreeNavigation.swift */,
+				E5A6F9DB27B4B30100D9D305 /* FolderTreeHeader.swift */,
+				E5CA6BB327B5E0D3002D1039 /* FolderTreeNavigator.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -251,7 +254,7 @@
 				E5A6F9CD27B1E9CC00D9D305 /* ThumbnailButtonView.swift in Sources */,
 				E5A6F9DA27B4B29800D9D305 /* NavigatorModel.swift in Sources */,
 				E56DF0CE27AC4F410087AB49 /* Atomic.swift in Sources */,
-				E5A6F9DC27B4B30100D9D305 /* FolderTreeNavigation.swift in Sources */,
+				E5A6F9DC27B4B30100D9D305 /* FolderTreeHeader.swift in Sources */,
 				E5A6F9D827B4496600D9D305 /* FolderTreeDisclosure.swift in Sources */,
 				E51DB2EA27A9B0E20046EFFA /* ThumbnailLoader.swift in Sources */,
 				E51DB2EB27A9B0E20046EFFA /* LRUCache.swift in Sources */,
@@ -265,6 +268,7 @@
 				E5E3D35527AE433D00BA332D /* ImageListView.swift in Sources */,
 				E51DB2AC27A9ACAE0046EFFA /* LightTableApp.swift in Sources */,
 				E5A6F9D127B3442900D9D305 /* ScrollViewOffsetModifier.swift in Sources */,
+				E5CA6BB427B5E0D3002D1039 /* FolderTreeNavigator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

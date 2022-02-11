@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FolderTreeNavigation: View {
+struct FolderTreeHeader: View {
     @StateObject var navigatorModel = NavigatorModel()
 
     var body: some View {

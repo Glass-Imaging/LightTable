@@ -33,61 +33,22 @@ struct LightTableView: View {
     @StateObject private var imageBrowserModel = ImageBrowserModel()
     @StateObject private var navigatorModel = NavigatorModel()
 
-    @State private var imageActive = false
-
     var body: some View {
-        // We need a binding for .focusedSceneValue, although model as @ObservedObject is read only...
         let navigatorModelBinding = Binding<NavigatorModel>(
             get: { navigatorModel },
             set: { val in }
         )
 
-        let selectionBinding = Binding<Set<URL>>(
-            get: { navigatorModel.multiSelection },
-            set: { val in navigatorModel.multiSelection = val }
+        let browserActive = Binding<Bool>(
+            get: { !imageBrowserModel.directories.isEmpty },
+            set: { val in  }
         )
 
         NavigationView {
             HStack(spacing: 0) {
-                if (navigatorModel.children.count == 0) {
-                    Text("Drop a folder here.")
-                } else {
-                    VStack(alignment: .leading) {
-                        Spacer(minLength: 10)
+                FolderTreeNavigator(imageBrowserModel: imageBrowserModel, navigatorModel: navigatorModel)
 
-                        FolderTreeNavigation(navigatorModel: navigatorModel)
-
-                        Spacer()
-                        
-                        Divider()
-
-                        List(navigatorModel.children, id:\.self, selection: selectionBinding) { folder in
-                            FolderTreeDisclosure(url: folder, selection: selectionBinding, doubleTapAction:{ url in
-                                navigatorModel.update(url: url)
-                            })
-                        }
-                        .onChange(of: navigatorModel.multiSelection) { newValue in
-                            var directories:[URL] = []
-
-                            for entry in navigatorModel.multiSelection {
-                                directories.append(entry)
-                            }
-
-                            imageBrowserModel.setDirectories(directories: directories)
-
-                            imageActive = !directories.isEmpty
-                        }
-                        .onReceive(navigatorModel.$children) { children in
-                            // Reset navigator's selection
-                            navigatorModel.multiSelection = Set<URL>()
-
-                            // Reset image browser state
-                            imageBrowserModel.reset()
-                        }
-                    }
-                }
-
-                NavigationLink(destination: ImageBrowserView(model: imageBrowserModel), isActive: $imageActive){}.hidden()
+                NavigationLink(destination: ImageBrowserView(model: imageBrowserModel), isActive: browserActive){}.hidden()
                     .frame(width: 0, height: 0)
             }
         }

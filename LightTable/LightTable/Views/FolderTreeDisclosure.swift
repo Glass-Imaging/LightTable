@@ -27,7 +27,7 @@ struct FolderTreeDisclosure: View {
                     }
                 }
             }, label: {
-                Label(url.lastPathComponent, systemImage: hasImages ? "plus.rectangle.on.folder.fill" : "folder.fill")
+                Label(url.lastPathComponent, systemImage: hasImages ? "folder.fill" : "folder")
                     .onTapGesture(count: 2, perform: {
                         doubleTapAction(url)
                     })
