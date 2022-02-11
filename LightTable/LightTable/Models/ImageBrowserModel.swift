@@ -24,6 +24,8 @@ class ImageBrowserModel: ObservableObject {
     // Keyboard movement computed location with multiple selections
     @Published var nextLocation:URL? = nil
 
+    @Published var fullScreen = false
+
     func setDirectories(directories: [URL]) {
         // Check removed directories
         for d in self.directories {

@@ -46,24 +46,29 @@ struct ImageBrowserView: View {
         var body: some Commands {
 
             CommandGroup(after: .sidebar) {
-                commandButton(model: model, label: "Rotate Left", key: "[") { model in
-                    model.rotateLeft()
-                }
-                commandButton(model: model, label: "Rotate Right", key: "]") { model in
-                    model.rotateRight()
-                }
 
-                commandButton(model: model, label: "Toggle Layout", key: "L") { model in
-                    model.switchLayout()
+                Group {
+                    commandButton(model: model, label: "Rotate Left", key: "[") { model in
+                        model.rotateLeft()
+                    }
+                    commandButton(model: model, label: "Rotate Right", key: "]") { model in
+                        model.rotateRight()
+                    }
+
+                    commandButton(model: model, label: "Toggle Layout", key: "L") { model in
+                        model.switchLayout()
+                    }
                 }
 
                 Divider()
 
-                commandButton(model: model, label: "Move Left", key: .leftArrow) { model in
-                    model.nextLocation = model.processKey(key: .leftArrow)
-                }
-                commandButton(model: model, label: "Move Right", key: .rightArrow) { model in
-                    model.nextLocation = model.processKey(key: .rightArrow)
+                Group {
+                    commandButton(model: model, label: "Move Left", key: .leftArrow) { model in
+                        model.nextLocation = model.processKey(key: .leftArrow)
+                    }
+                    commandButton(model: model, label: "Move Right", key: .rightArrow) { model in
+                        model.nextLocation = model.processKey(key: .rightArrow)
+                    }
                 }
 
                 Divider()
@@ -84,6 +89,15 @@ struct ImageBrowserView: View {
                     }
                 }
                 .disabled(model == nil)
+
+                Divider()
+
+                commandButton(model: model, label: (model != nil && model!.fullScreen ? "Exit " : "Enter ") + "Full Screen Preview", key: "F") { model in
+                    model.fullScreen = !model.fullScreen
+                }
+                .disabled(model == nil)
+
+                Divider()
             }
         }
     }

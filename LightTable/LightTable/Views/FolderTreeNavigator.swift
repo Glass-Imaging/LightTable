@@ -37,22 +37,8 @@ struct FolderTreeNavigator: View {
                     })
                 }
                 .focused($navigatorIsFocused)
-                .onChange(of: navigatorModel.multiSelection) { newValue in
-                    var directories:[URL] = []
-
-                    for entry in navigatorModel.multiSelection {
-                        directories.append(entry)
-                    }
-
-                    imageBrowserModel.setDirectories(directories: directories)
-                }
-                .onReceive(navigatorModel.$children) { children in
-                    // Reset navigator's selection
-                    navigatorModel.multiSelection = Set<URL>()
+                .onAppear {
                     navigatorIsFocused = true
-
-                    // Reset image browser state
-                    imageBrowserModel.reset()
                 }
             }
         }

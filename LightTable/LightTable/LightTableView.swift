@@ -44,17 +44,47 @@ struct LightTableView: View {
             set: { val in  }
         )
 
-        NavigationView {
-            HStack(spacing: 0) {
-                FolderTreeNavigator(imageBrowserModel: imageBrowserModel, navigatorModel: navigatorModel)
+        let modelBinding = Binding<ImageBrowserModel>(
+            get: { imageBrowserModel },
+            set: { val in }
+        )
 
-                NavigationLink(destination: ImageBrowserView(model: imageBrowserModel), isActive: browserActive){}.hidden()
-                    .frame(width: 0, height: 0)
+        VStack {
+            if imageBrowserModel.fullScreen {
+                ImageListView(model: imageBrowserModel)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .focusedSceneValue(\.focusedBrowserModel, modelBinding)
+            } else {
+                NavigationView {
+                    HStack(spacing: 0) {
+                        FolderTreeNavigator(imageBrowserModel: imageBrowserModel, navigatorModel: navigatorModel)
+
+                        NavigationLink(destination: ImageBrowserView(model: imageBrowserModel), isActive: browserActive){}
+                            .hidden()
+                            .frame(width: 0, height: 0)
+                    }
+                }
+                .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
+                .focusedSceneValue(\.focusedNavigatorModel, navigatorModelBinding)
+                .onDrop(of: ["public.file-url"], delegate: self)
             }
         }
-        .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
-        .focusedSceneValue(\.focusedNavigatorModel, navigatorModelBinding)
-        .onDrop(of: ["public.file-url"], delegate: self)
+        .onChange(of: navigatorModel.multiSelection) { newValue in
+            var directories:[URL] = []
+
+            for entry in navigatorModel.multiSelection {
+                directories.append(entry)
+            }
+
+            imageBrowserModel.setDirectories(directories: directories)
+        }
+        .onReceive(navigatorModel.$children) { children in
+            // Reset navigator's selection
+            navigatorModel.multiSelection = Set<URL>()
+
+            // Reset image browser state
+            imageBrowserModel.reset()
+        }
     }
 
     struct ContentCommands: Commands {
