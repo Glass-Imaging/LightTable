@@ -29,6 +29,7 @@ class ImageBrowserModel: ObservableObject {
     @Published var viewScaleFactor:CGFloat = 0
 
     @Published var viewOffset:CGPoint = CGPoint.zero
+    @Published var viewOffsetInteractive:CGPoint = CGPoint.zero
 
     func setDirectories(directories: [URL]) {
         // Check removed directories
