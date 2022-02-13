@@ -12,9 +12,6 @@ class ImageBrowserModel: ObservableObject {
     @Published var files:[[URL]] = []
     @Published var selection:[URL] = []
 
-    // Single Image view selection for ImageListView
-    @Published var imageViewSelection = -1
-
     // Multipe Image View layout (Horizontal/Vertical/Grid)
     @Published var imageViewLayout:ImageListLayout = .Horizontal
 
@@ -24,12 +21,20 @@ class ImageBrowserModel: ObservableObject {
     // Keyboard movement computed location with multiple selections
     @Published var nextLocation:URL? = nil
 
+    // Single Image view selection for ImageListView
+    @Published var imageViewSelection = -1
     @Published var fullScreen = false
-
     @Published var viewScaleFactor:CGFloat = 0
+    @Published var viewOffset = CGPoint.zero
+    @Published var viewOffsetInteractive = CGPoint.zero
 
-    @Published var viewOffset:CGPoint = CGPoint.zero
-    @Published var viewOffsetInteractive:CGPoint = CGPoint.zero
+    func resetInteractiveState() {
+        imageViewSelection = -1
+        // fullScreen = false
+        viewScaleFactor = 0
+        viewOffset = CGPoint.zero
+        viewOffsetInteractive = CGPoint.zero
+    }
 
     func setDirectories(directories: [URL]) {
         // Check removed directories
@@ -176,14 +181,16 @@ class ImageBrowserModel: ObservableObject {
         return result
     }
 
-    let sortTuple = { (a:(Int, Int), b:(Int, Int)) in // selection index, file index
+    func processKey(key: KeyEquivalent) {
+        nextLocation = processKey(key: key)
+        resetInteractiveState()
+    }
+
+    let orderByFileIndex = { (a:(Int, Int), b:(Int, Int)) in // selection index, file index
         return a.1 < b.1
     }
 
-    func processKey(key: KeyEquivalent) {
-        nextLocation = processKey(key: key)
-    }
-
+    // TODO: This code needs simplification
     private func processKey(key: KeyEquivalent) -> URL? {
         if (key == .rightArrow || key == .leftArrow) {
             if (files.isEmpty || files[0].isEmpty) {
@@ -200,7 +207,9 @@ class ImageBrowserModel: ObservableObject {
             var directoryIndices:[[(Int, Int)]] = []  // selection index, file index
             var directoryMax:[Int] = []
             var directoryMin:[Int] = []
-            var selectionStep = 0
+            var directoryStep:[Int] = []
+            var globalMin = Int.max
+            var globalMax = Int.min
 
             for d in 0 ..< directories.count {
                 if (files[d].isEmpty) {
@@ -216,12 +225,16 @@ class ImageBrowserModel: ObservableObject {
                     directoryIndices.append([])
                     continue
                 }
-                let min = indices.min(by: sortTuple)
-                let max = indices.max(by: sortTuple)
+                let min = indices.min(by: orderByFileIndex)
+                let max = indices.max(by: orderByFileIndex)
                 let step = max!.1 - min!.1 + 1
+                directoryStep.append(step)
 
-                if (step > selectionStep) {
-                    selectionStep = step
+                if (min!.1 < globalMin) {
+                    globalMin = min!.1
+                }
+                if (max!.1 > globalMax) {
+                    globalMax = max!.1
                 }
 
                 directoryMax.append(max!.1)
@@ -236,12 +249,12 @@ class ImageBrowserModel: ObservableObject {
                 }
 
                 if (key == .rightArrow) {
-                    if (directoryMax[d] >= files[d].count - selectionStep) {
+                    if (directoryMax[d] >= files[d].count - directoryStep[d]) {
                         // never mind, we can't advance
                         return nil
                     }
                 } else {
-                    if (directoryMin[d] < selectionStep) {
+                    if (directoryMin[d] < directoryStep[d]) {
                         // never mind, we can't advance
                         return nil
                     }
@@ -255,7 +268,7 @@ class ImageBrowserModel: ObservableObject {
                 }
                 for i in 0 ..< directoryIndices[d].count {
                     let index = directoryIndices[d][i]
-                    selection[index.0] = files[d][index.1 + (key == .rightArrow ? selectionStep : -selectionStep)]
+                    selection[index.0] = files[d][index.1 + (key == .rightArrow ? directoryStep[d] : -directoryStep[d])]
                 }
             }
 
@@ -268,10 +281,7 @@ class ImageBrowserModel: ObservableObject {
                         directoryWithMax = d
                     }
                 }
-
-                if (globalMax >= 0) {
-                    return files[directoryWithMax][globalMax + selectionStep]
-                }
+                return files[directoryWithMax][directoryMax[directoryWithMax] + directoryStep[directoryWithMax]]
             } else {
                 var globalMin:Int = Int.max
                 var directoryWithMin:Int = 0
@@ -281,11 +291,7 @@ class ImageBrowserModel: ObservableObject {
                         directoryWithMin = d
                     }
                 }
-
-                if (globalMin >= 0) {
-                    let result = files[directoryWithMin][globalMin - selectionStep]
-                    return result
-                }
+                return files[directoryWithMin][directoryMin[directoryWithMin] - directoryStep[directoryWithMin]]
             }
         }
         return nil
