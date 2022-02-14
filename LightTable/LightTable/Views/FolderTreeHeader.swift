@@ -13,8 +13,6 @@ struct FolderTreeHeader: View {
     var body: some View {
         HStack {
             if let root = navigatorModel.root {
-                Spacer(minLength: 10)
-
                 Button {
                     navigatorModel.back()
                 } label: {
@@ -31,6 +29,10 @@ struct FolderTreeHeader: View {
                 }
                 .buttonStyle(.borderless)
 
+                Text(root.lastPathComponent)
+                    .bold()
+                    .font(.title2)
+
                 Spacer()
 
                 let parents = parentFoldersList(url: root)
@@ -39,17 +41,19 @@ struct FolderTreeHeader: View {
                         Button(action: {
                             navigatorModel.update(url: item)
                         }, label: {
-                            Label(item.lastPathComponent, systemImage: "folder.fill")
+                            HStack {
+                                Image(systemName: "folder.fill")
+                                Text(item.lastPathComponent)
+                            }
                         })
                     }
                 }, label: {
-                    Label(root.lastPathComponent, systemImage: "list.bullet.indent")
-                        .font(.largeTitle)
-                        .imageScale(.large)
+                    Text("􀋳")
+                        .font(.title2)
                 })
                 .menuStyle(.borderlessButton)
-
-                Spacer(minLength: 10)
+                .menuIndicator(.visible)
+                .fixedSize()
             }
         }
     }

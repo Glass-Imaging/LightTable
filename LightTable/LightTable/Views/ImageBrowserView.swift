@@ -13,23 +13,33 @@ struct ImageBrowserView: View {
     // Height of the ThumbnailScrollerPanel, modified by the PaneDivider
     @State var scrollViewHeight:CGFloat = 200
 
+    @State var thumbnailSize:CGFloat = 150
+
     let minPaneSize:CGFloat = 200
 
     var body: some View {
         GeometryReader { geometry in
-            VStack(spacing: 0) {
-                ImageListView(model: model)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            VSplitView {
+                VStack {
+                    ImageListView(model: model)
+                        .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
 
-                PaneDivider { offset in
-                    DispatchQueue.main.async {
-                        scrollViewHeight = max(min(scrollViewHeight - offset, geometry.size.height - minPaneSize), minPaneSize)
+                    ZStack {
+                        Rectangle()
+                            .foregroundColor(Color(red: 20.0/255.0, green: 20.0/255.0, blue: 20.0/255.0))
+                        HStack {
+                            Spacer()
+
+                            SmallSlider(/* value: $thumbnailSize, in: 50...200 */)
+                                .padding(.trailing, 10)
+                        }
                     }
+                    .frame(height: 20)
                 }
+                .layoutPriority(1)
 
                 ThumbnailScrollView(model: model)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .frame(height: max(scrollViewHeight, 0))
+                    .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
                     .background(.regularMaterial)
             }
         }

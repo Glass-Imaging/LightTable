@@ -53,7 +53,7 @@ func fileListingAt(url:URL, filter:(_ entry:URL) -> Bool) -> [URL] {
                                                                includingPropertiesForKeys: nil,
                                                                options: .skipsSubdirectoryDescendants)
         for entry in directoryContent {
-            if filter(entry) {
+            if !entry.lastPathComponent.starts(with: ".") && filter(entry) {
                 entries.append(entry)
             }
         }

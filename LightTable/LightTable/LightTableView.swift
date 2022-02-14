@@ -29,6 +29,11 @@ func parentFolder(url: URL) -> URL {
     return url
 }
 
+private func toggleSidebar() {
+    NSApp.keyWindow?.firstResponder?
+        .tryToPerform(#selector(NSSplitViewController.toggleSidebar(_:)), with: nil)
+}
+
 struct LightTableView: View {
     @StateObject private var imageBrowserModel = ImageBrowserModel()
     @StateObject private var navigatorModel = NavigatorModel()
@@ -39,10 +44,7 @@ struct LightTableView: View {
             set: { val in }
         )
 
-        let browserActive = Binding<Bool>(
-            get: { !imageBrowserModel.directories.isEmpty },
-            set: { val in  }
-        )
+        let browserActive = !imageBrowserModel.directories.isEmpty
 
         let modelBinding = Binding<ImageBrowserModel>(
             get: { imageBrowserModel },
@@ -52,12 +54,19 @@ struct LightTableView: View {
         VStack {
             ZStack {
                 NavigationView {
-                    HStack(spacing: 0) {
-                        FolderTreeNavigator(imageBrowserModel: imageBrowserModel, navigatorModel: navigatorModel)
+                    FolderTreeNavigator(imageBrowserModel: imageBrowserModel, navigatorModel: navigatorModel)
+                        .frame(minWidth: 250)
+                        .toolbar {
+                            if !imageBrowserModel.fullScreen {
+                                Button(action: toggleSidebar) {
+                                    Image(systemName: "sidebar.left")
+                                    .help("Toggle Sidebar")
+                                }
+                            }
+                        }
 
-                        NavigationLink(destination: ImageBrowserView(model: imageBrowserModel), isActive: browserActive){}
-                            .hidden()
-                            .frame(width: 0, height: 0)
+                    if (browserActive) {
+                        ImageBrowserView(model: imageBrowserModel)
                     }
                 }
                 .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)

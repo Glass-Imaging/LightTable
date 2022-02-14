@@ -7,15 +7,20 @@
 
 import SwiftUI
 
-struct PaneDivider: View {
+struct PaneDivider<Content> : View where Content : View {
     var action: (_ offset: CGFloat) -> Void
+    var content: () -> Content
 
     @GestureState private var isDragging = false // Will reset to false when dragging has ended
 
+    init(action: @escaping (_ offset: CGFloat) -> Void, @ViewBuilder content: @escaping () -> Content) {
+        self.action = action
+        self.content = content
+    }
+
     var body: some View {
-        Rectangle()
+        VStack(content: content)
             .foregroundColor(Color.black)
-            .frame(height: 1)
             .onHover { inside in
                 if !isDragging {
                     if inside { NSCursor.resizeUpDown.push() }
@@ -32,7 +37,9 @@ struct PaneDivider: View {
                         if !state { NSCursor.resizeUpDown.push() }
                         state = true
                     }
-                    .onEnded { _ in NSCursor.pop() }
+                    .onEnded { _ in
+                        NSCursor.pop()
+                    }
             )
     }
 }
