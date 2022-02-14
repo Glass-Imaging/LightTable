@@ -16,15 +16,18 @@ struct ImageViewCaption: View {
             Spacer()
             let parentFolder = parentFolder(url:url).lastPathComponent
             let filename = url.lastPathComponent
-            Text("\(parentFolder)/\(filename)")
-                .bold()
-                .font(.caption)
-                .padding(10)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.black.opacity(0.4))
-                )
-                .padding(.bottom, 10)
+            VStack {
+                Text(filename)
+                    .bold()
+                Text(parentFolder)
+                    .font(.caption)
+            }
+            .padding(10)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.black.opacity(0.4))
+            )
+            .padding(.bottom, 10)
         }
     }
 }
@@ -36,7 +39,7 @@ struct ImageView: View {
 
     @ObservedObject var model:ImageBrowserModel
 
-    init(withURL url:URL, model:ImageBrowserModel) {
+    init(url:URL, model:ImageBrowserModel) {
         self.model = model
         self.url = url
         imageLoader.load(url:url)
@@ -44,7 +47,7 @@ struct ImageView: View {
 
     var body: some View {
         GeometryReader { geometry in
-             ScrollView([]) {
+            ScrollView([]) {
                 let scale = model.viewScaleFactor
                 let viewFrame = geometry.frame(in: .local)
                 let imageSize = (model.orientation == .up || model.orientation == .down)
@@ -59,7 +62,7 @@ struct ImageView: View {
                                 : CGSize(width: scale * image.size.width,
                                          height: scale * image.size.height);
 
-                ZStack {
+                VStack {
                     if let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) {
                         // NOTE: Without the orientation-specific Text label the orientation changes are not picked up
                         Image(cgImage, scale: 1, orientation: model.orientation, label: Text(String(describing: model.orientation)))
@@ -67,10 +70,7 @@ struct ImageView: View {
                             .antialiased(imageScale > 1.0 ? false : true)
                             .resizable()
                             .scaledToFit()
-                    }
-
-                    if image.isValid {
-                        ImageViewCaption(url: url)
+                            .overlay(ImageViewCaption(url: url))
                     }
                 }
                 .frame(width: frameSize.width, height: frameSize.height, alignment: .center)

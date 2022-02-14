@@ -23,11 +23,8 @@ struct FolderTreeNavigator: View {
             )
 
             VStack(alignment: .leading) {
-                Spacer(minLength: 10)
-
                 FolderTreeHeader(navigatorModel: navigatorModel)
-
-                Spacer()
+                    .padding(EdgeInsets(top: 10, leading: 5, bottom: 5, trailing: 5))
 
                 Divider()
 
