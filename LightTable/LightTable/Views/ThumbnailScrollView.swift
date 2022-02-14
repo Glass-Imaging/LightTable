@@ -19,30 +19,32 @@ struct ThumbnailGrid: View {
             set: { val in }
         )
 
-        ForEach(0 ..< model.directories.count, id: \.self) { directoryIndex in
-            let folderName = model.directories[directoryIndex].lastPathComponent
-            let folderListing = model.files[directoryIndex]
+        VStack(alignment: .leading) {
+            ForEach(0 ..< model.directories.count, id: \.self) { directoryIndex in
+                let folderName = model.directories[directoryIndex].lastPathComponent
+                let folderListing = model.files[directoryIndex]
 
-            Section(header: ZStack(alignment: .leading) {
-                Rectangle()
-                    .foregroundColor(Color(red: 33.0/255, green: 29.0/255, blue: 39.0/255))
-                    .frame(height: 20)
-                Text("\(folderName) - \(folderListing.count) images")
-                    .offset(x: max(scrollViewOffset.x, 0) + 3)
-                    .animation(.easeIn, value: scrollViewOffset)
-            }) {
-                LazyHStack(alignment: .bottom) {
-                    ForEach(folderListing, id: \.self) { file in
-                        ThumbnailButtonView(file: file, model: model) { modifier in
-                            // Handle Command-Click mouse actions
-                            if (modifier.contains(.command)) {
-                                model.addToSelection(file: file)
-                            } else {
-                                model.updateSelection(file: file)
+                Section(header: ZStack(alignment: .leading) {
+                    Rectangle()
+                        .foregroundColor(Color(red: 33.0/255, green: 29.0/255, blue: 39.0/255))
+                        .frame(height: 20)
+                    Text("\(folderName) - \(folderListing.count) images")
+                        .offset(x: max(scrollViewOffset.x, 0) + 3)
+                        .animation(.easeIn, value: scrollViewOffset)
+                }) {
+                    LazyHStack(alignment: .bottom) {
+                        ForEach(folderListing, id: \.self) { file in
+                            ThumbnailButtonView(file: file, model: model) { modifier in
+                                // Handle Command-Click mouse actions
+                                if (modifier.contains(.command)) {
+                                    model.addToSelection(file: file)
+                                } else {
+                                    model.updateSelection(file: file)
+                                }
                             }
+                            .id(file)
+                            .focusedSceneValue(\.focusedBrowserModel, modelBinding)
                         }
-                        .id(file)
-                        .focusedSceneValue(\.focusedBrowserModel, modelBinding)
                     }
                 }
             }

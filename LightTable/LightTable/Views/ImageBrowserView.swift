@@ -17,6 +17,18 @@ struct ImageBrowserView: View {
 
     var body: some View {
         GeometryReader { geometry in
+//            VSplitView {
+//                ImageListView(model: model)
+//                    .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
+//                    .layoutPriority(1)
+//
+//                GeometryReader { geometry in
+//                    ThumbnailScrollView(model: model)
+//                        .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
+//                        .background(.regularMaterial)
+//                }
+//            }
+
             VStack(spacing: 0) {
                 ImageListView(model: model)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -29,7 +41,7 @@ struct ImageBrowserView: View {
 
                 ThumbnailScrollView(model: model)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .frame(height: max(scrollViewHeight, 0))
+                    .frame(height: max(scrollViewHeight - 1, 0))
                     .background(.regularMaterial)
             }
         }
