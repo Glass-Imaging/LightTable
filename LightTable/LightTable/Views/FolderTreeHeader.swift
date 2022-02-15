@@ -35,6 +35,7 @@ struct FolderTreeHeader: View {
 
                 Spacer()
 
+                // "Custom Style" Menu Button with large icon B]
                 let parents = parentFoldersList(url: root)
                 Menu(content: {
                     ForEach(parents, id: \.self) { item in
@@ -48,12 +49,17 @@ struct FolderTreeHeader: View {
                         })
                     }
                 }, label: {
-                    Image(systemName: "list.bullet.indent")
-                        .font(.title2)
+                    Text("")
                 })
-                .menuStyle(.borderlessButton)
-                .menuIndicator(.visible)
-                .fixedSize()
+                    .frame(width: 40)
+                    .background(
+                        Image(systemName: "list.bullet.indent")
+                            .font(.title2)
+                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 10))
+                    )
+                    .menuStyle(.borderlessButton)
+                    .menuIndicator(.visible)
+                    .fixedSize()
             }
         }
     }
