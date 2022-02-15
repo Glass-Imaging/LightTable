@@ -48,7 +48,7 @@ struct FolderTreeHeader: View {
                         })
                     }
                 }, label: {
-                    Text("􀋳")
+                    Image(systemName: "list.bullet.indent")
                         .font(.title2)
                 })
                 .menuStyle(.borderlessButton)

@@ -53,26 +53,77 @@ struct LightTableView: View {
             set: { val in }
         )
 
+        let imageViewLayoutBinding = Binding<ImageListLayout>(
+            get: { imageBrowserModel.imageViewLayout },
+            set: { val in imageBrowserModel.imageViewLayout = val }
+        )
+
+        let fullScreenViewModeBinding = Binding<Bool>(
+            get: { imageBrowserModel.fullScreen },
+            set: { val in imageBrowserModel.fullScreen = val }
+        )
+
+        let viewSelectionBinding = Binding<Bool>(
+            get: { imageBrowserModel.imageViewSelection >= 0 },
+            set: { val in imageBrowserModel.imageViewSelection = -1 }
+        )
+
         VStack {
             ZStack {
                 NavigationView {
                     FolderTreeNavigator(imageBrowserModel: imageBrowserModel, navigatorModel: navigatorModel)
                         .frame(minWidth: 250)
                         .toolbar {
-                            Button(action: toggleSidebar) {
-                                Image(systemName: "sidebar.left")
-                                .help("Toggle Sidebar")
+                            ToolbarItem(placement: .automatic) {
+                                Button(action: toggleSidebar) {
+                                    Image(systemName: "sidebar.left")
+                                    .help("Toggle Sidebar")
+                                }
                             }
                         }
 
                     if (browserActive) {
                         ImageBrowserView(model: imageBrowserModel)
-//                            .toolbar {
-//                                Button(action: {}) {
-//                                    Image(systemName: "sidebar.left")
-//                                    .help("Toggle Sidebar")
-//                                }
-//                            }
+                            .toolbar {
+                                ToolbarItem(placement: .automatic) {
+                                    Picker("View Arrangement", selection: imageViewLayoutBinding) {
+                                        Image(systemName: "rectangle.split.3x1")
+                                            .background(Color.red)
+                                            .help("Horizontal")
+                                            .tag(ImageListLayout.Horizontal)
+
+                                        Image(systemName: "rectangle.split.1x2")
+                                            .help("Vertical")
+                                            .tag(ImageListLayout.Vertical)
+
+                                        Image(systemName: "rectangle.split.3x3")
+                                            .help("Grid")
+                                            .tag(ImageListLayout.Grid)
+                                    }
+                                    .pickerStyle(.inline /* DefaultPickerStyle() */)
+                                }
+
+                                ToolbarItem(placement: .automatic) {
+                                    Toggle(isOn: viewSelectionBinding, label: {
+                                        let caption = imageBrowserModel.imageViewSelection >= 0 ? "\(imageBrowserModel.imageViewSelection + 1)" : "—"
+                                        Image(systemName: "viewfinder")
+                                            .help("View Selection")
+                                        Text(caption)
+                                            .frame(width: 12)
+                                    })
+                                        .foregroundColor(imageBrowserModel.imageViewSelection >= 0 ? .blue : .gray)
+                                        .toggleStyle(.button)
+                                }
+
+                                ToolbarItem(placement: .automatic) {
+                                    Toggle(isOn: fullScreenViewModeBinding, label: {
+                                        Image(systemName: "arrow.up.left.and.arrow.down.right")
+                                            .help("Full Screen View")
+                                    })
+                                        .foregroundColor(imageBrowserModel.fullScreen ? .blue : .gray)
+                                        .toggleStyle(.button)
+                                }
+                            }
                     }
                 }
                 .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
