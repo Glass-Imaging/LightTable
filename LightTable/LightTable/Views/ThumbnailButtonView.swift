@@ -16,6 +16,7 @@ struct ThumbnailButtonView: View {
 
     var body: some View {
         Button(action: {
+            // Single Click
             action([])
         }) {
             let selected = model.selection.contains(file)
@@ -31,11 +32,15 @@ struct ThumbnailButtonView: View {
                     .frame(width: model.thumbnailSize, height: 20)
             }
             .frame(width: model.thumbnailSize, height: model.thumbnailSize + 20)
+            // Double Click: reveal the file in Finder
+            .gesture(TapGesture(count: 2).onEnded {
+                action([])
+                NSWorkspace.shared.selectFile(file.path, inFileViewerRootedAtPath: parentFolder(url: file).path)
+            })
             // Command-Click Multiple Selection
             .gesture(TapGesture().modifiers(.command).onEnded {
                 action(.command)
             })
-
         }
         .buttonStyle(PlainButtonStyle())
     }
