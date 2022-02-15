@@ -7,6 +7,23 @@
 
 import SwiftUI
 
+func OrientationIcon(orientation: Image.Orientation) -> some View {
+    let orientationIconName =
+        orientation == .right ? "person.fill.turn.right" :
+        orientation == .left ? "person.fill.turn.left" :
+        orientation == .down ? "person.fill.turn.down" : "person.fill"
+
+    return Image(systemName: orientationIconName)
+        .foregroundColor(orientation == .up ? Color.gray : Color.blue)
+        .font(Font.system(size: 14))
+        .frame(width: 20, height: 20)
+        .padding(2)
+        .overlay(
+            RoundedRectangle(cornerRadius: 5)
+                .fill(Color.gray).opacity(0.1)
+        )
+}
+
 @ToolbarContentBuilder
 func LightTableToolbar(model:ImageBrowserModel) -> some ToolbarContent {
     let imageViewLayoutBinding = Binding<ImageListLayout>(
@@ -38,6 +55,8 @@ func LightTableToolbar(model:ImageBrowserModel) -> some ToolbarContent {
             .help("Rotate Right")
         }
 
+        OrientationIcon(orientation: model.orientation)
+
         Divider()
     }
     ToolbarItemGroup(placement: .automatic) {
@@ -63,11 +82,12 @@ func LightTableToolbar(model:ImageBrowserModel) -> some ToolbarContent {
         }
 
         Text(model.viewScaleFactor == 0 ? "Fit" : "\(Int(model.viewScaleFactor))X")
+            .foregroundColor(model.viewScaleFactor > 0 ? Color.blue : Color.gray)
             .frame(width: 25)
             .padding(2)
             .overlay(
                 RoundedRectangle(cornerRadius: 5)
-                    .stroke(Color.gray, lineWidth: 1)
+                    .fill(Color.gray).opacity(0.1)
             )
 
         Divider()
