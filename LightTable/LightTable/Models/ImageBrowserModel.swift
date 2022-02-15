@@ -28,6 +28,8 @@ class ImageBrowserModel: ObservableObject {
     @Published var viewOffset = CGPoint.zero
     @Published var viewOffsetInteractive = CGPoint.zero
 
+    @Published var thumbnailSize:CGFloat = 150
+
     func resetInteractiveState() {
         imageViewSelection = -1
         // fullScreen = false

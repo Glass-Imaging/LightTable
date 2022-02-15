@@ -10,19 +10,24 @@ import SwiftUI
 struct ThumbnailView: View {
     @ObservedObject var thumbnailLoader = ThumbnailLoader()
 
-    private var size: CGFloat
+    let maxThumbnailSize = CGFloat(200)
 
-    init(withURL url: URL, size: CGFloat) {
-        self.size = size
-        thumbnailLoader.loadThumbnail(url: url, maxSize: size)
+    init(withURL url: URL) {
+        thumbnailLoader.loadThumbnail(url: url, maxSize: maxThumbnailSize)
     }
     
     var body: some View {
         if (thumbnailLoader.image.isValid) {
             Image(nsImage: thumbnailLoader.image)
+                .interpolation(.high)
+                .antialiased(true)
+                .resizable()
+                .scaledToFit()
         } else {
             Image(systemName: "photo.artframe")
-                .font(Font.system(size: 100))
+                .resizable()
+                .scaledToFit()
+                .font(Font.system(size: maxThumbnailSize))
                 .symbolRenderingMode(.hierarchical)
                 .foregroundColor(.secondary)
         }
@@ -33,6 +38,6 @@ fileprivate let testURL = URL(string: "")!
 
 struct ThumbnailView_Previews: PreviewProvider {
     static var previews: some View {
-        ThumbnailView(withURL: testURL, size: 150)
+        ThumbnailView(withURL: testURL)
     }
 }

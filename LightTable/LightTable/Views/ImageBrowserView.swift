@@ -13,11 +13,19 @@ struct ImageBrowserView: View {
     // Height of the ThumbnailScrollerPanel, modified by the PaneDivider
     @State var scrollViewHeight:CGFloat = 200
 
-    @State var thumbnailSize:CGFloat = 150
+    // @State var thumbnailSize:CGFloat = 150
+
+    let backgroundColor = Color(red: 30.0/255.0, green: 30.0/255.0, blue: 30.0/255.0)
+    let dividerColor = Color(red: 20.0/255.0, green: 20.0/255.0, blue: 20.0/255.0)
 
     let minPaneSize:CGFloat = 200
 
     var body: some View {
+        let thumbnailSizeBinding = Binding<CGFloat>(
+            get: { model.thumbnailSize },
+            set: { val in model.thumbnailSize = val }
+        )
+
         GeometryReader { geometry in
             VSplitView {
                 VStack {
@@ -26,11 +34,11 @@ struct ImageBrowserView: View {
 
                     ZStack {
                         Rectangle()
-                            .foregroundColor(Color(red: 20.0/255.0, green: 20.0/255.0, blue: 20.0/255.0))
+                            .foregroundColor(dividerColor)
                         HStack {
                             Spacer()
 
-                            SmallSlider(/* value: $thumbnailSize, in: 50...200 */)
+                            ThumbnailSizeSlider(value: thumbnailSizeBinding)
                                 .padding(.trailing, 10)
                         }
                     }
@@ -40,7 +48,7 @@ struct ImageBrowserView: View {
 
                 ThumbnailScrollView(model: model)
                     .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
-                    .background(.regularMaterial)
+                    .background(backgroundColor)
             }
         }
         .onReceive(model.$files) { _ in

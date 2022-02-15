@@ -7,9 +7,10 @@
 
 import SwiftUI
 
-struct SmallSlider: View {
-  private let thumbRadius: CGFloat = 15
-  @State private var value = 100.0
+struct ThumbnailSizeSlider: View {
+    @Binding var value:CGFloat
+
+    private let thumbRadius: CGFloat = 15
 
   var body: some View {
     // Text("Custom slider: \(value)")

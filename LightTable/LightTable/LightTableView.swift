@@ -38,6 +38,8 @@ struct LightTableView: View {
     @StateObject private var imageBrowserModel = ImageBrowserModel()
     @StateObject private var navigatorModel = NavigatorModel()
 
+    let backgroundColor = Color(red: 30.0/255.0, green: 30.0/255.0, blue: 30.0/255.0)
+
     var body: some View {
         let navigatorModelBinding = Binding<NavigatorModel>(
             get: { navigatorModel },
@@ -57,16 +59,20 @@ struct LightTableView: View {
                     FolderTreeNavigator(imageBrowserModel: imageBrowserModel, navigatorModel: navigatorModel)
                         .frame(minWidth: 250)
                         .toolbar {
-                            if !imageBrowserModel.fullScreen {
-                                Button(action: toggleSidebar) {
-                                    Image(systemName: "sidebar.left")
-                                    .help("Toggle Sidebar")
-                                }
+                            Button(action: toggleSidebar) {
+                                Image(systemName: "sidebar.left")
+                                .help("Toggle Sidebar")
                             }
                         }
 
                     if (browserActive) {
                         ImageBrowserView(model: imageBrowserModel)
+//                            .toolbar {
+//                                Button(action: {}) {
+//                                    Image(systemName: "sidebar.left")
+//                                    .help("Toggle Sidebar")
+//                                }
+//                            }
                     }
                 }
                 .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
@@ -77,10 +83,11 @@ struct LightTableView: View {
                     ImageListView(model: imageBrowserModel)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .focusedSceneValue(\.focusedBrowserModel, modelBinding)
-                        .background(Color(red: 33.0/255.0, green: 29.0/255.0, blue: 40.0/255.0))
+                        .background(backgroundColor)
                 }
             }
         }
+        .background(backgroundColor)
         .onChange(of: navigatorModel.multiSelection) { newValue in
             var directories:[URL] = []
 
