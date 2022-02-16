@@ -33,11 +33,23 @@ struct ImageViewCaption: View {
 }
 
 struct ImageView: View {
+    let url:URL
+    @ObservedObject var model:ImageBrowserModel
+
     @ObservedObject var imageLoader = ImageLoader()
     @State var image:NSImage = NSImage()
-    let url:URL
 
-    @ObservedObject var model:ImageBrowserModel
+    @State var viewOffsetInteractive = CGPoint.zero
+
+    static var offsetMap: [URL : CGPoint] = [:]
+
+    func storedOffset(url: URL) -> CGPoint {
+        if let storedOffset = ImageView.offsetMap[url] {
+            print("found stored offset", storedOffset)
+            return storedOffset
+        }
+        return CGPoint.zero
+    }
 
     init(url:URL, model:ImageBrowserModel) {
         self.model = model
@@ -48,6 +60,8 @@ struct ImageView: View {
     var body: some View {
         GeometryReader { geometry in
             ScrollView([]) {
+                var viewOffset = storedOffset(url: url)
+
                 let scale = model.viewScaleFactor
                 let viewFrame = geometry.frame(in: .local)
                 let imageSize = (model.orientation == .up || model.orientation == .down)
@@ -74,8 +88,29 @@ struct ImageView: View {
                     }
                 }
                 .frame(width: frameSize.width, height: frameSize.height, alignment: .center)
-                .offset(x: scale == 0 ? 0 : scale * model.viewOffset.x + model.viewOffsetInteractive.x,
-                        y: scale == 0 ? 0 : scale * model.viewOffset.y + model.viewOffsetInteractive.y)
+                .offset(x: scale == 0 ? 0 : scale * model.viewOffset.x + model.viewOffsetInteractive.x + viewOffset.x + viewOffsetInteractive.x,
+                        y: scale == 0 ? 0 : scale * model.viewOffset.y + model.viewOffsetInteractive.y + viewOffset.y + viewOffsetInteractive.y)
+                .gesture(
+                    DragGesture().modifiers(.option)
+                        .onChanged { gesture in
+                            if (scale > 0) {
+                                print("onChanged - viewOffset", viewOffset)
+
+                                viewOffsetInteractive = CGPoint(x: gesture.translation.width, y: gesture.translation.height)
+                            }
+                        }
+                        .onEnded { value in
+                            if (scale > 0) {
+                                print("onEnded - viewOffset", viewOffset)
+
+                                viewOffset.x += viewOffsetInteractive.x / scale
+                                viewOffset.y += viewOffsetInteractive.y / scale
+                                viewOffsetInteractive = CGPoint.zero
+
+                                ImageView.offsetMap[url] = viewOffset
+                            }
+                        }
+                )
                 .gesture(
                     DragGesture()
                         .onChanged { gesture in
