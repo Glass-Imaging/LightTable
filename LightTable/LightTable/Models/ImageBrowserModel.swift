@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+extension KeyEquivalent: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.character == rhs.character
+    }
+}
+
 class ImageBrowserModel: ObservableObject {
     @Published var directories:[URL] = []
     @Published var files:[[URL]] = []

@@ -67,14 +67,14 @@ struct ImageBrowserView: View {
             CommandGroup(after: .sidebar) {
 
                 Group {
-                    commandButton(model: model, label: "Rotate Left", key: "[") { model in
+                    CommandButton(model: model, label: "Rotate Left", key: "[") { model in
                         model.rotateLeft()
                     }
-                    commandButton(model: model, label: "Rotate Right", key: "]") { model in
+                    CommandButton(model: model, label: "Rotate Right", key: "]") { model in
                         model.rotateRight()
                     }
 
-                    commandButton(model: model, label: "Toggle Layout", key: "L") { model in
+                    CommandButton(model: model, label: "Toggle Layout", key: "L") { model in
                         model.switchLayout()
                     }
                 }
@@ -82,15 +82,15 @@ struct ImageBrowserView: View {
                 Divider()
 
                 Group {
-                    commandButton(model: model, label: "Zoom In", key: "=", modifiers: .command) { model in
+                    CommandButton(model: model, label: "Zoom In", key: "=", modifiers: .command) { model in
                         model.viewScaleFactor += 1
                     }
-                    commandButton(model: model, label: "Zoom Out", key: "-", modifiers: .command) { model in
+                    CommandButton(model: model, label: "Zoom Out", key: "-", modifiers: .command) { model in
                         if (model.viewScaleFactor > 0) {
                             model.viewScaleFactor -= 1
                         }
                     }
-                    commandButton(model: model, label: "Zoom To Fit", key: "=") { model in
+                    CommandButton(model: model, label: "Zoom To Fit", key: "=") { model in
                         model.viewScaleFactor = 0
                     }
                 }
@@ -98,10 +98,10 @@ struct ImageBrowserView: View {
                 Divider()
 
                 Group {
-                    commandButton(model: model, label: "Move Left", key: .leftArrow) { model in
+                    CommandButton(model: model, label: "Move Left", key: .leftArrow) { model in
                         model.processKey(key: .leftArrow)
                     }
-                    commandButton(model: model, label: "Move Right", key: .rightArrow) { model in
+                    CommandButton(model: model, label: "Move Right", key: .rightArrow) { model in
                         model.processKey(key: .rightArrow)
                     }
                 }
@@ -112,14 +112,14 @@ struct ImageBrowserView: View {
                     let zero = Character("0")
                     ForEach(1...9, id: \.self) { index in
                         let c = Character(UnicodeScalar(Int(zero.asciiValue!) + index)!)
-                        commandButton(model: model, label: "View " + String(c), key: KeyEquivalent(c)) { model in
+                        CommandButton(model: model, label: "View " + String(c), key: KeyEquivalent(c)) { model in
                             model.imageViewSelection(char: c)
                         }
                     }
-                    commandButton(model: model, label: "View 10", key: "0") { model in
+                    CommandButton(model: model, label: "View 10", key: "0") { model in
                         model.imageViewSelection(char: "0")
                     }
-                    commandButton(model: model, label: "Show All", key: "`") { model in
+                    CommandButton(model: model, label: "Show All", key: "`") { model in
                         model.imageViewSelection = -1
                     }
                 }
@@ -127,7 +127,7 @@ struct ImageBrowserView: View {
 
                 Divider()
 
-                commandButton(model: model, label: (model != nil && model!.fullScreen ? "Exit " : "Enter ") + "Full Screen Preview", key: "F") { model in
+                CommandButton(model: model, label: (model != nil && model!.fullScreen ? "Exit " : "Enter ") + "Full Screen Preview", key: "F") { model in
                     model.fullScreen = !model.fullScreen
                 }
                 .disabled(model == nil)

@@ -125,22 +125,22 @@ struct LightTableView: View {
             }
 
             CommandMenu("Go") {
-                commandButton(model: model, label: "Back", key: "[", modifiers: [.command]) { model in
+                CommandButton(model: model, label: "Back", key: "[", modifiers: [.command]) { model in
                     model.back()
                 }
 
-                commandButton(model: model, label: "Forward", key: "]", modifiers: [.command]) { model in
+                CommandButton(model: model, label: "Forward", key: "]", modifiers: [.command]) { model in
                     model.forward()
                 }
 
-                commandButton(model: model, label: "Enclosing Folder", key: .upArrow, modifiers: [.command]) { model in
+                CommandButton(model: model, label: "Enclosing Folder", key: .upArrow, modifiers: [.command]) { model in
                     if let root = model.root {
                         model.update(url: parentFolder(url: root))
                         model.multiSelection = [root]
                     }
                 }
 
-                commandButton(model: model, label: "Selected Folder", key: .downArrow, modifiers: [.command]) { model in
+                CommandButton(model: model, label: "Selected Folder", key: .downArrow, modifiers: [.command]) { model in
                     if let selection = model.multiSelection.first {
                         model.update(url: selection)
                     }

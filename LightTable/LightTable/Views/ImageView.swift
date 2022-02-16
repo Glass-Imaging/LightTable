@@ -114,6 +114,7 @@ struct ImageView: View {
                 .frame(width: frameSize.width, height: frameSize.height, alignment: .center)
                 .offset(x: offset.x, y: offset.y)
                 .gesture(
+                    // Option-Click-Drag for individual image offset, made persistent in ImageView.offsetMap
                     DragGesture().modifiers(.option)
                         .onChanged { gesture in
                             if (scale > 0) {
@@ -131,6 +132,7 @@ struct ImageView: View {
                         }
                 )
                 .gesture(
+                    // Click-Drag for global image offset
                     DragGesture()
                         .onChanged { gesture in
                             if (scale > 0) {
