@@ -36,6 +36,7 @@
 		E5A6F9DA27B4B29800D9D305 /* NavigatorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9D927B4B29800D9D305 /* NavigatorModel.swift */; };
 		E5A6F9DC27B4B30100D9D305 /* FolderTreeHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9DB27B4B30100D9D305 /* FolderTreeHeader.swift */; };
 		E5CA6BB427B5E0D3002D1039 /* FolderTreeNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CA6BB327B5E0D3002D1039 /* FolderTreeNavigator.swift */; };
+		E5DF6B1D27BCB4E900D191AF /* CGOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5DF6B1C27BCB4E900D191AF /* CGOperations.swift */; };
 		E5E3D35327AE401700BA332D /* PaneDivider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E3D35227AE401700BA332D /* PaneDivider.swift */; };
 		E5E3D35527AE433D00BA332D /* ImageListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E3D35427AE433D00BA332D /* ImageListView.swift */; };
 		E5E3D35727AE438A00BA332D /* ThumbnailScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E3D35627AE438A00BA332D /* ThumbnailScrollView.swift */; };
@@ -73,6 +74,7 @@
 		E5A6F9D927B4B29800D9D305 /* NavigatorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigatorModel.swift; sourceTree = "<group>"; };
 		E5A6F9DB27B4B30100D9D305 /* FolderTreeHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTreeHeader.swift; sourceTree = "<group>"; };
 		E5CA6BB327B5E0D3002D1039 /* FolderTreeNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTreeNavigator.swift; sourceTree = "<group>"; };
+		E5DF6B1C27BCB4E900D191AF /* CGOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGOperations.swift; sourceTree = "<group>"; };
 		E5E3D35227AE401700BA332D /* PaneDivider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaneDivider.swift; sourceTree = "<group>"; };
 		E5E3D35427AE433D00BA332D /* ImageListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageListView.swift; sourceTree = "<group>"; };
 		E5E3D35627AE438A00BA332D /* ThumbnailScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailScrollView.swift; sourceTree = "<group>"; };
@@ -151,6 +153,7 @@
 				E56DF0CD27AC4F410087AB49 /* Atomic.swift */,
 				E5A6F9C827AC9B6400D9D305 /* Filesystem.swift */,
 				E5A6F9CA27ACA70C00D9D305 /* KeyInputSubjectWrapper.swift */,
+				E5DF6B1C27BCB4E900D191AF /* CGOperations.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -277,6 +280,7 @@
 				E5A6F9D627B4489C00D9D305 /* FilesOutlineView.swift in Sources */,
 				E5A6F9C727AC8E4800D9D305 /* FocusedValues+LightTable.swift in Sources */,
 				E51DB2E827A9B0E20046EFFA /* ImageBrowserModel.swift in Sources */,
+				E5DF6B1D27BCB4E900D191AF /* CGOperations.swift in Sources */,
 				E51DB2EF27A9B0E20046EFFA /* LinkedList.swift in Sources */,
 				E51DB2F427A9B0E20046EFFA /* ThumbnailView.swift in Sources */,
 				E5A6F9C927AC9B6400D9D305 /* Filesystem.swift in Sources */,

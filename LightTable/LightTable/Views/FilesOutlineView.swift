@@ -49,7 +49,6 @@ struct FilesOutlineView: View {
 
     var body: some View {
         Button {
-            print("selected", item.url)
             if (selection.contains(item.url)) {
                 selection.remove(item.url)
                 selected = false

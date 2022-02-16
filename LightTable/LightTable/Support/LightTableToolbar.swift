@@ -110,7 +110,6 @@ func LightTableToolbar(model:ImageBrowserModel) -> some ToolbarContent {
     ToolbarItemGroup(placement: .automatic) {
         Picker("View Arrangement", selection: imageViewLayoutBinding) {
             Image(systemName: "rectangle.split.3x1")
-                .background(Color.red)
                 .help("Horizontal")
                 .tag(ImageListLayout.Horizontal)
 
