@@ -2,7 +2,7 @@
 //  ThumbnailView.swift
 //  LightTable
 //
-//  Created by Gualtiero Frigerio on 23/08/21.
+//  Created by Fabio Riccardi on 1/31/22.
 //
 
 import SwiftUI

@@ -2,7 +2,7 @@
 //  ImageView.swift
 //  LightTable
 //
-//  Created by Gualtiero Frigerio on 03/02/2021.
+//  Created by Fabio Riccardi on 1/31/22.
 //
 
 import Combine
