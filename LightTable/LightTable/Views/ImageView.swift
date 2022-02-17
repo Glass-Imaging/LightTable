@@ -38,6 +38,7 @@ struct ImageView: View {
 
     @ObservedObject var imageLoader = ImageLoader()
     @State var image:NSImage = NSImage()
+    @State var metadata:NSDictionary = NSDictionary()
 
     @State var viewOffsetInteractive = CGPoint.zero
 
@@ -69,6 +70,26 @@ struct ImageView: View {
         }
     }
 
+    func imageOrientation(metadata: NSDictionary) -> Image.Orientation {
+        if let exifOrientation = metadata["Orientation"] as? Int {
+            switch(exifOrientation) {
+            case 1:
+                return .up
+            case 8:
+                return .left
+            case 6:
+                return .right
+            case 3:
+                return .down
+            default:
+                print("Unexpected EXIF orientation value:", exifOrientation)
+                return .up
+            }
+        } else {
+            return .up
+        }
+    }
+
     func prepareImage(downScale: Bool) -> AnyView {
         if image.isValid {
             // NSImage sometimes changes the image size to take into account the ppi from metadata, override with NSImageRep
@@ -78,9 +99,11 @@ struct ImageView: View {
                 image.size = repSize
             }
             if let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) {
+
+                let orientation = imageOrientation(metadata: metadata)
                 return AnyView(
                     // NOTE: Without the orientation-specific Text label the orientation changes are not picked up
-                    Image(cgImage, scale: 1, orientation: model.orientation, label: Text(String(describing: model.orientation)))
+                    Image(cgImage, scale: 1, orientation: ImageBrowserModel.rotate(value: orientation, by: model.orientation), label: Text(String(describing: model.orientation)))
                         .interpolation(downScale ? .high : .none)
                         .antialiased(downScale ? true : false)
                         .resizable()
@@ -149,7 +172,15 @@ struct ImageView: View {
             }
         }
         .onReceive(imageLoader.didChange) { data in
-            image = data
+            if !data.isEmpty {
+                image = NSImage(dataIgnoringOrientation: data as Data)!
+
+                if let cgImageSource = CGImageSourceCreateWithData(data as CFData, nil) {
+                    if let dictionary = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil) {
+                        metadata = dictionary as NSDictionary
+                    }
+                }
+            }
         }
     }
 }

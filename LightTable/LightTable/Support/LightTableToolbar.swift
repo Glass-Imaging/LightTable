@@ -43,13 +43,13 @@ func LightTableToolbar(model:ImageBrowserModel) -> some ToolbarContent {
 
     ToolbarItemGroup(placement: .automatic) {
         Button(action: {
-            model.rotateLeft()
+            model.orientation = ImageBrowserModel.rotateLeft(value: model.orientation)
         }) {
             Image(systemName: "rotate.left")
             .help("Rotate Left")
         }
         Button(action: {
-            model.rotateRight()
+            model.orientation = ImageBrowserModel.rotateRight(value: model.orientation)
         }) {
             Image(systemName: "rotate.right")
             .help("Rotate Right")

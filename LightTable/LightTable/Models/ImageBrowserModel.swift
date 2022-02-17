@@ -316,33 +316,67 @@ class ImageBrowserModel: ObservableObject {
         }
     }
 
-    func rotateRight() {
-        switch orientation {
+    static func rotateRight(value: Image.Orientation) -> Image.Orientation {
+        switch value {
         case Image.Orientation.up:
-            orientation = Image.Orientation.right
+            return Image.Orientation.right
         case Image.Orientation.right:
-            orientation = Image.Orientation.down
+            return Image.Orientation.down
         case Image.Orientation.down:
-            orientation = Image.Orientation.left
+            return Image.Orientation.left
         case Image.Orientation.left:
-            orientation = Image.Orientation.up
+            return Image.Orientation.up
         default:
-            print("Unexpected orientation: ", orientation)
+            print("Unexpected orientation: ", value)
+            return value
         }
     }
 
-    func rotateLeft() {
-        switch orientation {
+    static func rotateLeft(value: Image.Orientation) -> Image.Orientation {
+        switch value {
         case Image.Orientation.up:
-            orientation = Image.Orientation.left
+            return Image.Orientation.left
         case Image.Orientation.right:
-            orientation = Image.Orientation.up
+            return Image.Orientation.up
         case Image.Orientation.down:
-            orientation = Image.Orientation.right
+            return Image.Orientation.right
         case Image.Orientation.left:
-            orientation = Image.Orientation.down
+            return Image.Orientation.down
         default:
-            print("Unexpected orientation: ", orientation)
+            print("Unexpected orientation: ", value)
+            return value
+        }
+    }
+
+    static func rotateDown(value: Image.Orientation) -> Image.Orientation {
+        switch value {
+        case Image.Orientation.up:
+            return Image.Orientation.down
+        case Image.Orientation.right:
+            return Image.Orientation.left
+        case Image.Orientation.down:
+            return Image.Orientation.up
+        case Image.Orientation.left:
+            return Image.Orientation.up
+        default:
+            print("Unexpected orientation: ", value)
+            return value
+        }
+    }
+
+    static func rotate(value: Image.Orientation, by: Image.Orientation) -> Image.Orientation {
+        switch by {
+        case Image.Orientation.up:
+            return value
+        case Image.Orientation.right:
+            return rotateRight(value: value)
+        case Image.Orientation.down:
+            return rotateDown(value: value)
+        case Image.Orientation.left:
+            return rotateLeft(value: value)
+        default:
+            print("Unexpected orientation: ", value)
+            return value
         }
     }
 
