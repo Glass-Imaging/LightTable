@@ -9,25 +9,52 @@ import Combine
 import SwiftUI
 
 struct ImageViewCaption: View {
-    let url:URL
+    let url: URL
+    let metadata: NSDictionary
+    @ObservedObject var model:ImageBrowserModel
+
+    func imageMetadata() -> String {
+        if let pixelWidth = metadata["PixelWidth"] as? Int {
+            if let pixelHeight = metadata["PixelHeight"] as? Int {
+                return "\(pixelWidth)w \(pixelHeight)h"
+            }
+        }
+        return "--"
+    }
 
     var body: some View {
-        VStack() {
-            Spacer()
-            let parentFolder = parentFolder(url:url).lastPathComponent
-            let filename = url.lastPathComponent
-            VStack {
-                Text(filename)
+        let parentFolder = parentFolder(url:url).lastPathComponent
+        let filename = url.lastPathComponent
+        let index = model.fileIndex(file: url)
+
+        if model.viewInfoItems > 0 {
+            VStack(spacing: 1) {
+                Text("\(filename) (\(index.0)/\(index.1))")
                     .bold()
-                Text(parentFolder)
-                    .font(.caption)
+                    .font(.subheadline)
+
+                if model.viewInfoItems > 1 {
+                    Divider()
+                        .frame(width: 150)
+
+                    Text(parentFolder)
+                        .font(.caption)
+
+                    if model.viewInfoItems > 2 {
+                        Divider()
+                            .frame(width: 150)
+
+                        Text(imageMetadata())
+                            .font(.caption)
+                    }
+                }
             }
-            .padding(10)
+            .padding(5)
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.black.opacity(0.4))
+                    .fill(Color.black.opacity(0.3))
             )
-            .padding(.bottom, 10)
+            .padding(.bottom, 5)
         }
     }
 }
@@ -37,7 +64,7 @@ struct ImageView: View {
     @ObservedObject var model:ImageBrowserModel
 
     @ObservedObject var imageLoader = ImageLoader()
-    @State var image:NSImage = NSImage()
+    @State var nsImage:NSImage = NSImage()
     @State var metadata:NSDictionary = NSDictionary()
 
     @State var viewOffsetInteractive = CGPoint.zero
@@ -57,66 +84,6 @@ struct ImageView: View {
         imageLoader.load(url:url)
     }
 
-    func orientationToAngle(orientation: Image.Orientation) -> Angle {
-        switch orientation {
-        case .right:
-            return Angle.degrees(90)
-        case .down:
-            return Angle.degrees(180)
-        case .left:
-            return Angle.degrees(270)
-        default:
-            return Angle.degrees(0)
-        }
-    }
-
-    func imageOrientation(metadata: NSDictionary) -> Image.Orientation {
-        if let exifOrientation = metadata["Orientation"] as? Int {
-            switch(exifOrientation) {
-            case 1:
-                return .up
-            case 8:
-                return .left
-            case 6:
-                return .right
-            case 3:
-                return .down
-            default:
-                print("Unexpected EXIF orientation value:", exifOrientation)
-                return .up
-            }
-        } else {
-            return .up
-        }
-    }
-
-    func prepareImage(downScale: Bool) -> AnyView {
-        if image.isValid {
-            // NSImage sometimes changes the image size to take into account the ppi from metadata, override with NSImageRep
-            let rep = image.representations[0]
-            let repSize = CGSize(width: rep.pixelsWide, height: rep.pixelsHigh)
-            if (image.size != repSize) {
-                image.size = repSize
-            }
-            if let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) {
-
-                let orientation = imageOrientation(metadata: metadata)
-                return AnyView(
-                    // NOTE: Without the orientation-specific Text label the orientation changes are not picked up
-                    Image(cgImage, scale: 1, orientation: ImageBrowserModel.rotate(value: orientation, by: model.orientation), label: Text(String(describing: model.orientation)))
-                        .interpolation(downScale ? .high : .none)
-                        .antialiased(downScale ? true : false)
-                        .resizable()
-                        .scaledToFit()
-                        .overlay(alignment: .bottom) {
-                            ImageViewCaption(url: url)
-                        }
-                )
-            }
-        }
-        return AnyView(EmptyView())
-    }
-
     var body: some View {
         GeometryReader { geometry in
             ScrollView([]) {
@@ -124,7 +91,7 @@ struct ImageView: View {
 
                 let scale = model.viewScaleFactor
                 let swapDimensions = model.orientation == .left || model.orientation == .right
-                let imageSize = swapDimensions ? CGSize(width: image.size.height, height: image.size.width) : image.size
+                let imageSize = swapDimensions ? CGSize(width: nsImage.size.height, height: nsImage.size.width) : nsImage.size
                 let frameSize = scale == 0 ? geometry.size : imageSize * scale
 
                 let offset = scale == 0
@@ -132,7 +99,13 @@ struct ImageView: View {
                            : model.viewOffset * scale + model.viewOffsetInteractive + viewOffset + viewOffsetInteractive
 
                 VStack {
-                    prepareImage(downScale: scale == 0)
+                    if let image = Image(nsImage: nsImage, metadata: metadata, orientation: model.orientation, downScale: scale == 0) {
+                        image
+                            .scaledToFit()
+                            .overlay(alignment: .bottom) {
+                                ImageViewCaption(url: url, metadata: metadata, model: model)
+                            }
+                    }
                 }
                 .frame(width: frameSize.width, height: frameSize.height, alignment: .center)
                 .offset(x: offset.x, y: offset.y)
@@ -173,12 +146,9 @@ struct ImageView: View {
         }
         .onReceive(imageLoader.didChange) { data in
             if !data.isEmpty {
-                image = NSImage(dataIgnoringOrientation: data as Data)!
-
-                if let cgImageSource = CGImageSourceCreateWithData(data as CFData, nil) {
-                    if let dictionary = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil) {
-                        metadata = dictionary as NSDictionary
-                    }
+                if let nsImage = NSImage(nsData: data) {
+                    self.nsImage = nsImage
+                    metadata = NSImageMetadata(nsData: data)
                 }
             }
         }

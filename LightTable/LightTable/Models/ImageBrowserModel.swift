@@ -29,12 +29,29 @@ class ImageBrowserModel: ObservableObject {
 
     // Single Image view selection for ImageListView
     @Published var imageViewSelection = -1
+
+    // Fullscreen view presentation
     @Published var fullScreen = false
+
+    // View magnification factor: 0 -> scale to fit, 1x, 2x, 3x, ...
     @Published var viewScaleFactor:CGFloat = 0
+
+    // User dragging action
     @Published var viewOffset = CGPoint.zero
     @Published var viewOffsetInteractive = CGPoint.zero
 
     @Published var thumbnailSize:CGFloat = 150
+
+    @Published var viewInfoItems:Int = 3
+
+    func fileIndex(file: URL) -> (Int, Int) {
+        for listing in files {
+            if let index = listing.firstIndex(of: file) {
+                return (index, listing.count)
+            }
+        }
+        return (0, 0)
+    }
 
     func resetInteractiveState() {
         imageViewSelection = -1
@@ -316,68 +333,8 @@ class ImageBrowserModel: ObservableObject {
         }
     }
 
-    static func rotateRight(value: Image.Orientation) -> Image.Orientation {
-        switch value {
-        case Image.Orientation.up:
-            return Image.Orientation.right
-        case Image.Orientation.right:
-            return Image.Orientation.down
-        case Image.Orientation.down:
-            return Image.Orientation.left
-        case Image.Orientation.left:
-            return Image.Orientation.up
-        default:
-            print("Unexpected orientation: ", value)
-            return value
-        }
-    }
-
-    static func rotateLeft(value: Image.Orientation) -> Image.Orientation {
-        switch value {
-        case Image.Orientation.up:
-            return Image.Orientation.left
-        case Image.Orientation.right:
-            return Image.Orientation.up
-        case Image.Orientation.down:
-            return Image.Orientation.right
-        case Image.Orientation.left:
-            return Image.Orientation.down
-        default:
-            print("Unexpected orientation: ", value)
-            return value
-        }
-    }
-
-    static func rotateDown(value: Image.Orientation) -> Image.Orientation {
-        switch value {
-        case Image.Orientation.up:
-            return Image.Orientation.down
-        case Image.Orientation.right:
-            return Image.Orientation.left
-        case Image.Orientation.down:
-            return Image.Orientation.up
-        case Image.Orientation.left:
-            return Image.Orientation.up
-        default:
-            print("Unexpected orientation: ", value)
-            return value
-        }
-    }
-
-    static func rotate(value: Image.Orientation, by: Image.Orientation) -> Image.Orientation {
-        switch by {
-        case Image.Orientation.up:
-            return value
-        case Image.Orientation.right:
-            return rotateRight(value: value)
-        case Image.Orientation.down:
-            return rotateDown(value: value)
-        case Image.Orientation.left:
-            return rotateLeft(value: value)
-        default:
-            print("Unexpected orientation: ", value)
-            return value
-        }
+    func switchViewInfoItems() {
+        viewInfoItems = viewInfoItems == 0 ? 3 : viewInfoItems - 1
     }
 
     func imageViewSelection(char:Character) {

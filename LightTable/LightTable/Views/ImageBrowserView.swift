@@ -68,14 +68,18 @@ struct ImageBrowserView: View {
 
                 Group {
                     CommandButton(model: model, label: "Rotate Left", key: "[") { model in
-                        model.orientation = ImageBrowserModel.rotateLeft(value: model.orientation)
+                        model.orientation = rotateLeft(value: model.orientation)
                     }
                     CommandButton(model: model, label: "Rotate Right", key: "]") { model in
-                        model.orientation = ImageBrowserModel.rotateRight(value: model.orientation)
+                        model.orientation = rotateRight(value: model.orientation)
                     }
 
                     CommandButton(model: model, label: "Toggle Layout", key: "L") { model in
                         model.switchLayout()
+                    }
+
+                    CommandButton(model: model, label: "Toggle Image View Data", key: "V") { model in
+                        model.switchViewInfoItems()
                     }
                 }
 

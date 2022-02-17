@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct ThumbnailButtonView: View {
-    var file:URL
+    let file:URL
     @ObservedObject var model:ImageBrowserModel
-    var action: (_ modifiers: EventModifiers) -> Void
+    let action: (_ modifiers: EventModifiers) -> Void
 
     var body: some View {
         Button(action: {
