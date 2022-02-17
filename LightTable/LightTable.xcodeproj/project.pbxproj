@@ -13,15 +13,14 @@
 		E51DB2B327A9ACB00046EFFA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E51DB2B227A9ACB00046EFFA /* Preview Assets.xcassets */; };
 		E51DB2E827A9B0E20046EFFA /* ImageBrowserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2D827A9B0E10046EFFA /* ImageBrowserModel.swift */; };
 		E51DB2EA27A9B0E20046EFFA /* ThumbnailLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2DB27A9B0E10046EFFA /* ThumbnailLoader.swift */; };
-		E51DB2EB27A9B0E20046EFFA /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2DC27A9B0E10046EFFA /* LRUCache.swift */; };
 		E51DB2EC27A9B0E20046EFFA /* DropUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2DD27A9B0E10046EFFA /* DropUtils.swift */; };
 		E51DB2EE27A9B0E20046EFFA /* ImageLoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2DF27A9B0E10046EFFA /* ImageLoder.swift */; };
-		E51DB2EF27A9B0E20046EFFA /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2E027A9B0E10046EFFA /* LinkedList.swift */; };
 		E51DB2F127A9B0E20046EFFA /* ImageBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2E327A9B0E10046EFFA /* ImageBrowserView.swift */; };
 		E51DB2F327A9B0E20046EFFA /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2E527A9B0E10046EFFA /* ImageView.swift */; };
 		E51DB2F427A9B0E20046EFFA /* ThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB2E627A9B0E10046EFFA /* ThumbnailView.swift */; };
 		E54B33AE27BC376900455433 /* LightTableToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54B33AD27BC376900455433 /* LightTableToolbar.swift */; };
 		E54B33B027BC41C400455433 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = E54B33AF27BC41C400455433 /* Credits.rtf */; };
+		E54B33B227BF052E00455433 /* CGImageWithMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54B33B127BF052E00455433 /* CGImageWithMetadata.swift */; };
 		E555C94827BAF64D00D77C08 /* CustomSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E555C94727BAF64D00D77C08 /* CustomSliderView.swift */; };
 		E555C94A27BAF66900D77C08 /* ThumbnailSizeSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E555C94927BAF66900D77C08 /* ThumbnailSizeSlider.swift */; };
 		E56DF0CE27AC4F410087AB49 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = E56DF0CD27AC4F410087AB49 /* Atomic.swift */; };
@@ -51,15 +50,14 @@
 		E51DB2B427A9ACB00046EFFA /* LightTable.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LightTable.entitlements; sourceTree = "<group>"; };
 		E51DB2D827A9B0E10046EFFA /* ImageBrowserModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageBrowserModel.swift; sourceTree = "<group>"; };
 		E51DB2DB27A9B0E10046EFFA /* ThumbnailLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbnailLoader.swift; sourceTree = "<group>"; };
-		E51DB2DC27A9B0E10046EFFA /* LRUCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
 		E51DB2DD27A9B0E10046EFFA /* DropUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropUtils.swift; sourceTree = "<group>"; };
 		E51DB2DF27A9B0E10046EFFA /* ImageLoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageLoder.swift; sourceTree = "<group>"; };
-		E51DB2E027A9B0E10046EFFA /* LinkedList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
 		E51DB2E327A9B0E10046EFFA /* ImageBrowserView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageBrowserView.swift; sourceTree = "<group>"; };
 		E51DB2E527A9B0E10046EFFA /* ImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
 		E51DB2E627A9B0E10046EFFA /* ThumbnailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbnailView.swift; sourceTree = "<group>"; };
 		E54B33AD27BC376900455433 /* LightTableToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightTableToolbar.swift; sourceTree = "<group>"; };
 		E54B33AF27BC41C400455433 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
+		E54B33B127BF052E00455433 /* CGImageWithMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGImageWithMetadata.swift; sourceTree = "<group>"; };
 		E555C94727BAF64D00D77C08 /* CustomSliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSliderView.swift; sourceTree = "<group>"; };
 		E555C94927BAF66900D77C08 /* ThumbnailSizeSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailSizeSlider.swift; sourceTree = "<group>"; };
 		E56DF0CD27AC4F410087AB49 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
@@ -137,6 +135,7 @@
 			children = (
 				E51DB2D827A9B0E10046EFFA /* ImageBrowserModel.swift */,
 				E5A6F9D927B4B29800D9D305 /* NavigatorModel.swift */,
+				E54B33B127BF052E00455433 /* CGImageWithMetadata.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -147,8 +146,6 @@
 				E51DB2DF27A9B0E10046EFFA /* ImageLoder.swift */,
 				E51DB2DB27A9B0E10046EFFA /* ThumbnailLoader.swift */,
 				E51DB2DD27A9B0E10046EFFA /* DropUtils.swift */,
-				E51DB2DC27A9B0E10046EFFA /* LRUCache.swift */,
-				E51DB2E027A9B0E10046EFFA /* LinkedList.swift */,
 				E56DF0CD27AC4F410087AB49 /* Atomic.swift */,
 				E5A6F9C827AC9B6400D9D305 /* Filesystem.swift */,
 				E5A6F9CA27ACA70C00D9D305 /* CommandButton.swift */,
@@ -275,15 +272,14 @@
 				E5A6F9D827B4496600D9D305 /* FolderTreeDisclosure.swift in Sources */,
 				E51DB2EA27A9B0E20046EFFA /* ThumbnailLoader.swift in Sources */,
 				E555C94827BAF64D00D77C08 /* CustomSliderView.swift in Sources */,
-				E51DB2EB27A9B0E20046EFFA /* LRUCache.swift in Sources */,
 				E5A6F9D627B4489C00D9D305 /* FilesOutlineView.swift in Sources */,
 				E5A6F9C727AC8E4800D9D305 /* FocusedValues+LightTable.swift in Sources */,
 				E51DB2E827A9B0E20046EFFA /* ImageBrowserModel.swift in Sources */,
 				E5DF6B1D27BCB4E900D191AF /* CGOperations.swift in Sources */,
-				E51DB2EF27A9B0E20046EFFA /* LinkedList.swift in Sources */,
 				E5DF6B1F27BDFA0100D191AF /* ImageUtils.swift in Sources */,
 				E51DB2F427A9B0E20046EFFA /* ThumbnailView.swift in Sources */,
 				E5A6F9C927AC9B6400D9D305 /* Filesystem.swift in Sources */,
+				E54B33B227BF052E00455433 /* CGImageWithMetadata.swift in Sources */,
 				E51DB2F127A9B0E20046EFFA /* ImageBrowserView.swift in Sources */,
 				E5E3D35527AE433D00BA332D /* ImageListView.swift in Sources */,
 				E51DB2AC27A9ACAE0046EFFA /* LightTableApp.swift in Sources */,

@@ -15,16 +15,19 @@ class ThumbnailLoader: ObservableObject {
     @Published var image = NSImage()
 
     // LRU Cache for thumbnails, avoids flashing redraws in the browser, cache up to 1000 thumbnails
-    static var lruCache:LRUCache<URL> = LRUCache<URL>(1000)
+    static let lruCache:NSCache<NSString, NSImage> = {
+        let cache = NSCache<NSString, NSImage>()
+        cache.countLimit = 1000
+        return cache
+    }()
 
     /// Tries to load a thumbnail for a given URL
     /// - Parameters:
     ///   - url: URL of the image
     ///   - maxSize: maximum size (width/height) aspect ratio preserved
     func loadThumbnail(url: URL, maxSize: CGFloat) {
-        let cachedData = ThumbnailLoader.lruCache.get(url)
-        if (cachedData != nil) {
-            image = (cachedData! as? NSImage)!
+        if let cachedData = ThumbnailLoader.lruCache.object(forKey: NSString(string: url.path)) {
+            image = cachedData
             return
         }
 
@@ -44,7 +47,7 @@ class ThumbnailLoader: ObservableObject {
                 return
             }
             DispatchQueue.main.async {
-                ThumbnailLoader.lruCache.set(url, val: nsImage)
+                ThumbnailLoader.lruCache.setObject(nsImage, forKey: NSString(string: url.path))
                 self.image = nsImage
             }
         }

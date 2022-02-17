@@ -10,13 +10,18 @@ import SwiftUI
 
 /// Observable object responsible to load an image to be used by SwiftUI views
 class ImageLoader: ObservableObject {
-    // LRU Cache for images, minimizes flashing redraws in the browser, cache up to 100 NSData renderings
-    static var lruCache:LRUCache<URL> = LRUCache<URL>(10)
+    static let lruCache:NSCache<NSString, CGImageWithMetadata> = {
+        let cache = NSCache<NSString, CGImageWithMetadata>()
+        cache.countLimit = 10
+        return cache
+    }()
 
-    var didChange = PassthroughSubject<NSData, Never>()
-    var data = NSData() {
+    var didChange = PassthroughSubject<CGImageWithMetadata, Never>()
+    var imageWithMetadata:CGImageWithMetadata? = nil {
         didSet {
-            didChange.send(data)
+            if let imageWithMetadata = imageWithMetadata {
+                didChange.send(imageWithMetadata)
+            }
         }
     }
 
@@ -34,29 +39,27 @@ class ImageLoader: ObservableObject {
     }
 
     private func loadImage(fromURL url:URL) {
-        let cachedData = ImageLoader.lruCache.get(url)
-        if (cachedData != nil) {
+        if let cachedData = ImageLoader.lruCache.object(forKey: NSString(string: url.path)) {
             DispatchQueue.main.async {
-                self.data = (cachedData! as? NSData)!
+                self.imageWithMetadata = cachedData
             }
-            return
-        }
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data else { return }
+        } else {
+            let task = URLSession.shared.dataTask(with: url) { data, response, error in
+                if let data = data {
+                    if let cgImageSource = CGImageSourceCreateWithData(data as CFData, nil) {
+                        if let cgImage = CGImageSourceCreateImageAtIndex(cgImageSource, 0, nil) {
+                            let cgImageProperties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil)
 
-            // TODO: NSImage appears to be quite slow at this, run it on the loader thread
-            // let image = NSImage(dataIgnoringOrientation: data)
-
-            let nsData = NSData(data: data)
-//            let source = CGImageSourceCreateWithData(data as CFData, nil)!
-//            let metadata = CGImageSourceCopyPropertiesAtIndex(source, 0, nil)!
-//            print(metadata)
-
-            DispatchQueue.main.async {
-                ImageLoader.lruCache.set(url, val: nsData)
-                self.data = nsData
+                            DispatchQueue.main.async {
+                                let newImageWithMetadata = CGImageWithMetadata(image: cgImage, metadata: cgImageProperties!)
+                                ImageLoader.lruCache.setObject(newImageWithMetadata, forKey: NSString(string: url.path))
+                                self.imageWithMetadata = newImageWithMetadata
+                            }
+                        }
+                    }
+                }
             }
+            task.resume()
         }
-        task.resume()
     }
 }
