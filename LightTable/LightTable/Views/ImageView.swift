@@ -94,8 +94,8 @@ struct ImageView: View {
                     var viewOffset = storedOffset(url: url)
 
                     let scale = model.viewScaleFactor
-                    let swapDimensions = orientation == .left || orientation == .right
 
+                    let swapDimensions = [.left, .right].contains(orientation)
                     let imageSize = swapDimensions ? CGSize(width: cgImage.height, height: cgImage.width) : CGSize(width: cgImage.width, height: cgImage.height)
                     let frameSize = scale == 0 ? geometry.frame(in: .global).size : imageSize * scale
 

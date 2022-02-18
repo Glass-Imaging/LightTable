@@ -54,7 +54,6 @@ struct ImageListView: View {
         HStack {
             if (model.selection.count == 0) {
                 Text("Make a selection.")
-                    .padding(100)
             } else {
                 if (model.imageViewSelection >= 0 && model.imageViewSelection < model.selection.count) {
                     ImageView(url: model.selection[model.imageViewSelection], model: model)

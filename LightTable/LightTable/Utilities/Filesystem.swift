@@ -21,8 +21,9 @@ func NSOpenPanelDirectoryListing(files:inout[URL]) -> URL? {
 }
 
 func isImage(file:URL) -> Bool {
-    let file_extension = file.pathExtension.lowercased()
-    return file_extension == "jpg" || file_extension == "jpeg" || file_extension == "png"
+    let imageFileExtensions = ["jpg", "jpeg", "png", "dng", "cr3"]
+    let fileExtension = file.pathExtension.lowercased()
+    return imageFileExtensions.contains(fileExtension)
 }
 
 func folderListingAt(url:URL) -> [URL] {
