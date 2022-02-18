@@ -44,22 +44,24 @@ class ImageLoader: ObservableObject {
                 self.imageWithMetadata = cachedData
             }
         } else {
-            let task = URLSession.shared.dataTask(with: url) { data, response, error in
-                if let data = data {
-                    if let cgImageSource = CGImageSourceCreateWithData(data as CFData, nil) {
-                        if let cgImage = CGImageSourceCreateImageAtIndex(cgImageSource, 0, nil) {
-                            let cgImageProperties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil)
+            DispatchQueue.global(qos: .userInteractive).async {
+                let task = URLSession.shared.dataTask(with: url) { data, response, error in
+                    if let data = data {
+                        if let cgImageSource = CGImageSourceCreateWithData(data as CFData, nil) {
+                            if let cgImage = CGImageSourceCreateImageAtIndex(cgImageSource, 0, nil) {
+                                let cgImageProperties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil)
 
-                            DispatchQueue.main.async {
-                                let newImageWithMetadata = CGImageWithMetadata(image: cgImage, metadata: cgImageProperties!)
-                                ImageLoader.lruCache.setObject(newImageWithMetadata, forKey: NSString(string: url.path))
-                                self.imageWithMetadata = newImageWithMetadata
+                                DispatchQueue.main.async {
+                                    let newImageWithMetadata = CGImageWithMetadata(image: cgImage, metadata: cgImageProperties!)
+                                    ImageLoader.lruCache.setObject(newImageWithMetadata, forKey: NSString(string: url.path))
+                                    self.imageWithMetadata = newImageWithMetadata
+                                }
                             }
                         }
                     }
                 }
+                task.resume()
             }
-            task.resume()
         }
     }
 }

@@ -18,15 +18,8 @@ struct ImageListView: View {
 
     func gridLayout(count:Int) -> [GridItem] {
         let gridItem = GridItem(.flexible())
-        var gridItemLayout:[GridItem] = [gridItem]
-
-        if (count > 2) {
-            gridItemLayout.append(gridItem)
-        }
-        if (count > 6) {
-            gridItemLayout.append(gridItem)
-        }
-        if (count > 12) {
+        var gridItemLayout:[GridItem] = []
+        for _ in 0 ..< count {
             gridItemLayout.append(gridItem)
         }
         return gridItemLayout
@@ -79,8 +72,8 @@ struct ImageListView: View {
                         let gridConstraints = gridSizeConstraints(count: model.selection.count)
                         GeometryReader { geometry in
                             VStack {
-                                let gridItemLayout:[GridItem] = gridLayout(count: model.selection.count)
-                                LazyHGrid(rows: gridItemLayout) {
+                                let gridItemLayout:[GridItem] = gridLayout(count: Int(gridConstraints.width))
+                                LazyVGrid(columns: gridItemLayout) {
                                     ForEach(0 ..< count, id: \.self) { index in
                                         let file = model.selection[index]
                                         ImageView(url: file, model: model)

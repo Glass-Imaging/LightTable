@@ -68,6 +68,8 @@ struct ImageView: View {
 
     @State var viewOffsetInteractive = CGPoint.zero
 
+    @State var showLoading = false
+
     static var offsetMap: [URL : CGPoint] = [:]
 
     func storedOffset(url: URL) -> CGPoint {
@@ -85,6 +87,8 @@ struct ImageView: View {
 
     var body: some View {
         GeometryReader { geometry in
+            let geometryFrameSize = geometry.frame(in: .global).size
+
             ScrollView([]) {
                 if let cgImageWithMetadata = cgImageWithMetadata {
                     let cgImage = cgImageWithMetadata.image
@@ -97,9 +101,9 @@ struct ImageView: View {
 
                     let swapDimensions = [.left, .right].contains(orientation)
                     let imageSize = swapDimensions ? CGSize(width: cgImage.height, height: cgImage.width) : CGSize(width: cgImage.width, height: cgImage.height)
-                    let frameSize = scale == 0 ? geometry.frame(in: .global).size : imageSize * scale
+                    let frameSize = scale == 0 ? geometryFrameSize : imageSize * scale
 
-                    let viewPortOffset = (imageSize * scale - geometry.frame(in: .global).size) / 2
+                    let viewPortOffset = (imageSize * scale - geometryFrameSize) / 2
 
                     let offset = scale == 0
                                ? CGPoint.zero
@@ -150,6 +154,18 @@ struct ImageView: View {
                                 }
                             }
                     )
+                } else {
+                    VStack {
+                        if showLoading {
+                            Text("Loading Image...")
+                        }
+                    }
+                    .frame(width: geometryFrameSize.width, height: geometryFrameSize.height, alignment: .center)
+                    .onAppear {
+                        withAnimation {
+                            showLoading = true
+                        }
+                    }
                 }
             }
         }
