@@ -202,7 +202,6 @@ struct ImageView: View {
             }
         }
         .onReceive(imageLoader.didChange) { cgImageWithMetadata in
-            print("new data")
             self.cgImageWithMetadata = cgImageWithMetadata
         }
     }

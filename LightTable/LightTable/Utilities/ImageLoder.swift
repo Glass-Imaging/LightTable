@@ -12,7 +12,7 @@ import SwiftUI
 class ImageLoader: ObservableObject {
     static let lruCache:NSCache<NSString, CGImageWithMetadata> = {
         let cache = NSCache<NSString, CGImageWithMetadata>()
-        cache.countLimit = 10
+        cache.countLimit = 20
         return cache
     }()
 
@@ -35,26 +35,24 @@ class ImageLoader: ObservableObject {
                 self.imageWithMetadata = cachedData
             }
         } else {
-            DispatchQueue.global(qos: .userInteractive).async {
-                let task = URLSession.shared.dataTask(with: url) { data, response, error in
-                    if let data = data {
-                        if let cgImageSource = CGImageSourceCreateWithData(data as CFData, nil) {
-                            if let cgImage = CGImageSourceCreateImageAtIndex(cgImageSource, 0, nil) {
-                                let cgImageProperties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil)
+            let task = URLSession.shared.dataTask(with: url) { data, response, error in
+                if let data = data {
+                    if let cgImageSource = CGImageSourceCreateWithData(data as CFData, nil) {
+                        if let cgImage = CGImageSourceCreateImageAtIndex(cgImageSource, 0, nil) {
+                            let cgImageProperties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil)
 
-                                DispatchQueue.main.async {
-                                    let newImageWithMetadata = CGImageWithMetadata(url: url, image: cgImage, metadata: cgImageProperties!)
-                                    ImageLoader.lruCache.setObject(newImageWithMetadata, forKey: NSString(string: url.path))
-                                    self.imageWithMetadata = newImageWithMetadata
-                                }
-                            } else {
-                                print("Can't open file:", url)
+                            DispatchQueue.main.async {
+                                let newImageWithMetadata = CGImageWithMetadata(url: url, image: cgImage, metadata: cgImageProperties!)
+                                ImageLoader.lruCache.setObject(newImageWithMetadata, forKey: NSString(string: url.path))
+                                self.imageWithMetadata = newImageWithMetadata
                             }
+                        } else {
+                            print("Can't open file:", url)
                         }
                     }
                 }
-                task.resume()
             }
+            task.resume()
         }
     }
 }

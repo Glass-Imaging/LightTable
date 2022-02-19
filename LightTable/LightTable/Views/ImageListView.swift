@@ -25,21 +25,28 @@ struct ImageListView: View {
         return gridItemLayout
     }
 
-    func gridSizeConstraints(count:Int) -> CGSize {
-        if (count == 1) {
-            return CGSize(width: 1, height: 1)
-        } else if (count == 2) {
-            return CGSize(width: 2, height:1)
-        } else if (count >= 3 && count <= 4) {
-            return CGSize(width: 2, height:2)
-        } else if (count >= 5 && count <= 6) {
-            return CGSize(width: 3, height:2)
-        } else if (count >= 7 && count <= 9) {
-            return CGSize(width: 3, height:3)
-        } else if (count >= 10 && count <= 12) {
-            return CGSize(width: 4, height:3)
-        } else /* if (count >= 13) */ {
-            return CGSize(width: 4, height:4)
+    func gridSizeConstraints(count:Int, layout: ImageListLayout) -> CGSize {
+        switch layout {
+        case .Horizontal:
+            return CGSize(width: count, height: 1)
+        case .Vertical:
+            return CGSize(width: 1, height: count)
+        case .Grid:
+            if (count == 1) {
+                return CGSize(width: 1, height: 1)
+            } else if (count == 2) {
+                return CGSize(width: 2, height:1)
+            } else if (count >= 3 && count <= 4) {
+                return CGSize(width: 2, height:2)
+            } else if (count >= 5 && count <= 6) {
+                return CGSize(width: 3, height:2)
+            } else if (count >= 7 && count <= 9) {
+                return CGSize(width: 3, height:3)
+            } else if (count >= 10 && count <= 12) {
+                return CGSize(width: 4, height:3)
+            } else /* if (count >= 13) */ {
+                return CGSize(width: 4, height:4)
+            }
         }
     }
 
@@ -51,37 +58,17 @@ struct ImageListView: View {
                 if (model.imageViewSelection >= 0 && model.imageViewSelection < model.selection.count) {
                     ImageView(url: model.selection[model.imageViewSelection], model: model, index: model.imageViewSelection)
                 } else {
-                    let count = min(model.selection.count, 16)
-
-                    switch (model.imageViewLayout) {
-                    case .Horizontal:
-                        ForEach(0 ..< count, id: \.self) { index in
-                            let file = model.selection[index]
-                            ImageView(url: file, model: model, index: index)
-                                .id(file)
-                        }
-                    case .Vertical:
-                        VStack {
-                            ForEach(0 ..< count, id: \.self) { index in
+                    let gridConstraints = gridSizeConstraints(count: model.selection.count, layout: model.imageViewLayout)
+                    GeometryReader { geometry in
+                        let gridItemLayout:[GridItem] = gridLayout(count: Int(gridConstraints.width))
+                        LazyVGrid(columns: gridItemLayout) {
+                            let items = min(model.selection.count, 16)
+                            ForEach(0 ..< items, id: \.self) { index in
                                 let file = model.selection[index]
                                 ImageView(url: file, model: model, index: index)
                                     .id(file)
-                            }
-                        }
-                    case .Grid:
-                        let gridConstraints = gridSizeConstraints(count: model.selection.count)
-                        GeometryReader { geometry in
-                            VStack {
-                                let gridItemLayout:[GridItem] = gridLayout(count: Int(gridConstraints.width))
-                                LazyVGrid(columns: gridItemLayout) {
-                                    ForEach(0 ..< count, id: \.self) { index in
-                                        let file = model.selection[index]
-                                        ImageView(url: file, model: model, index: index)
-                                            .id(file)
-                                    }.frame(width: geometry.size.width / gridConstraints.width,
-                                            height: geometry.size.height / gridConstraints.height)
-                                }
-                            }
+                            }.frame(width: geometry.size.width / gridConstraints.width,
+                                    height: geometry.size.height / gridConstraints.height)
                         }
                     }
                 }
@@ -89,4 +76,3 @@ struct ImageListView: View {
         }
     }
 }
-
