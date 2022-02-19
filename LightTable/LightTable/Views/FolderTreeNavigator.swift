@@ -30,6 +30,8 @@ struct FolderTreeNavigator: View {
 
                 Divider()
 
+                // FolderTreeList(navigatorModel: navigatorModel, selection: selectionBinding)
+
                 List(navigatorModel.children, id:\.self, selection: selectionBinding) { folder in
                     FolderTreeDisclosure(url: folder, selection: selectionBinding, doubleTapAction:{ url in
                         navigatorModel.update(url: url)

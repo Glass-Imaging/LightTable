@@ -208,6 +208,8 @@ class ImageBrowserModel: ObservableObject {
                 let indices = selectionIndices(directory: d)
 
                 if (indices.isEmpty) {
+                    // Never used, just to keep the size of steps in sync with that of directories
+                    steps.append(-1)
                     continue
                 }
 

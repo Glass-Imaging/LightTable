@@ -23,33 +23,35 @@ struct ThumbnailGrid: View {
 
         VStack(alignment: .leading, spacing: 0) {
             ForEach(0 ..< model.directories.count, id: \.self) { directoryIndex in
-                let folderName = model.directories[directoryIndex].lastPathComponent
-                let folderListing = model.files[directoryIndex]
+                if (!model.files[directoryIndex].isEmpty) {
+                    let folderName = model.directories[directoryIndex].lastPathComponent
+                    let folderListing = model.files[directoryIndex]
 
-                Section(header: ZStack(alignment: .leading) {
-                    Rectangle()
-                        .foregroundColor(folderDetailColor)
-                        .frame(height: 20)
-                    Text("\(folderName) - \(folderListing.count) images")
-                        .offset(x: max(scrollViewOffset.x, 0) + 3)
-                        .animation(.easeIn, value: scrollViewOffset)
-                }) {
-                    LazyHStack(alignment: .top) {
-                        ForEach(folderListing, id: \.self) { file in
-                            ThumbnailButtonView(file: file, model: model) { modifier in
-                                // Handle Command-Click mouse actions
-                                if (modifier.contains(.command)) {
-                                    model.addToSelection(file: file)
-                                } else {
-                                    model.updateSelection(file: file)
+                    Section(header: ZStack(alignment: .leading) {
+                        Rectangle()
+                            .foregroundColor(folderDetailColor)
+                            .frame(height: 20)
+                        Text("\(folderName) - \(folderListing.count) images")
+                            .offset(x: max(scrollViewOffset.x, 0) + 3)
+                            .animation(.easeIn, value: scrollViewOffset)
+                    }) {
+                        LazyHStack(alignment: .top) {
+                            ForEach(folderListing, id: \.self) { file in
+                                ThumbnailButtonView(file: file, model: model) { modifier in
+                                    // Handle Command-Click mouse actions
+                                    if (modifier.contains(.command)) {
+                                        model.addToSelection(file: file)
+                                    } else {
+                                        model.updateSelection(file: file)
+                                    }
                                 }
+                                .id(file)
+                                .focusedSceneValue(\.focusedBrowserModel, modelBinding)
                             }
-                            .id(file)
-                            .focusedSceneValue(\.focusedBrowserModel, modelBinding)
                         }
+                        // TODO: Kludge, LazyHStack tends to grow vertically, so we need to constrain it
+                        .frame(maxHeight: model.thumbnailSize + 20)
                     }
-                    // TODO: Kludge, LazyHStack tends to grow vertically, so we need to constrain it
-                    .frame(maxHeight: model.thumbnailSize + 20)
                 }
             }
             Spacer()

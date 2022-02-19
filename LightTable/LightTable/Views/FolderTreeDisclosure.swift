@@ -28,12 +28,15 @@ struct FolderTreeDisclosure: View {
                 }
             }, label: {
                 Label(url.lastPathComponent, systemImage: hasImages ? "folder.fill" : "folder")
-                    .onTapGesture(count: 2, perform: {
+                    .onTapGesture(count: 2) {
                         doubleTapAction(url)
+                    }
+                    .gesture(TapGesture(count: 1).modifiers(.shift).onEnded {
+                        selection.insert(url)
                     })
-                    .onTapGesture(count: 1, perform: {
+                    .onTapGesture(count: 1) {
                         selection = [url]
-                    })
+                    }
             })
         }
     }
