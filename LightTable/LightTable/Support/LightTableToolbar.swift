@@ -24,114 +24,102 @@ func OrientationIcon(orientation: Image.Orientation) -> some View {
         )
 }
 
-@ToolbarContentBuilder
-func LightTableToolbar(model:ImageBrowserModel) -> some ToolbarContent {
-    let imageViewLayoutBinding = Binding<ImageListLayout>(
-        get: { model.imageViewLayout },
-        set: { val in model.imageViewLayout = val }
-    )
+extension LightTableView {
 
-    let fullScreenViewModeBinding = Binding<Bool>(
-        get: { model.fullScreen },
-        set: { val in model.fullScreen = val }
-    )
-
-    let viewSelectionBinding = Binding<Bool>(
-        get: { model.imageViewSelection >= 0 },
-        set: { val in model.imageViewSelection = -1 }
-    )
-
-    ToolbarItemGroup(placement: .automatic) {
-        Button(action: {
-            model.orientation = rotateLeft(value: model.orientation)
-        }) {
-            Image(systemName: "rotate.left")
-            .help("Rotate Left")
-        }
-        Button(action: {
-            model.orientation = rotateRight(value: model.orientation)
-        }) {
-            Image(systemName: "rotate.right")
-            .help("Rotate Right")
-        }
-
-        OrientationIcon(orientation: model.orientation)
-
-        Divider()
-    }
-    ToolbarItemGroup(placement: .automatic) {
-        Button(action: {
-            model.viewScaleFactor += 1
-        }) {
-            Image(systemName: "plus.magnifyingglass")
-            .help("Zoom In")
-        }
-        Button(action: {
-            if (model.viewScaleFactor > 0) {
-                model.viewScaleFactor -= 1
+    @ToolbarContentBuilder
+    func LightTableToolbar() -> some ToolbarContent {
+        ToolbarItemGroup(placement: .automatic) {
+            Button(action: {
+                imageBrowserModel.orientation = rotateLeft(value: imageBrowserModel.orientation)
+            }) {
+                Image(systemName: "rotate.left")
+                .help("Rotate Left")
             }
-        }) {
-            Image(systemName: "minus.magnifyingglass")
-            .help("Zoom Out")
+            Button(action: {
+                imageBrowserModel.orientation = rotateRight(value: imageBrowserModel.orientation)
+            }) {
+                Image(systemName: "rotate.right")
+                .help("Rotate Right")
+            }
+
+            OrientationIcon(orientation: imageBrowserModel.orientation)
+
+            Divider()
         }
-        Button(action: {
-            model.viewScaleFactor = 0
-        }) {
-            Image(systemName: "arrow.up.left.and.down.right.magnifyingglass")
-            .help("Zoom To Fit")
+        ToolbarItemGroup(placement: .automatic) {
+            Button(action: {
+                imageBrowserModel.viewScaleFactor += 1
+            }) {
+                Image(systemName: "plus.magnifyingglass")
+                .help("Zoom In")
+            }
+            Button(action: {
+                if (imageBrowserModel.viewScaleFactor > 0) {
+                    imageBrowserModel.viewScaleFactor -= 1
+                }
+            }) {
+                Image(systemName: "minus.magnifyingglass")
+                .help("Zoom Out")
+            }
+            Button(action: {
+                imageBrowserModel.viewScaleFactor = 0
+            }) {
+                Image(systemName: "arrow.up.left.and.down.right.magnifyingglass")
+                .help("Zoom To Fit")
+            }
+
+            Text(imageBrowserModel.viewScaleFactor == 0 ? "Fit" : "\(Int(imageBrowserModel.viewScaleFactor))X")
+                .foregroundColor(imageBrowserModel.viewScaleFactor > 0 ? Color.blue : Color.gray)
+                .frame(width: 25)
+                .padding(2)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(Color.gray).opacity(0.1)
+                )
+
+            Divider()
         }
 
-        Text(model.viewScaleFactor == 0 ? "Fit" : "\(Int(model.viewScaleFactor))X")
-            .foregroundColor(model.viewScaleFactor > 0 ? Color.blue : Color.gray)
-            .frame(width: 25)
-            .padding(2)
-            .overlay(
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(Color.gray).opacity(0.1)
-            )
+        ToolbarItemGroup(placement: .automatic) {
+            Button(action: {
+                imageBrowserModel.imageViewSelection = -1
+            }, label: {
+                let caption = imageBrowserModel.imageViewSelection >= 0 ? "\(imageBrowserModel.imageViewSelection + 1)" : "—"
+                Image(systemName: "viewfinder")
+                    .help("View Selection")
+                Text(caption)
+                    .frame(width: 12)
+            }).foregroundColor(imageBrowserModel.imageViewSelection >= 0 ? .blue : .gray)
 
-        Divider()
-    }
-
-    ToolbarItemGroup(placement: .automatic) {
-        Toggle(isOn: viewSelectionBinding, label: {
-            let caption = model.imageViewSelection >= 0 ? "\(model.imageViewSelection + 1)" : "—"
-            Image(systemName: "viewfinder")
-                .help("View Selection")
-            Text(caption)
-                .frame(width: 12)
-        })
-            .foregroundColor(model.imageViewSelection >= 0 ? .blue : .gray)
-            .toggleStyle(.button)
-
-        Divider()
-    }
-
-    ToolbarItemGroup(placement: .automatic) {
-        Picker("View Arrangement", selection: imageViewLayoutBinding) {
-            Image(systemName: "rectangle.split.3x1")
-                .help("Horizontal")
-                .tag(ImageListLayout.Horizontal)
-
-            Image(systemName: "rectangle.split.1x2")
-                .help("Vertical")
-                .tag(ImageListLayout.Vertical)
-
-            Image(systemName: "rectangle.split.3x3")
-                .help("Grid")
-                .tag(ImageListLayout.Grid)
+            Divider()
         }
-        .pickerStyle(.inline)
 
-        Divider()
-    }
+        ToolbarItemGroup(placement: .automatic) {
+            Picker("View Arrangement", selection: $imageBrowserModel.imageViewLayout) {
+                Image(systemName: "rectangle.split.3x1")
+                    .help("Horizontal")
+                    .tag(ImageListLayout.Horizontal)
 
-    ToolbarItem(placement: .automatic) {
-        Toggle(isOn: fullScreenViewModeBinding, label: {
-            Image(systemName: "arrow.up.left.and.arrow.down.right")
-                .help("Full Screen View")
-        })
-            .foregroundColor(model.fullScreen ? .blue : .gray)
-            .toggleStyle(.button)
+                Image(systemName: "rectangle.split.1x2")
+                    .help("Vertical")
+                    .tag(ImageListLayout.Vertical)
+
+                Image(systemName: "rectangle.split.3x3")
+                    .help("Grid")
+                    .tag(ImageListLayout.Grid)
+            }
+            .pickerStyle(.inline)
+
+            Divider()
+        }
+
+        ToolbarItem(placement: .automatic) {
+            Toggle(isOn: $imageBrowserModel.fullScreen, label: {
+                Image(systemName: "arrow.up.left.and.arrow.down.right")
+                    .help("Full Screen View")
+            })
+                .foregroundColor(imageBrowserModel.fullScreen ? .blue : .gray)
+                .toggleStyle(.button)
+        }
     }
 }

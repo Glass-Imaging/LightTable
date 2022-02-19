@@ -17,11 +17,6 @@ struct FolderTreeNavigator: View {
         if (navigatorModel.children.count == 0) {
             Text("Drop a folder here.")
         } else {
-            let selectionBinding = Binding<Set<URL>>(
-                get: { navigatorModel.multiSelection },
-                set: { val in navigatorModel.multiSelection = val }
-            )
-
             VStack(alignment: .leading) {
                 Divider()
 
@@ -30,10 +25,10 @@ struct FolderTreeNavigator: View {
 
                 Divider()
 
-                // FolderTreeList(navigatorModel: navigatorModel, selection: selectionBinding)
+                // FolderTreeList(navigatorModel: navigatorModel, selection: $navigatorModel.multiSelection)
 
-                List(navigatorModel.children, id:\.self, selection: selectionBinding) { folder in
-                    FolderTreeDisclosure(url: folder, selection: selectionBinding, doubleTapAction:{ url in
+                List(navigatorModel.children, id:\.self, selection: $navigatorModel.multiSelection) { folder in
+                    FolderTreeDisclosure(url: folder, selection: $navigatorModel.multiSelection, doubleTapAction:{ url in
                         navigatorModel.update(url: url)
                     })
                 }

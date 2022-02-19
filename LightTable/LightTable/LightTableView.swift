@@ -35,8 +35,8 @@ private func toggleSidebar() {
 }
 
 struct LightTableView: View {
-    @StateObject private var imageBrowserModel = ImageBrowserModel()
-    @StateObject private var navigatorModel = NavigatorModel()
+    @StateObject var imageBrowserModel = ImageBrowserModel()
+    @StateObject var navigatorModel = NavigatorModel()
 
     let backgroundColor = Color(red: 30.0/255.0, green: 30.0/255.0, blue: 30.0/255.0)
 
@@ -70,7 +70,7 @@ struct LightTableView: View {
                     if (browserActive) {
                         ImageBrowserView(model: imageBrowserModel)
                             .toolbar {
-                                LightTableToolbar(model: imageBrowserModel)
+                                LightTableToolbar()
                             }
                     }
                 }
