@@ -8,10 +8,12 @@
 import Foundation
 
 class CGImageWithMetadata {
+    let url:URL
     let image:CGImage
     let metadata:CFDictionary
 
-    init(image:CGImage, metadata:CFDictionary) {
+    init(url:URL, image:CGImage, metadata:CFDictionary) {
+        self.url = url
         self.image = image
         self.metadata = metadata
     }

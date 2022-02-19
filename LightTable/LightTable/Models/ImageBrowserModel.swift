@@ -44,6 +44,9 @@ class ImageBrowserModel: ObservableObject {
 
     @Published var viewInfoItems:Int = 3
 
+    @Published var useMasterOrientation = false
+    @Published var masterOrientation:Image.Orientation = .up
+
     func fileIndex(file: URL) -> (Int, Int) {
         for listing in files {
             if let index = listing.firstIndex(of: file) {

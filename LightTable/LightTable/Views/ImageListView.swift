@@ -49,7 +49,7 @@ struct ImageListView: View {
                 Text("Make a selection.")
             } else {
                 if (model.imageViewSelection >= 0 && model.imageViewSelection < model.selection.count) {
-                    ImageView(url: model.selection[model.imageViewSelection], model: model)
+                    ImageView(url: model.selection[model.imageViewSelection], model: model, index: model.imageViewSelection)
                 } else {
                     let count = min(model.selection.count, 16)
 
@@ -57,14 +57,14 @@ struct ImageListView: View {
                     case .Horizontal:
                         ForEach(0 ..< count, id: \.self) { index in
                             let file = model.selection[index]
-                            ImageView(url: file, model: model)
+                            ImageView(url: file, model: model, index: index)
                                 .id(file)
                         }
                     case .Vertical:
                         VStack {
                             ForEach(0 ..< count, id: \.self) { index in
                                 let file = model.selection[index]
-                                ImageView(url: file, model: model)
+                                ImageView(url: file, model: model, index: index)
                                     .id(file)
                             }
                         }
@@ -76,7 +76,7 @@ struct ImageListView: View {
                                 LazyVGrid(columns: gridItemLayout) {
                                     ForEach(0 ..< count, id: \.self) { index in
                                         let file = model.selection[index]
-                                        ImageView(url: file, model: model)
+                                        ImageView(url: file, model: model, index: index)
                                             .id(file)
                                     }.frame(width: geometry.size.width / gridConstraints.width,
                                             height: geometry.size.height / gridConstraints.height)

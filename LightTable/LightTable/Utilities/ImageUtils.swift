@@ -54,6 +54,10 @@ func orientationToAngle(orientation: Image.Orientation) -> Angle {
     }
 }
 
+func hasOrientationMetadata(metadata: NSDictionary) -> Bool {
+    return metadata["Orientation"] != nil
+}
+
 func imageOrientation(metadata: NSDictionary) -> Image.Orientation {
     if let exifOrientation = metadata["Orientation"] as? Int {
         switch(exifOrientation) {

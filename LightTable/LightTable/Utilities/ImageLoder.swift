@@ -25,17 +25,8 @@ class ImageLoader: ObservableObject {
         }
     }
 
-    /// Load an image at the given URL
-    /// - Parameter url: The image URL
     func load(url: URL) {
         loadImage(fromURL: url)
-    }
-
-    /// Load an image from a given string
-    /// - Parameter urlString: The string representing the image URL
-    func load(urlString:String) {
-        guard let url = URL(string: urlString) else { return }
-        load(url: url)
     }
 
     private func loadImage(fromURL url:URL) {
@@ -52,10 +43,12 @@ class ImageLoader: ObservableObject {
                                 let cgImageProperties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil)
 
                                 DispatchQueue.main.async {
-                                    let newImageWithMetadata = CGImageWithMetadata(image: cgImage, metadata: cgImageProperties!)
+                                    let newImageWithMetadata = CGImageWithMetadata(url: url, image: cgImage, metadata: cgImageProperties!)
                                     ImageLoader.lruCache.setObject(newImageWithMetadata, forKey: NSString(string: url.path))
                                     self.imageWithMetadata = newImageWithMetadata
                                 }
+                            } else {
+                                print("Can't open file:", url)
                             }
                         }
                     }

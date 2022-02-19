@@ -74,6 +74,10 @@ struct ImageBrowserView: View {
                         model.orientation = rotateRight(value: model.orientation)
                     }
 
+                    CommandButton(model: model, label: "Uniform Orientation", key: "O") { model in
+                        model.useMasterOrientation = !model.useMasterOrientation
+                    }
+
                     CommandButton(model: model, label: "Toggle Layout", key: "L") { model in
                         model.switchLayout()
                     }

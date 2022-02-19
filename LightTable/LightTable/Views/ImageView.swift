@@ -60,8 +60,9 @@ struct ImageViewCaption: View {
 }
 
 struct ImageView: View {
-    let url:URL
     @ObservedObject var model:ImageBrowserModel
+    let url:URL
+    let index:Int
 
     @ObservedObject var imageLoader = ImageLoader()
     @State var cgImageWithMetadata:CGImageWithMetadata? = nil
@@ -79,10 +80,40 @@ struct ImageView: View {
         return CGPoint.zero
     }
 
-    init(url:URL, model:ImageBrowserModel) {
-        self.model = model
+    init(url:URL, model:ImageBrowserModel, index:Int) {
         self.url = url
+        self.model = model
+        self.index = index
+
         imageLoader.load(url:url)
+    }
+
+    func viewOrientation() -> Image.Orientation {
+        let baseOrientation:Image.Orientation
+
+        if let cgImageWithMetadata = cgImageWithMetadata {
+            let metadata = cgImageWithMetadata.metadata
+            let imageURL = cgImageWithMetadata.url
+
+            if model.useMasterOrientation {
+                // ImageView objects are being recycled by the container, see if this one is up to date
+                if (url == imageURL && index == 0) {
+                    baseOrientation = imageOrientation(metadata: metadata)
+                    if model.masterOrientation != baseOrientation {
+                        DispatchQueue.main.async {
+                            model.masterOrientation = baseOrientation
+                        }
+                    }
+                } else {
+                    baseOrientation = model.masterOrientation
+                }
+            } else {
+                baseOrientation = imageOrientation(metadata: metadata)
+            }
+        } else {
+            baseOrientation = .up
+        }
+        return rotate(value: baseOrientation, by: model.orientation)
     }
 
     var body: some View {
@@ -93,7 +124,8 @@ struct ImageView: View {
                 if let cgImageWithMetadata = cgImageWithMetadata {
                     let cgImage = cgImageWithMetadata.image
                     let metadata = cgImageWithMetadata.metadata
-                    let orientation = rotate(value: imageOrientation(metadata: metadata), by: model.orientation)
+
+                    let orientation = viewOrientation()
 
                     var viewOffset = storedOffset(url: url)
 
@@ -170,7 +202,8 @@ struct ImageView: View {
             }
         }
         .onReceive(imageLoader.didChange) { cgImageWithMetadata in
-                self.cgImageWithMetadata = cgImageWithMetadata
+            print("new data")
+            self.cgImageWithMetadata = cgImageWithMetadata
         }
     }
 }
