@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ImageBrowserView: View {
-    @ObservedObject var model:ImageBrowserModel
+    @Binding var model:ImageBrowserModel
 
     // Height of the ThumbnailScrollerPanel, modified by the PaneDivider
     @State var scrollViewHeight:CGFloat = 200
@@ -22,7 +22,7 @@ struct ImageBrowserView: View {
         GeometryReader { geometry in
             VSplitView {
                 VStack {
-                    ImageListView(model: model)
+                    ImageListView(model: $model)
                         .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
 
                     ZStack {
@@ -39,16 +39,16 @@ struct ImageBrowserView: View {
                 }
                 .layoutPriority(1)
 
-                ThumbnailScrollView(model: model)
+                ThumbnailScrollView(model: $model)
                     .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
                     .background(backgroundColor)
             }
         }
-        .onReceive(model.$files) { _ in
-            model.imageViewSelection = -1
+        .onChange(of: model.files) { _ in
+            model.imageViewSelection(char: "`")
         }
-        .onReceive(model.$selection) { _ in
-            model.imageViewSelection = -1
+        .onChange(of: model.selection) { _ in
+            model.imageViewSelection(char: "`")
         }
     }
 
@@ -60,50 +60,48 @@ struct ImageBrowserView: View {
             CommandGroup(after: .sidebar) {
 
                 Group {
-                    CommandButton(model: model, label: "Rotate Left", key: "[") { model in
-                        model.orientation = rotateLeft(value: model.orientation)
+                    CommandButton(label: "Rotate Left", key: "[") {
+                        model?.rotateLeft()
                     }
-                    CommandButton(model: model, label: "Rotate Right", key: "]") { model in
-                        model.orientation = rotateRight(value: model.orientation)
-                    }
-
-                    CommandButton(model: model, label: "Uniform Orientation", key: "O") { model in
-                        model.useMasterOrientation = !model.useMasterOrientation
+                    CommandButton(label: "Rotate Right", key: "]") {
+                        model?.rotateRight()
                     }
 
-                    CommandButton(model: model, label: "Toggle Layout", key: "L") { model in
-                        model.switchLayout()
+                    CommandButton(label: "Uniform Orientation", key: "O") {
+                        model?.togglaMasterOrientation()
                     }
 
-                    CommandButton(model: model, label: "Toggle Image View Data", key: "V") { model in
-                        model.switchViewInfoItems()
+                    CommandButton(label: "Toggle Layout", key: "L") {
+                        model?.switchLayout()
+                    }
+
+                    CommandButton(label: "Toggle Image View Data", key: "V") {
+                        model?.switchViewInfoItems()
                     }
                 }
 
                 Divider()
 
                 Group {
-                    CommandButton(model: model, label: "Zoom In", key: "=", modifiers: .command) { model in
-                        model.viewScaleFactor += 1
+                    CommandButton(label: "Zoom Out", key: "-", modifiers: .command) {
+                        model?.zoomOut()
                     }
-                    CommandButton(model: model, label: "Zoom Out", key: "-", modifiers: .command) { model in
-                        if (model.viewScaleFactor > 0) {
-                            model.viewScaleFactor -= 1
-                        }
+                    CommandButton(label: "Zoom In", key: "=", modifiers: .command) {
+                        model?.zoomIn()
                     }
-                    CommandButton(model: model, label: "Zoom To Fit", key: "=") { model in
-                        model.viewScaleFactor = 0
+                    CommandButton(label: "Zoom To Fit", key: "=") {
+                        model?.zoomToFit()
                     }
                 }
 
                 Divider()
 
                 Group {
-                    CommandButton(model: model, label: "Move Left", key: .leftArrow) { model in
-                        model.processKey(key: .leftArrow)
+                    CommandButton(label: "Move Left", key: .leftArrow) {
+                        model?.processKey(key: .leftArrow)
                     }
-                    CommandButton(model: model, label: "Move Right", key: .rightArrow) { model in
-                        model.processKey(key: .rightArrow)
+                    CommandButton(label: "Move Right", key: .rightArrow) {
+                        model?.processKey(key: .rightArrow)
                     }
                 }
 
@@ -113,23 +111,23 @@ struct ImageBrowserView: View {
                     let zero = Character("0")
                     ForEach(1...9, id: \.self) { index in
                         let c = Character(UnicodeScalar(Int(zero.asciiValue!) + index)!)
-                        CommandButton(model: model, label: "View " + String(c), key: KeyEquivalent(c)) { model in
-                            model.imageViewSelection(char: c)
+                        CommandButton(label: "View " + String(c), key: KeyEquivalent(c)) {
+                            model?.imageViewSelection(char: c)
                         }
                     }
-                    CommandButton(model: model, label: "View 10", key: "0") { model in
-                        model.imageViewSelection(char: "0")
+                    CommandButton(label: "View 10", key: "0") {
+                        model?.imageViewSelection(char: "0")
                     }
-                    CommandButton(model: model, label: "Show All", key: "`") { model in
-                        model.imageViewSelection = -1
+                    CommandButton(label: "Show All", key: "`") {
+                        model?.imageViewSelection(char: "`")
                     }
                 }
                 .disabled(model == nil)
 
                 Divider()
 
-                CommandButton(model: model, label: (model != nil && model!.fullScreen ? "Exit " : "Enter ") + "Full Screen Preview", key: "F") { model in
-                    model.fullScreen = !model.fullScreen
+                CommandButton(label: (model != nil && model!.fullScreen ? "Exit " : "Enter ") + "Full Screen Preview", key: "F") {
+                    model?.toggleFullscreen()
                 }
                 .disabled(model == nil)
 

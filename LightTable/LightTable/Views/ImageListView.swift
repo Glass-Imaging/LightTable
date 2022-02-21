@@ -14,7 +14,7 @@ enum ImageListLayout {
 }
 
 struct ImageListView: View {
-    @ObservedObject var model:ImageBrowserModel
+    @Binding var model:ImageBrowserModel
 
     func gridLayout(count:Int) -> [GridItem] {
         let gridItem = GridItem(.flexible())
@@ -56,7 +56,7 @@ struct ImageListView: View {
                 Text("Make a selection.")
             } else {
                 if (model.imageViewSelection >= 0 && model.imageViewSelection < model.selection.count) {
-                    ImageView(url: model.selection[model.imageViewSelection], model: model, index: model.imageViewSelection)
+                    ImageView(url: model.selection[model.imageViewSelection], model: $model, index: model.imageViewSelection)
                 } else {
                     let gridConstraints = gridSizeConstraints(count: model.selection.count, layout: model.imageViewLayout)
                     GeometryReader { geometry in
@@ -65,7 +65,7 @@ struct ImageListView: View {
                             let items = min(model.selection.count, 16)
                             ForEach(0 ..< items, id: \.self) { index in
                                 let file = model.selection[index]
-                                ImageView(url: file, model: model, index: index)
+                                ImageView(url: file, model: $model, index: index)
                                     .id(file)
                             }.frame(width: geometry.size.width / gridConstraints.width,
                                     height: geometry.size.height / gridConstraints.height)

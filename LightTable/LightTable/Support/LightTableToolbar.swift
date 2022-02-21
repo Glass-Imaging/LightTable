@@ -30,13 +30,13 @@ extension LightTableView {
     func LightTableToolbar() -> some ToolbarContent {
         ToolbarItemGroup(placement: .automatic) {
             Button(action: {
-                imageBrowserModel.orientation = rotateLeft(value: imageBrowserModel.orientation)
+                imageBrowserModel.rotateLeft()
             }) {
                 Image(systemName: "rotate.left")
                 .help("Rotate Left")
             }
             Button(action: {
-                imageBrowserModel.orientation = rotateRight(value: imageBrowserModel.orientation)
+                imageBrowserModel.rotateRight()
             }) {
                 Image(systemName: "rotate.right")
                 .help("Rotate Right")
@@ -48,21 +48,19 @@ extension LightTableView {
         }
         ToolbarItemGroup(placement: .automatic) {
             Button(action: {
-                imageBrowserModel.viewScaleFactor += 1
-            }) {
-                Image(systemName: "plus.magnifyingglass")
-                .help("Zoom In")
-            }
-            Button(action: {
-                if (imageBrowserModel.viewScaleFactor > 0) {
-                    imageBrowserModel.viewScaleFactor -= 1
-                }
+                imageBrowserModel.zoomOut()
             }) {
                 Image(systemName: "minus.magnifyingglass")
                 .help("Zoom Out")
             }
             Button(action: {
-                imageBrowserModel.viewScaleFactor = 0
+                imageBrowserModel.zoomIn()
+            }) {
+                Image(systemName: "plus.magnifyingglass")
+                .help("Zoom In")
+            }
+            Button(action: {
+                imageBrowserModel.zoomToFit()
             }) {
                 Image(systemName: "arrow.up.left.and.down.right.magnifyingglass")
                 .help("Zoom To Fit")
@@ -82,7 +80,7 @@ extension LightTableView {
 
         ToolbarItemGroup(placement: .automatic) {
             Button(action: {
-                imageBrowserModel.imageViewSelection = -1
+                imageBrowserModel.imageViewSelection(char: "`")
             }, label: {
                 let caption = imageBrowserModel.imageViewSelection >= 0 ? "\(imageBrowserModel.imageViewSelection + 1)" : "—"
                 Image(systemName: "viewfinder")

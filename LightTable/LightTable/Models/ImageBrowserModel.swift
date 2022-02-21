@@ -13,39 +13,99 @@ extension KeyEquivalent: Equatable {
     }
 }
 
-class ImageBrowserModel: ObservableObject {
-    @Published var directories:[URL] = []
-    @Published var files:[[URL]] = []
-    @Published var selection:[URL] = []
+struct ImageBrowserModel {
+    private(set) var directories:[URL] = []
+    private(set) var files:[[URL]] = []
+    private(set) var selection:[URL] = []
 
     // Multipe Image View layout (Horizontal/Vertical/Grid)
-    @Published var imageViewLayout:ImageListLayout = .Horizontal
+    var imageViewLayout:ImageListLayout = .Horizontal
+
+    mutating func switchLayout() {
+        switch (imageViewLayout) {
+        case .Horizontal:
+            imageViewLayout = .Vertical
+        case .Vertical:
+            imageViewLayout = .Grid
+        case .Grid:
+            imageViewLayout = .Horizontal
+        }
+    }
 
     // Image View Orientation
-    @Published var orientation:Image.Orientation = .up
+    private(set) var orientation:Image.Orientation = .up
+
+    mutating func rotateLeft() {
+        orientation = LightTable.rotateLeft(value: orientation)
+    }
+
+    mutating func rotateRight() {
+        orientation = LightTable.rotateRight(value: orientation)
+    }
 
     // Keyboard movement computed location with multiple selections
-    @Published var nextLocation:URL? = nil
+    private(set) var nextLocation:URL? = nil
 
     // Single Image view selection for ImageListView
-    @Published var imageViewSelection = -1
+    private(set) var imageViewSelection = -1
+
+    mutating func imageViewSelection(char:Character) {
+        if (char >= "0" && char <= "9") {
+            // Single image selection mode
+            let zero = Character("0")
+            let index = char == zero ? 9 : (char.wholeNumberValue! - zero.wholeNumberValue!) - 1;
+            if (selection.count > 0 && selection.count > index) {
+                imageViewSelection = index
+            }
+        } else if (KeyEquivalent(char) == "`") {
+            // Exit single image selection mode
+            imageViewSelection = -1
+        }
+    }
 
     // Fullscreen view presentation
-    @Published var fullScreen = false
+    var fullScreen = false
+
+    mutating func toggleFullscreen() {
+        fullScreen = !fullScreen
+    }
 
     // View magnification factor: 0 -> scale to fit, 1x, 2x, 3x, ...
-    @Published var viewScaleFactor:CGFloat = 0
+    private(set) var viewScaleFactor:CGFloat = 0
+
+    mutating func zoomIn() {
+        viewScaleFactor += 1
+    }
+
+    mutating func zoomOut() {
+        if (viewScaleFactor > 0) {
+            viewScaleFactor -= 1
+        }
+    }
+
+    mutating func zoomToFit() {
+        viewScaleFactor = 0
+    }
 
     // User dragging action
-    @Published var viewOffset = CGPoint.zero
-    @Published var viewOffsetInteractive = CGPoint.zero
+    var viewOffset = CGPoint.zero
+    var viewOffsetInteractive = CGPoint.zero
 
-    @Published var thumbnailSize:CGFloat = 150
+    var thumbnailSize:CGFloat = 150
 
-    @Published var viewInfoItems:Int = 3
+    private(set) var viewInfoItems:Int = 3
 
-    @Published var useMasterOrientation = false
-    @Published var masterOrientation:Image.Orientation = .up
+    private(set) var useMasterOrientation = false
+
+    mutating func togglaMasterOrientation() {
+        useMasterOrientation = !useMasterOrientation
+    }
+
+    private(set) var masterOrientation:Image.Orientation = .up
+
+    mutating func setMasterOrientation(orientation:Image.Orientation) {
+        masterOrientation = orientation
+    }
 
     func fileIndex(file: URL) -> (Int, Int) {
         for listing in files {
@@ -56,7 +116,7 @@ class ImageBrowserModel: ObservableObject {
         return (0, 0)
     }
 
-    func resetInteractiveState() {
+    mutating func resetInteractiveState() {
         imageViewSelection = -1
         // fullScreen = false
         viewScaleFactor = 0
@@ -64,7 +124,7 @@ class ImageBrowserModel: ObservableObject {
         viewOffsetInteractive = CGPoint.zero
     }
 
-    func setDirectories(directories: [URL]) {
+    mutating func setDirectories(directories: [URL]) {
         // Check removed directories
         for d in self.directories {
             if (!directories.contains(d)) {
@@ -79,7 +139,7 @@ class ImageBrowserModel: ObservableObject {
         }
     }
 
-    func addDirectory(directory: URL) {
+    mutating func addDirectory(directory: URL) {
         if (!directories.contains(directory)) {
             let fileListing = imageFileListingAt(url: directory)
             directories.append(directory)
@@ -87,7 +147,7 @@ class ImageBrowserModel: ObservableObject {
         }
     }
 
-    func removeDirectory(directory: URL) {
+    mutating func removeDirectory(directory: URL) {
         guard let index = directories.firstIndex(of: directory) else {
             return
         }
@@ -107,7 +167,7 @@ class ImageBrowserModel: ObservableObject {
         directories.remove(at: index)
     }
 
-    func reset() {
+    mutating func reset() {
         directories = []
         files = []
         selection = []
@@ -117,7 +177,7 @@ class ImageBrowserModel: ObservableObject {
         return selection.contains(file)
     }
 
-    func updateSelection(file: URL) {
+    mutating func updateSelection(file: URL) {
         // don't update the selection gratuitously
         if (!(selection.count == 1 && selection[0] == file)) {
             selection = [file]
@@ -125,7 +185,7 @@ class ImageBrowserModel: ObservableObject {
         }
     }
 
-    func addToSelection(file: URL) {
+    mutating func addToSelection(file: URL) {
         guard let index = selection.firstIndex(of: file) else {
             selection.append(file)
             nextLocation = file
@@ -138,7 +198,7 @@ class ImageBrowserModel: ObservableObject {
         }
     }
 
-    func removeFromSelection(file: URL) {
+    mutating func removeFromSelection(file: URL) {
         guard let index = selection.firstIndex(of: file) else {
             return
         }
@@ -181,7 +241,7 @@ class ImageBrowserModel: ObservableObject {
         return indices.max(by: orderByFileIndex)!.0
     }
 
-    func processKey(key: KeyEquivalent) {
+    mutating func processKey(key: KeyEquivalent) {
         nextLocation = processKey(key: key)
         resetInteractiveState()
     }
@@ -190,7 +250,7 @@ class ImageBrowserModel: ObservableObject {
         return a.1 < b.1
     }
 
-    private func processKey(key: KeyEquivalent) -> URL? {
+    private mutating func processKey(key: KeyEquivalent) -> URL? {
         if (key == .rightArrow || key == .leftArrow) {
             if (files.isEmpty || files[0].isEmpty) {
                 return nil
@@ -257,32 +317,7 @@ class ImageBrowserModel: ObservableObject {
         return nil
     }
 
-    func switchLayout() {
-        switch (imageViewLayout) {
-        case .Horizontal:
-            imageViewLayout = .Vertical
-        case .Vertical:
-            imageViewLayout = .Grid
-        case .Grid:
-            imageViewLayout = .Horizontal
-        }
-    }
-
-    func switchViewInfoItems() {
+    mutating func switchViewInfoItems() {
         viewInfoItems = viewInfoItems == 0 ? 3 : viewInfoItems - 1
-    }
-
-    func imageViewSelection(char:Character) {
-        if (char >= "0" && char <= "9") {
-            // Single image selection mode
-            let zero = Character("0")
-            let index = char == zero ? 9 : (char.wholeNumberValue! - zero.wholeNumberValue!) - 1;
-            if (selection.count > 0 && selection.count > index) {
-                imageViewSelection = index
-            }
-        } else if (KeyEquivalent(char) == "`") {
-            // Exit single image selection mode
-            imageViewSelection = -1
-        }
     }
 }

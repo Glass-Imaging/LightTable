@@ -11,7 +11,7 @@ import SwiftUI
 struct ImageViewCaption: View {
     let url: URL
     let metadata: NSDictionary
-    @ObservedObject var model:ImageBrowserModel
+    @Binding var model:ImageBrowserModel
 
     func imageMetadata() -> String {
         if let pixelWidth = metadata["PixelWidth"] as? Int {
@@ -60,7 +60,7 @@ struct ImageViewCaption: View {
 }
 
 struct ImageView: View {
-    @ObservedObject var model:ImageBrowserModel
+    @Binding var model:ImageBrowserModel
     let url:URL
     let index:Int
 
@@ -80,9 +80,9 @@ struct ImageView: View {
         return CGPoint.zero
     }
 
-    init(url:URL, model:ImageBrowserModel, index:Int) {
+    init(url:URL, model:Binding<ImageBrowserModel>, index:Int) {
         self.url = url
-        self.model = model
+        self._model = model
         self.index = index
 
         imageLoader.load(url:url)
@@ -101,7 +101,7 @@ struct ImageView: View {
                     baseOrientation = imageOrientation(metadata: metadata)
                     if model.masterOrientation != baseOrientation {
                         DispatchQueue.main.async {
-                            model.masterOrientation = baseOrientation
+                            model.setMasterOrientation(orientation: baseOrientation)
                         }
                     }
                 } else {
@@ -148,7 +148,7 @@ struct ImageView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .overlay(alignment: .bottom) {
-                                    ImageViewCaption(url: url, metadata: metadata, model: model)
+                                    ImageViewCaption(url: url, metadata: metadata, model: $model)
                                 }
                     }
                     .frame(width: frameSize.width, height: frameSize.height, alignment: .center)

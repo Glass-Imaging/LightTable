@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FolderTreeNavigator: View {
-    @StateObject var imageBrowserModel:ImageBrowserModel
+    @Binding var imageBrowserModel:ImageBrowserModel
     @Binding var navigatorModel:NavigatorModel
 
     @FocusState private var navigatorIsFocused: Bool

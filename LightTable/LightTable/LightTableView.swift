@@ -13,7 +13,7 @@ private func toggleSidebar() {
 }
 
 struct LightTableView: View {
-    @StateObject var imageBrowserModel = ImageBrowserModel()
+    @State var imageBrowserModel = ImageBrowserModel()
     @State var navigatorModel = NavigatorModel()
 
     let backgroundColor = Color(red: 30.0/255.0, green: 30.0/255.0, blue: 30.0/255.0)
@@ -29,7 +29,7 @@ struct LightTableView: View {
         VStack {
             ZStack {
                 NavigationView {
-                    FolderTreeNavigator(imageBrowserModel: imageBrowserModel, navigatorModel: $navigatorModel)
+                    FolderTreeNavigator(imageBrowserModel: $imageBrowserModel, navigatorModel: $navigatorModel)
                         .frame(minWidth: 250)
                         .toolbar {
                             ToolbarItem(placement: .automatic) {
@@ -41,7 +41,7 @@ struct LightTableView: View {
                         }
 
                     if (browserActive) {
-                        ImageBrowserView(model: imageBrowserModel)
+                        ImageBrowserView(model: $imageBrowserModel)
                             .toolbar {
                                 LightTableToolbar()
                             }
@@ -52,7 +52,7 @@ struct LightTableView: View {
                 .onDrop(of: ["public.file-url"], delegate: self)
 
                 if imageBrowserModel.fullScreen {
-                    ImageListView(model: imageBrowserModel)
+                    ImageListView(model: $imageBrowserModel)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .focusedSceneValue(\.focusedBrowserModel, modelBinding)
                         .background(backgroundColor)
