@@ -19,3 +19,13 @@ func CommandButton<M>(model: M?, label:String, key: KeyEquivalent, modifiers: Ev
     .keyboardShortcut(key, modifiers: modifiers)
     .disabled(model == nil)
 }
+
+func CommandButton(label:String, key: KeyEquivalent, modifiers: EventModifiers = [], action: @escaping () -> Void) -> some View {
+    return Button {
+        action()
+    } label: {
+        Text(label)
+    }
+    .keyboardShortcut(key, modifiers: modifiers)
+    // .disabled(model == nil)
+}

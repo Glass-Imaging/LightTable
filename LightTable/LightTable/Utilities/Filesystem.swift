@@ -46,6 +46,28 @@ func imageFileListingAt(url:URL) -> [URL] {
     }
 }
 
+func parentFoldersList(url: URL) -> [URL] {
+    let rootPath = URL(string: "file:///")
+    var parents:[URL] = []
+    if (url != rootPath && url.hasDirectoryPath) {
+        var current = url
+        repeat {
+            parents.append(current)
+            current = current.deletingLastPathComponent()
+        } while(current != rootPath)
+    }
+    return parents
+}
+
+func parentFolder(url: URL) -> URL {
+    let rootPath = URL(string: "file:///")
+    if url != rootPath {
+        let parent = url.deletingLastPathComponent()
+        return parent
+    }
+    return url
+}
+
 func fileListingAt(url:URL, filter:(_ entry:URL) -> Bool) -> [URL] {
     let manager = FileManager.default
     do {
@@ -59,8 +81,8 @@ func fileListingAt(url:URL, filter:(_ entry:URL) -> Bool) -> [URL] {
             }
         }
         // Sort images alphabetically
-        return entries.sorted { a, b in
-            return a.lastPathComponent < b.lastPathComponent
+        return entries.sorted {
+            $0.lastPathComponent < $1.lastPathComponent
         }
     } catch {
         return []

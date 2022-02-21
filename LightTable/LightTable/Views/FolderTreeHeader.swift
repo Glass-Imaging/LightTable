@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FolderTreeHeader: View {
-    @StateObject var navigatorModel = NavigatorModel()
+    @Binding var navigatorModel:NavigatorModel
 
     var body: some View {
         HStack {

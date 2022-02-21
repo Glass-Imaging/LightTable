@@ -38,7 +38,7 @@ class FileEntry: Identifiable {
 }
 
 struct FolderTreeList: View {
-    @StateObject var navigatorModel:NavigatorModel
+    @Binding var navigatorModel:NavigatorModel
     @Binding var selection:Set<URL>
 
     var body: some View {

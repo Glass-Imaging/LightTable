@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FolderTreeNavigator: View {
     @StateObject var imageBrowserModel:ImageBrowserModel
-    @StateObject var navigatorModel:NavigatorModel
+    @Binding var navigatorModel:NavigatorModel
 
     @FocusState private var navigatorIsFocused: Bool
 
@@ -20,7 +20,7 @@ struct FolderTreeNavigator: View {
             VStack(alignment: .leading) {
                 Divider()
 
-                FolderTreeHeader(navigatorModel: navigatorModel)
+                FolderTreeHeader(navigatorModel: $navigatorModel)
                     .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
 
                 Divider()

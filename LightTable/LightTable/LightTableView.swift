@@ -7,28 +7,6 @@
 
 import SwiftUI
 
-func parentFoldersList(url: URL) -> [URL] {
-    let rootPath = URL(string: "file:///")
-    var parents:[URL] = []
-    if (url.hasDirectoryPath) {
-        var current = url
-        repeat {
-            parents.append(current)
-            current = current.deletingLastPathComponent()
-        } while(current != rootPath)
-    }
-    return parents
-}
-
-func parentFolder(url: URL) -> URL {
-    let rootPath = URL(string: "file:///")
-    let parent = url.deletingLastPathComponent()
-    if parent != rootPath {
-        return parent
-    }
-    return url
-}
-
 private func toggleSidebar() {
     NSApp.keyWindow?.firstResponder?
         .tryToPerform(#selector(NSSplitViewController.toggleSidebar(_:)), with: nil)
@@ -36,27 +14,22 @@ private func toggleSidebar() {
 
 struct LightTableView: View {
     @StateObject var imageBrowserModel = ImageBrowserModel()
-    @StateObject var navigatorModel = NavigatorModel()
+    @State var navigatorModel = NavigatorModel()
 
     let backgroundColor = Color(red: 30.0/255.0, green: 30.0/255.0, blue: 30.0/255.0)
 
     var body: some View {
-        let navigatorModelBinding = Binding<NavigatorModel>(
-            get: { navigatorModel },
-            set: { val in }
-        )
-
         let browserActive = !imageBrowserModel.directories.isEmpty
 
         let modelBinding = Binding<ImageBrowserModel>(
             get: { imageBrowserModel },
-            set: { val in }
+            set: { _in in }
         )
 
         VStack {
             ZStack {
                 NavigationView {
-                    FolderTreeNavigator(imageBrowserModel: imageBrowserModel, navigatorModel: navigatorModel)
+                    FolderTreeNavigator(imageBrowserModel: imageBrowserModel, navigatorModel: $navigatorModel)
                         .frame(minWidth: 250)
                         .toolbar {
                             ToolbarItem(placement: .automatic) {
@@ -75,7 +48,7 @@ struct LightTableView: View {
                     }
                 }
                 .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
-                .focusedSceneValue(\.focusedNavigatorModel, navigatorModelBinding)
+                .focusedSceneValue(\.focusedNavigatorModel, $navigatorModel)
                 .onDrop(of: ["public.file-url"], delegate: self)
 
                 if imageBrowserModel.fullScreen {
@@ -96,7 +69,7 @@ struct LightTableView: View {
 
             imageBrowserModel.setDirectories(directories: directories)
         }
-        .onReceive(navigatorModel.$children) { children in
+        .onChange(of: navigatorModel.children) { children in
             // Reset navigator's selection
             navigatorModel.multiSelection = Set<URL>()
 
@@ -106,18 +79,14 @@ struct LightTableView: View {
     }
 
     struct ContentCommands: Commands {
-        @FocusedBinding(\.focusedNavigatorModel) private var model: NavigatorModel?
+        @FocusedBinding(\.focusedNavigatorModel) var model: NavigatorModel?
 
         var body: some Commands {
             CommandGroup(after: CommandGroupPlacement.newItem) {
                 Button("Open...") {
-                    if let model = model {
-                        var listing:[URL] = []
-                        let selectedDirectory = NSOpenPanelDirectoryListing(files: &listing)
-                        if (listing.count > 0) {
-                            model.root = selectedDirectory
-                            model.children = listing
-                        }
+                    var listing:[URL] = []
+                    if let selectedDirectory = NSOpenPanelDirectoryListing(files: &listing) {
+                        model?.update(url: selectedDirectory, listing: listing)
                     }
                 }
                 .keyboardShortcut("O", modifiers: .command)
@@ -125,26 +94,21 @@ struct LightTableView: View {
             }
 
             CommandMenu("Go") {
-                CommandButton(model: model, label: "Back", key: "[", modifiers: [.command]) { model in
-                    model.back()
-                }
+                CommandButton(label: "Back", key: "[", modifiers: [.command]) {
+                    model?.back()
+                }.disabled(model == nil || !model!.hasBackHistory())
 
-                CommandButton(model: model, label: "Forward", key: "]", modifiers: [.command]) { model in
-                    model.forward()
-                }
+                CommandButton(label: "Forward", key: "]", modifiers: [.command]) {
+                    model?.forward()
+                }.disabled(model == nil || !model!.hasForwardHistory())
 
-                CommandButton(model: model, label: "Enclosing Folder", key: .upArrow, modifiers: [.command]) { model in
-                    if let root = model.root {
-                        model.update(url: parentFolder(url: root))
-                        model.multiSelection = [root]
-                    }
-                }
+                CommandButton(label: "Enclosing Folder", key: .upArrow, modifiers: [.command]) {
+                    model?.enclosingFolder()
+                }.disabled(model == nil)
 
-                CommandButton(model: model, label: "Selected Folder", key: .downArrow, modifiers: [.command]) { model in
-                    if let selection = model.multiSelection.first {
-                        model.update(url: selection)
-                    }
-                }
+                CommandButton(label: "Selected Folder", key: .downArrow, modifiers: [.command]) {
+                    model?.selectedFolder()
+                }.disabled(model == nil || !model!.hasSelection())
             }
         }
     }

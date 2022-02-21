@@ -7,39 +7,79 @@
 
 import SwiftUI
 
-class NavigatorModel: ObservableObject {
-    @Published var root:URL? = nil
-    @Published var children:[URL] = []
+struct NavigatorModel: Equatable, Hashable {
+    var root:URL? = nil
+    var children:[URL] = []
 
-    @Published var multiSelection = Set<URL>()
+    var multiSelection = Set<URL>()
 
-    @Published var historyBack:[URL] = []
-    @Published var historyForward:[URL] = []
+    var historyBack:[URL] = []
+    var historyForward:[URL] = []
 
-    func update(url: URL) {
-        if (root != nil) {
-            historyBack.append(root!)
+    func hasBackHistory() -> Bool {
+        !historyBack.isEmpty
+    }
+
+    func hasForwardHistory() -> Bool {
+        !historyForward.isEmpty
+    }
+
+    func hasSelection() -> Bool {
+        !multiSelection.isEmpty
+    }
+
+    func hasParentFolder() -> Bool {
+        let rootPath = URL(string: "file:///")
+        return root != rootPath
+    }
+
+    mutating func update(url: URL) {
+        if let root = root {
+            historyBack.append(root)
         }
         root = url
         children = folderListingAt(url: url)
     }
 
-    func back() {
+    mutating func update(url: URL, listing: [URL]) {
+        if let root = root {
+            historyBack.append(root)
+        }
+        root = url
+        children = listing
+    }
+
+    mutating func enclosingFolder() {
+        if let root = root {
+            let previousRoot = root
+            update(url: parentFolder(url: root))
+            // TODO: Selection gets lost...
+            multiSelection = [previousRoot]
+        }
+    }
+
+    mutating func selectedFolder() {
+        if let selection = multiSelection.first {
+            update(url: selection)
+        }
+    }
+
+    mutating func back() {
         if (!historyBack.isEmpty) {
             let item = historyBack.remove(at: historyBack.count - 1)
-            if (root != nil) {
-                historyForward.append(root!)
+            if let root = root {
+                historyForward.append(root)
             }
             root = item
             children = folderListingAt(url: item)
         }
     }
 
-    func forward() {
+    mutating func forward() {
         if (!historyForward.isEmpty) {
             let item = historyForward.remove(at: historyForward.count - 1)
-            if (root != nil) {
-                historyBack.append(root!)
+            if let root = root {
+                historyBack.append(root)
             }
             root = item
             children = folderListingAt(url: item)
