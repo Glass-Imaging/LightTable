@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct NavigatorModel: Equatable, Hashable {
-    var root:URL? = nil
-    var children:[URL] = []
+    private(set) var root:URL? = nil
+    private(set) var children:[URL] = []
 
-    var selection = Set<URL>()
+    private(set) var historyBack:[URL] = []
+    private(set) var historyForward:[URL] = []
 
-    var historyBack:[URL] = []
-    var historyForward:[URL] = []
+    // Directly accessed by FolderTreeNavigator
+    /* private(set) */ var selection = Set<URL>()
 
     func hasBackHistory() -> Bool {
         !historyBack.isEmpty

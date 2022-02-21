@@ -31,7 +31,7 @@ struct ThumbnailGrid: View {
                     }) {
                         LazyHStack(alignment: .top) {
                             ForEach(folderListing, id: \.self) { file in
-                                ThumbnailButtonView(file: file, model: $model) { modifier in
+                                ThumbnailButtonView(file: file, selection: $model.selection, thumbnailSize: $model.thumbnailSize) { modifier in
                                     // Handle Command-Click mouse actions
                                     if (modifier.contains(.command)) {
                                         model.addToSelection(file: file)

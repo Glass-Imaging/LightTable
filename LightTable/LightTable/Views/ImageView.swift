@@ -10,8 +10,9 @@ import SwiftUI
 
 struct ImageViewCaption: View {
     let url: URL
+    let index: (Int, Int)
     let metadata: NSDictionary
-    @Binding var model:ImageBrowserModel
+    @Binding var viewInfoItems:Int
 
     func imageMetadata() -> String {
         if let pixelWidth = metadata["PixelWidth"] as? Int {
@@ -25,22 +26,21 @@ struct ImageViewCaption: View {
     var body: some View {
         let parentFolder = parentFolder(url:url).lastPathComponent
         let filename = url.lastPathComponent
-        let index = model.fileIndex(file: url)
 
-        if model.viewInfoItems > 0 {
+        if viewInfoItems > 0 {
             VStack(spacing: 1) {
                 Text("\(filename) (\(index.0)/\(index.1))")
                     .bold()
                     .font(.subheadline)
 
-                if model.viewInfoItems > 1 {
+                if viewInfoItems > 1 {
                     Divider()
                         .frame(width: 150)
 
                     Text(parentFolder)
                         .font(.caption)
 
-                    if model.viewInfoItems > 2 {
+                    if viewInfoItems > 2 {
                         Divider()
                             .frame(width: 150)
 
@@ -148,7 +148,7 @@ struct ImageView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .overlay(alignment: .bottom) {
-                                    ImageViewCaption(url: url, metadata: metadata, model: $model)
+                                    ImageViewCaption(url: url, index: model.fileIndex(file: url), metadata: metadata, viewInfoItems: $model.viewInfoItems)
                                 }
                     }
                     .frame(width: frameSize.width, height: frameSize.height, alignment: .center)

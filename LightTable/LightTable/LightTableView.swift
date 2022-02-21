@@ -29,7 +29,7 @@ struct LightTableView: View {
         VStack {
             ZStack {
                 NavigationView {
-                    FolderTreeNavigator(imageBrowserModel: $imageBrowserModel, navigatorModel: $navigatorModel)
+                    FolderTreeNavigator(navigatorModel: $navigatorModel)
                         .frame(minWidth: 250)
                         .toolbar {
                             ToolbarItem(placement: .automatic) {

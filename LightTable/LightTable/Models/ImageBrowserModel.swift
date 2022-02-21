@@ -16,7 +16,7 @@ extension KeyEquivalent: Equatable {
 struct ImageBrowserModel {
     private(set) var directories:[URL] = []
     private(set) var files:[[URL]] = []
-    private(set) var selection:[URL] = []
+    /* private(set) */ var selection:[URL] = []
 
     // Multipe Image View layout (Horizontal/Vertical/Grid)
     var imageViewLayout:ImageListLayout = .Horizontal
@@ -97,7 +97,7 @@ struct ImageBrowserModel {
 
     var thumbnailSize:CGFloat = 150
 
-    private(set) var viewInfoItems:Int = 3
+    /* private(set) */ var viewInfoItems:Int = 3
 
     private(set) var useMasterOrientation = false
 

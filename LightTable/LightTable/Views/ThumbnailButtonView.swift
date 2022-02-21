@@ -9,7 +9,8 @@ import SwiftUI
 
 struct ThumbnailButtonView: View {
     let file:URL
-    @Binding var model:ImageBrowserModel
+    @Binding var selection:[URL]
+    @Binding var thumbnailSize:CGFloat
     let action: (_ modifiers: EventModifiers) -> Void
 
     var body: some View {
@@ -17,7 +18,7 @@ struct ThumbnailButtonView: View {
             // Single Click
             action([])
         }) {
-            let selected = model.selection.contains(file)
+            let selected = selection.contains(file)
 
             VStack {
                 ThumbnailView(withURL: file)
@@ -27,9 +28,9 @@ struct ThumbnailButtonView: View {
                     .font(.caption)
                     .background(selected ? Color.accentColor : nil)
                     .cornerRadius(3)
-                    .frame(width: model.thumbnailSize, height: 20)
+                    .frame(width: thumbnailSize, height: 20)
             }
-            .frame(width: model.thumbnailSize, height: model.thumbnailSize + 20)
+            .frame(width: thumbnailSize, height: thumbnailSize + 20)
             // Double Click: reveal the file in Finder
             .gesture(TapGesture(count: 2).onEnded {
                 action([])
