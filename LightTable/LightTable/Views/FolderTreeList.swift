@@ -39,12 +39,11 @@ class FileEntry: Identifiable {
 
 struct FolderTreeList: View {
     @Binding var navigatorModel:NavigatorModel
-    @Binding var selection:Set<URL>
 
     var body: some View {
         List(FileEntry.fileListing(listing: navigatorModel.children)!,
              children: \.children,
-             selection: $selection) { item in
+             selection: $navigatorModel.selection) { item in
             Label(item.url.lastPathComponent, systemImage: item.hasImages ? "folder.fill" : "folder")
                 .gesture(TapGesture(count: 2).onEnded {
                     DispatchQueue.main.async {
@@ -54,13 +53,13 @@ struct FolderTreeList: View {
                     }
                 })
                 .gesture(TapGesture(count: 1).modifiers(.command).onEnded {
-                    navigatorModel.multiSelection.insert(item.url)
+                    navigatorModel.selection.insert(item.url)
                 })
                 .gesture(TapGesture(count: 1).modifiers(.shift).onEnded {
-                    navigatorModel.multiSelection.insert(item.url)
+                    navigatorModel.selection.insert(item.url)
                 })
                 .gesture(TapGesture(count: 1).onEnded {
-                    navigatorModel.multiSelection = [item.url]
+                    navigatorModel.selection = [item.url]
                 })
         }
         .listStyle(.inset)

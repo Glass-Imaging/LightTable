@@ -60,10 +60,10 @@ struct LightTableView: View {
             }
         }
         .background(backgroundColor)
-        .onChange(of: navigatorModel.multiSelection) { newValue in
+        .onChange(of: navigatorModel.selection) { newValue in
             var directories:[URL] = []
 
-            for entry in navigatorModel.multiSelection {
+            for entry in navigatorModel.selection {
                 directories.append(entry)
             }
 
@@ -71,7 +71,7 @@ struct LightTableView: View {
         }
         .onChange(of: navigatorModel.children) { children in
             // Reset navigator's selection
-            navigatorModel.multiSelection = Set<URL>()
+            navigatorModel.selection = Set<URL>()
 
             // Reset image browser state
             imageBrowserModel.reset()

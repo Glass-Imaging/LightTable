@@ -31,7 +31,10 @@ struct FolderTreeDisclosure: View {
                     .onTapGesture(count: 2) {
                         doubleTapAction(url)
                     }
-                    .gesture(TapGesture(count: 1).modifiers(.shift).onEnded {
+                    .gesture(TapGesture(count: 1).modifiers([.shift]).onEnded {
+                        selection.insert(url)
+                    })
+                    .gesture(TapGesture(count: 1).modifiers([.command]).onEnded {
                         selection.insert(url)
                     })
                     .onTapGesture(count: 1) {

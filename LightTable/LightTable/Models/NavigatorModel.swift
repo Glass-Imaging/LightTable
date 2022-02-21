@@ -11,7 +11,7 @@ struct NavigatorModel: Equatable, Hashable {
     var root:URL? = nil
     var children:[URL] = []
 
-    var multiSelection = Set<URL>()
+    var selection = Set<URL>()
 
     var historyBack:[URL] = []
     var historyForward:[URL] = []
@@ -25,7 +25,7 @@ struct NavigatorModel: Equatable, Hashable {
     }
 
     func hasSelection() -> Bool {
-        !multiSelection.isEmpty
+        !selection.isEmpty
     }
 
     func hasParentFolder() -> Bool {
@@ -54,12 +54,12 @@ struct NavigatorModel: Equatable, Hashable {
             let previousRoot = root
             update(url: parentFolder(url: root))
             // TODO: Selection gets lost...
-            multiSelection = [previousRoot]
+            selection = [previousRoot]
         }
     }
 
     mutating func selectedFolder() {
-        if let selection = multiSelection.first {
+        if let selection = selection.first {
             update(url: selection)
         }
     }

@@ -25,10 +25,10 @@ struct FolderTreeNavigator: View {
 
                 Divider()
 
-                // FolderTreeList(navigatorModel: navigatorModel, selection: $navigatorModel.multiSelection)
+                // FolderTreeList(navigatorModel: $navigatorModel)
 
-                List(navigatorModel.children, id:\.self, selection: $navigatorModel.multiSelection) { folder in
-                    FolderTreeDisclosure(url: folder, selection: $navigatorModel.multiSelection, doubleTapAction:{ url in
+                List(navigatorModel.children, id:\.self, selection: $navigatorModel.selection) { folder in
+                    FolderTreeDisclosure(url: folder, selection: $navigatorModel.selection, doubleTapAction:{ url in
                         navigatorModel.update(url: url)
                     })
                 }
