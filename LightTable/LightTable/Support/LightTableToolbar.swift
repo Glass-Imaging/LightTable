@@ -80,7 +80,7 @@ extension LightTableView {
 
         ToolbarItemGroup(placement: .automatic) {
             Button(action: {
-                imageBrowserModel.imageViewSelection(char: "`")
+                imageBrowserModel.resetImageViewSelection()
             }, label: {
                 let caption = imageBrowserModel.imageViewSelection >= 0 ? "\(imageBrowserModel.imageViewSelection + 1)" : "—"
                 Image(systemName: "viewfinder")

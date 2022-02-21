@@ -63,6 +63,10 @@ struct ImageBrowserModel {
         }
     }
 
+    mutating func resetImageViewSelection() {
+        imageViewSelection = -1
+    }
+
     // Fullscreen view presentation
     var fullScreen = false
 
@@ -117,7 +121,7 @@ struct ImageBrowserModel {
     }
 
     mutating func resetInteractiveState() {
-        imageViewSelection = -1
+        resetImageViewSelection()
         // fullScreen = false
         viewScaleFactor = 0
         viewOffset = CGPoint.zero
@@ -144,6 +148,8 @@ struct ImageBrowserModel {
             let fileListing = imageFileListingAt(url: directory)
             directories.append(directory)
             files.append(fileListing)
+
+            resetImageViewSelection()
         }
     }
 
@@ -165,12 +171,16 @@ struct ImageBrowserModel {
 
         // Remove the directory entry
         directories.remove(at: index)
+
+        resetImageViewSelection()
     }
 
     mutating func reset() {
         directories = []
         files = []
         selection = []
+
+        resetImageViewSelection()
     }
 
     func isSelcted(file: URL) -> Bool {

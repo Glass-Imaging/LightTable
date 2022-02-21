@@ -44,12 +44,6 @@ struct ImageBrowserView: View {
                     .background(backgroundColor)
             }
         }
-        .onChange(of: model.files) { _ in
-            model.imageViewSelection(char: "`")
-        }
-        .onChange(of: model.selection) { _ in
-            model.imageViewSelection(char: "`")
-        }
     }
 
     struct BrowserCommands: Commands {
@@ -83,11 +77,11 @@ struct ImageBrowserView: View {
                 Divider()
 
                 Group {
-                    CommandButton(label: "Zoom Out", key: "-", modifiers: .command) {
-                        model?.zoomOut()
-                    }
                     CommandButton(label: "Zoom In", key: "=", modifiers: .command) {
                         model?.zoomIn()
+                    }
+                    CommandButton(label: "Zoom Out", key: "-", modifiers: .command) {
+                        model?.zoomOut()
                     }
                     CommandButton(label: "Zoom To Fit", key: "=") {
                         model?.zoomToFit()
@@ -119,7 +113,7 @@ struct ImageBrowserView: View {
                         model?.imageViewSelection(char: "0")
                     }
                     CommandButton(label: "Show All", key: "`") {
-                        model?.imageViewSelection(char: "`")
+                        model?.resetImageViewSelection()
                     }
                 }
                 .disabled(model == nil)
