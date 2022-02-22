@@ -32,6 +32,7 @@
 		E5A6F9DA27B4B29800D9D305 /* NavigatorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9D927B4B29800D9D305 /* NavigatorModel.swift */; };
 		E5A6F9DC27B4B30100D9D305 /* FolderTreeHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9DB27B4B30100D9D305 /* FolderTreeHeader.swift */; };
 		E5CA6BB427B5E0D3002D1039 /* FolderTreeNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CA6BB327B5E0D3002D1039 /* FolderTreeNavigator.swift */; };
+		E5D4D87327C49DFC00F1D944 /* Folder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5D4D87227C49DFC00F1D944 /* Folder.swift */; };
 		E5DF6B1D27BCB4E900D191AF /* CGOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5DF6B1C27BCB4E900D191AF /* CGOperations.swift */; };
 		E5DF6B1F27BDFA0100D191AF /* ImageUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5DF6B1E27BDFA0100D191AF /* ImageUtils.swift */; };
 		E5E3D35327AE401700BA332D /* PaneDivider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E3D35227AE401700BA332D /* PaneDivider.swift */; };
@@ -67,6 +68,7 @@
 		E5A6F9D927B4B29800D9D305 /* NavigatorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigatorModel.swift; sourceTree = "<group>"; };
 		E5A6F9DB27B4B30100D9D305 /* FolderTreeHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTreeHeader.swift; sourceTree = "<group>"; };
 		E5CA6BB327B5E0D3002D1039 /* FolderTreeNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTreeNavigator.swift; sourceTree = "<group>"; };
+		E5D4D87227C49DFC00F1D944 /* Folder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Folder.swift; sourceTree = "<group>"; };
 		E5DF6B1C27BCB4E900D191AF /* CGOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGOperations.swift; sourceTree = "<group>"; };
 		E5DF6B1E27BDFA0100D191AF /* ImageUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageUtils.swift; sourceTree = "<group>"; };
 		E5E3D35227AE401700BA332D /* PaneDivider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaneDivider.swift; sourceTree = "<group>"; };
@@ -132,6 +134,7 @@
 				E51DB2D827A9B0E10046EFFA /* ImageBrowserModel.swift */,
 				E5A6F9D927B4B29800D9D305 /* NavigatorModel.swift */,
 				E54B33B127BF052E00455433 /* CGImageWithMetadata.swift */,
+				E5D4D87227C49DFC00F1D944 /* Folder.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -277,6 +280,7 @@
 				E51DB2AC27A9ACAE0046EFFA /* LightTableApp.swift in Sources */,
 				E5A6F9D127B3442900D9D305 /* ScrollViewOffsetModifier.swift in Sources */,
 				E5CA6BB427B5E0D3002D1039 /* FolderTreeNavigator.swift in Sources */,
+				E5D4D87327C49DFC00F1D944 /* Folder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

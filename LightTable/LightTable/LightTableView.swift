@@ -69,7 +69,7 @@ struct LightTableView: View {
 
             imageBrowserModel.setDirectories(directories: directories)
         }
-        .onChange(of: navigatorModel.children) { children in
+        .onChange(of: navigatorModel.root) { _ in
             // Reset navigator's selection
             navigatorModel.selection = Set<URL>()
 
@@ -86,7 +86,7 @@ struct LightTableView: View {
                 Button("Open...") {
                     var listing:[URL] = []
                     if let selectedDirectory = NSOpenPanelDirectoryListing(files: &listing) {
-                        model?.update(url: selectedDirectory, listing: listing)
+                        model?.update(url: selectedDirectory)
                     }
                 }
                 .keyboardShortcut("O", modifiers: .command)

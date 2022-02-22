@@ -8,14 +8,12 @@
 import SwiftUI
 
 struct NavigatorModel: Equatable, Hashable {
-    private(set) var root:URL? = nil
-    private(set) var children:[URL] = []
+    // Directly accessed by FolderTreeNavigator
+    /* private(set) */ var root:Folder? = nil
+    /* private(set) */ var selection = Set<URL>()
 
     private(set) var historyBack:[URL] = []
     private(set) var historyForward:[URL] = []
-
-    // Directly accessed by FolderTreeNavigator
-    /* private(set) */ var selection = Set<URL>()
 
     func hasBackHistory() -> Bool {
         !historyBack.isEmpty
@@ -31,31 +29,21 @@ struct NavigatorModel: Equatable, Hashable {
 
     func hasParentFolder() -> Bool {
         let rootPath = URL(string: "file:///")
-        return root != rootPath
+        return root != nil && root!.url != rootPath
     }
 
     mutating func update(url: URL) {
         if let root = root {
-            historyBack.append(root)
+            historyBack.append(root.url)
         }
-        root = url
-        children = folderListingAt(url: url)
-    }
-
-    mutating func update(url: URL, listing: [URL]) {
-        if let root = root {
-            historyBack.append(root)
-        }
-        root = url
-        children = listing
+        root = Folder(url: url)
     }
 
     mutating func enclosingFolder() {
         if let root = root {
-            let previousRoot = root
-            update(url: parentFolder(url: root))
+            update(url: parentFolder(url: root.url))
             // TODO: Selection gets lost...
-            selection = [previousRoot]
+            selection = [root.url]
         }
     }
 
@@ -69,10 +57,9 @@ struct NavigatorModel: Equatable, Hashable {
         if (!historyBack.isEmpty) {
             let item = historyBack.remove(at: historyBack.count - 1)
             if let root = root {
-                historyForward.append(root)
+                historyForward.append(root.url)
             }
-            root = item
-            children = folderListingAt(url: item)
+            root = Folder(url: item)
         }
     }
 
@@ -80,10 +67,9 @@ struct NavigatorModel: Equatable, Hashable {
         if (!historyForward.isEmpty) {
             let item = historyForward.remove(at: historyForward.count - 1)
             if let root = root {
-                historyBack.append(root)
+                historyBack.append(root.url)
             }
-            root = item
-            children = folderListingAt(url: item)
+            root = Folder(url: item)
         }
     }
 }

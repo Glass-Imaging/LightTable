@@ -8,37 +8,34 @@
 import SwiftUI
 
 struct FolderTreeDisclosure: View {
-    let url:URL
+    let folder:Folder
     @Binding var selection:Set<URL>
     @State var expanded = false
     let doubleTapAction:(_ entry:URL) -> Void
 
     var body: some View {
-        var hasImages = false
-        let children = folderListingAt(url: url, hasImages: &hasImages)
-
-        if children.isEmpty {
-            Label(url.lastPathComponent, systemImage: hasImages ? "folder.fill" : "folder")
+        if folder.children.isEmpty {
+            Label(folder.url.lastPathComponent, systemImage: folder.hasImages ? "folder.fill" : "folder")
         } else {
             DisclosureGroup(isExpanded: $expanded, content: {
                 if expanded {
-                    ForEach(children, id: \.self) { item in
-                        FolderTreeDisclosure(url: item, selection: _selection, doubleTapAction: doubleTapAction)
+                    ForEach(folder.children, id: \.self.url) { item in
+                        FolderTreeDisclosure(folder: item, selection: _selection, doubleTapAction: doubleTapAction)
                     }
                 }
             }, label: {
-                Label(url.lastPathComponent, systemImage: hasImages ? "folder.fill" : "folder")
+                Label(folder.url.lastPathComponent, systemImage: folder.hasImages ? "folder.fill" : "folder")
                     .gesture(TapGesture(count: 2).onEnded {
-                        doubleTapAction(url)
+                        doubleTapAction(folder.url)
                     })
                     .gesture(TapGesture(count: 1).modifiers([.shift]).onEnded {
-                        selection.insert(url)
+                        selection.insert(folder.url)
                     })
                     .gesture(TapGesture(count: 1).modifiers([.command]).onEnded {
-                        selection.insert(url)
+                        selection.insert(folder.url)
                     })
                     .gesture(TapGesture(count: 1).onEnded {
-                        selection = [url]
+                        selection = [folder.url]
                     })
             })
         }
@@ -51,9 +48,7 @@ struct FolderTreeNavigator: View {
     @FocusState private var navigatorIsFocused: Bool
 
     var body: some View {
-        if (navigatorModel.children.count == 0) {
-            Text("Drop a folder here.")
-        } else {
+        if let root = navigatorModel.root {
             VStack(alignment: .leading) {
                 Divider()
 
@@ -62,8 +57,8 @@ struct FolderTreeNavigator: View {
 
                 Divider()
 
-                List(navigatorModel.children, id:\.self, selection: $navigatorModel.selection) { folder in
-                    FolderTreeDisclosure(url: folder, selection: $navigatorModel.selection) { url in
+                List(root.children, id:\.self.url, selection: $navigatorModel.selection) { folder in
+                    FolderTreeDisclosure(folder: folder, selection: $navigatorModel.selection) { url in
                         navigatorModel.update(url: url)
                     }
                 }
@@ -72,6 +67,8 @@ struct FolderTreeNavigator: View {
                     navigatorIsFocused = true
                 }
             }
+        } else {
+            Text("Drop a folder here.")
         }
     }
 }
