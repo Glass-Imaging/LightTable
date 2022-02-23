@@ -30,44 +30,44 @@ extension LightTableView {
     func LightTableToolbar() -> some ToolbarContent {
         ToolbarItemGroup(placement: .automatic) {
             Button(action: {
-                imageBrowserModel.rotateLeft()
+                viewModel.rotateLeft()
             }) {
                 Image(systemName: "rotate.left")
                 .help("Rotate Left")
             }
             Button(action: {
-                imageBrowserModel.rotateRight()
+                viewModel.rotateRight()
             }) {
                 Image(systemName: "rotate.right")
                 .help("Rotate Right")
             }
 
-            OrientationIcon(orientation: imageBrowserModel.orientation)
+            OrientationIcon(orientation: viewModel.orientation)
 
             Divider()
         }
         ToolbarItemGroup(placement: .automatic) {
             Button(action: {
-                imageBrowserModel.zoomOut()
+                viewModel.zoomOut()
             }) {
                 Image(systemName: "minus.magnifyingglass")
                 .help("Zoom Out")
             }
             Button(action: {
-                imageBrowserModel.zoomIn()
+                viewModel.zoomIn()
             }) {
                 Image(systemName: "plus.magnifyingglass")
                 .help("Zoom In")
             }
             Button(action: {
-                imageBrowserModel.zoomToFit()
+                viewModel.zoomToFit()
             }) {
                 Image(systemName: "arrow.up.left.and.down.right.magnifyingglass")
                 .help("Zoom To Fit")
             }
 
-            Text(imageBrowserModel.viewScaleFactor == 0 ? "Fit" : "\(Int(imageBrowserModel.viewScaleFactor))X")
-                .foregroundColor(imageBrowserModel.viewScaleFactor > 0 ? Color.blue : Color.gray)
+            Text(viewModel.viewScaleFactor == 0 ? "Fit" : "\(Int(viewModel.viewScaleFactor))X")
+                .foregroundColor(viewModel.viewScaleFactor > 0 ? Color.blue : Color.gray)
                 .frame(width: 25)
                 .padding(2)
                 .overlay(
@@ -80,20 +80,20 @@ extension LightTableView {
 
         ToolbarItemGroup(placement: .automatic) {
             Button(action: {
-                imageBrowserModel.resetImageViewSelection()
+                viewModel.resetImageViewSelection()
             }, label: {
-                let caption = imageBrowserModel.imageViewSelection >= 0 ? "\(imageBrowserModel.imageViewSelection + 1)" : "—"
+                let caption = viewModel.imageViewSelection >= 0 ? "\(viewModel.imageViewSelection + 1)" : "—"
                 Image(systemName: "viewfinder")
                     .help("View Selection")
                 Text(caption)
                     .frame(width: 12)
-            }).foregroundColor(imageBrowserModel.imageViewSelection >= 0 ? .blue : .gray)
+            }).foregroundColor(viewModel.imageViewSelection >= 0 ? .blue : .gray)
 
             Divider()
         }
 
         ToolbarItemGroup(placement: .automatic) {
-            Picker("View Arrangement", selection: $imageBrowserModel.imageViewLayout) {
+            Picker("View Arrangement", selection: $viewModel.imageViewLayout) {
                 Image(systemName: "rectangle.split.3x1")
                     .help("Horizontal")
                     .tag(ImageListLayout.Horizontal)
@@ -112,11 +112,11 @@ extension LightTableView {
         }
 
         ToolbarItem(placement: .automatic) {
-            Toggle(isOn: $imageBrowserModel.fullScreen, label: {
+            Toggle(isOn: $viewModel.fullScreen, label: {
                 Image(systemName: "arrow.up.left.and.arrow.down.right")
                     .help("Full Screen View")
             })
-                .foregroundColor(imageBrowserModel.fullScreen ? .blue : .gray)
+                .foregroundColor(viewModel.fullScreen ? .blue : .gray)
                 .toggleStyle(.button)
         }
     }

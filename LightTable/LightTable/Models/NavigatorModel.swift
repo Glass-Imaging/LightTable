@@ -5,7 +5,7 @@
 //  Created by Fabio Riccardi on 2/9/22.
 //
 
-import SwiftUI
+import Foundation
 
 struct NavigatorModel: Equatable, Hashable {
     // Directly accessed by FolderTreeNavigator

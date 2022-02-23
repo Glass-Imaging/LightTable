@@ -14,7 +14,8 @@ enum ImageListLayout {
 }
 
 struct ImageListView: View {
-    @Binding var model:ImageBrowserModel
+    @Binding var browserModel:ImageBrowserModel
+    @Binding var viewModel:ImageViewModel
 
     func gridLayout(count:Int) -> [GridItem] {
         let gridItem = GridItem(.flexible())
@@ -52,20 +53,21 @@ struct ImageListView: View {
 
     var body: some View {
         HStack {
-            if (model.selection.count == 0) {
+            if (browserModel.selection.count == 0) {
                 Text("Make a selection.")
             } else {
-                if (model.imageViewSelection >= 0 && model.imageViewSelection < model.selection.count) {
-                    ImageView(url: model.selection[model.imageViewSelection], model: $model, index: model.imageViewSelection)
+                if (viewModel.imageViewSelection >= 0 && viewModel.imageViewSelection < browserModel.selection.count) {
+                    let file = browserModel.selection[viewModel.imageViewSelection]
+                    ImageView(url: file, fileIndex: browserModel.fileIndex(file: file), index: viewModel.imageViewSelection, imageViewModel: $viewModel)
                 } else {
-                    let gridConstraints = gridSizeConstraints(count: model.selection.count, layout: model.imageViewLayout)
+                    let gridConstraints = gridSizeConstraints(count: browserModel.selection.count, layout: viewModel.imageViewLayout)
                     GeometryReader { geometry in
                         let gridItemLayout:[GridItem] = gridLayout(count: Int(gridConstraints.width))
                         LazyVGrid(columns: gridItemLayout) {
-                            let items = min(model.selection.count, 16)
+                            let items = min(browserModel.selection.count, 16)
                             ForEach(0 ..< items, id: \.self) { index in
-                                let file = model.selection[index]
-                                ImageView(url: file, model: $model, index: index)
+                                let file = browserModel.selection[index]
+                                ImageView(url: file, fileIndex: browserModel.fileIndex(file: file), index: index, imageViewModel: $viewModel)
                                     .id(file)
                             }.frame(width: geometry.size.width / gridConstraints.width,
                                     height: geometry.size.height / gridConstraints.height)

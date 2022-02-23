@@ -13,18 +13,14 @@ private func toggleSidebar() {
 }
 
 struct LightTableView: View {
-    @State var imageBrowserModel = ImageBrowserModel()
     @State var navigatorModel = NavigatorModel()
+    @State var browserModel = ImageBrowserModel()
+    @State var viewModel = ImageViewModel()
 
     let backgroundColor = Color(red: 30.0/255.0, green: 30.0/255.0, blue: 30.0/255.0)
 
     var body: some View {
-        let browserActive = !imageBrowserModel.directories.isEmpty
-
-        let modelBinding = Binding<ImageBrowserModel>(
-            get: { imageBrowserModel },
-            set: { _in in }
-        )
+        let browserActive = !browserModel.directories.isEmpty
 
         VStack {
             ZStack {
@@ -41,40 +37,41 @@ struct LightTableView: View {
                         }
 
                     if (browserActive) {
-                        ImageBrowserView(model: $imageBrowserModel)
+                        ImageBrowserView(browserModel: $browserModel, viewModel: $viewModel)
                             .toolbar {
                                 LightTableToolbar()
                             }
                     }
                 }
                 .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
-                .focusedSceneValue(\.focusedNavigatorModel, $navigatorModel)
                 .onDrop(of: ["public.file-url"], delegate: self)
 
-                if imageBrowserModel.fullScreen {
-                    ImageListView(model: $imageBrowserModel)
+                if viewModel.fullScreen {
+                    ImageListView(browserModel: $browserModel, viewModel: $viewModel)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .focusedSceneValue(\.focusedBrowserModel, modelBinding)
                         .background(backgroundColor)
                 }
             }
         }
+        .focusedSceneValue(\.focusedNavigatorModel, $navigatorModel)
+        .focusedSceneValue(\.focusedBrowserModel, $browserModel)
+        .focusedSceneValue(\.focusedViewModel, $viewModel)
         .background(backgroundColor)
         .onChange(of: navigatorModel.selection) { newValue in
             var directories:[URL] = []
-
             for entry in navigatorModel.selection {
                 directories.append(entry)
             }
-
-            imageBrowserModel.setDirectories(directories: directories)
+            browserModel.setDirectories(directories: directories)
+            viewModel.resetImageViewSelection()
         }
         .onChange(of: navigatorModel.root) { _ in
             // Reset navigator's selection
             navigatorModel.selection = Set<URL>()
 
             // Reset image browser state
-            imageBrowserModel.reset()
+            browserModel.reset()
+            viewModel.resetImageViewSelection()
         }
     }
 

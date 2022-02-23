@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct ThumbnailGrid: View {
-    @Binding var model:ImageBrowserModel
+    @Binding var browserModel:ImageBrowserModel
+    @Binding var thumbnailSize:CGFloat
 
     @State private var scrollViewOffset = CGPoint.zero
 
@@ -16,10 +17,10 @@ struct ThumbnailGrid: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(0 ..< model.directories.count, id: \.self) { directoryIndex in
-                if (!model.files[directoryIndex].isEmpty) {
-                    let folderName = model.directories[directoryIndex].lastPathComponent
-                    let folderListing = model.files[directoryIndex]
+            ForEach(0 ..< browserModel.directories.count, id: \.self) { directoryIndex in
+                if (!browserModel.files[directoryIndex].isEmpty) {
+                    let folderName = browserModel.directories[directoryIndex].lastPathComponent
+                    let folderListing = browserModel.files[directoryIndex]
 
                     Section(header: ZStack(alignment: .leading) {
                         Rectangle()
@@ -31,20 +32,19 @@ struct ThumbnailGrid: View {
                     }) {
                         LazyHStack(alignment: .top) {
                             ForEach(folderListing, id: \.self) { file in
-                                ThumbnailButtonView(file: file, selection: $model.selection, thumbnailSize: $model.thumbnailSize) { modifier in
+                                ThumbnailButtonView(file: file, selection: $browserModel.selection, thumbnailSize: $thumbnailSize) { modifier in
                                     // Handle Command-Click mouse actions
                                     if (modifier.contains(.command)) {
-                                        model.addToSelection(file: file)
+                                        browserModel.addToSelection(file: file)
                                     } else {
-                                        model.updateSelection(file: file)
+                                        browserModel.updateSelection(file: file)
                                     }
                                 }
                                 .id(file)
-                                .focusedSceneValue(\.focusedBrowserModel, $model)
                             }
                         }
                         // TODO: Kludge, LazyHStack tends to grow vertically, so we need to constrain it
-                        .frame(maxHeight: model.thumbnailSize + 20)
+                        .frame(maxHeight: thumbnailSize + 20)
                     }
                 }
             }
@@ -56,33 +56,34 @@ struct ThumbnailGrid: View {
 }
 
 struct ThumbnailScrollView: View {
-    @Binding var model:ImageBrowserModel
+    @Binding var browserModel:ImageBrowserModel
+    @Binding var thumbnailSize:CGFloat
 
     var body: some View {
-        if (model.files.count == 0 || model.files[0].count == 0) {
+        if (browserModel.files.count == 0 || browserModel.files[0].count == 0) {
             Text("Select a folder with images")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
             GeometryReader { geometry in
                 ScrollViewReader { scroller in
                     ScrollView([.vertical, .horizontal], showsIndicators: true) {
-                        ThumbnailGrid(model: $model)
+                        ThumbnailGrid(browserModel: $browserModel, thumbnailSize: $thumbnailSize)
                             .frame(minWidth: geometry.size.width, minHeight: geometry.size.height)
                     }
                     .coordinateSpace(name: "scroll")
-                    .onChange(of: model.files) { newFiles in
+                    .onChange(of: browserModel.files) { newFiles in
                         if (newFiles.count == 1 && !newFiles[0].isEmpty) {
                             DispatchQueue.main.async {
                                 scroller.scrollTo(newFiles[0][0])
                             }
                         }
                     }
-                    .onChange(of: model.selection) { selection in
+                    .onChange(of: browserModel.selection) { selection in
                         if (!selection.isEmpty) {
-                            if (model.nextLocation != nil) {
+                            if (browserModel.nextLocation != nil) {
                                 DispatchQueue.main.async {
                                     withAnimation(.linear) {
-                                        scroller.scrollTo(model.nextLocation)
+                                        scroller.scrollTo(browserModel.nextLocation)
                                     }
                                 }
                             }

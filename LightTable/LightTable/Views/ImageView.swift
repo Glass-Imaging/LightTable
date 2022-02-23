@@ -60,9 +60,11 @@ struct ImageViewCaption: View {
 }
 
 struct ImageView: View {
-    @Binding var model:ImageBrowserModel
     let url:URL
     let index:Int
+    let fileIndex:(Int, Int)
+
+    @Binding var imageViewModel:ImageViewModel
 
     @ObservedObject var imageLoader = ImageLoader()
     @State var cgImageWithMetadata:CGImageWithMetadata? = nil
@@ -80,11 +82,13 @@ struct ImageView: View {
         return CGPoint.zero
     }
 
-    init(url:URL, model:Binding<ImageBrowserModel>, index:Int) {
+    init(url:URL, fileIndex:(Int, Int), index:Int, imageViewModel:Binding<ImageViewModel>) {
         self.url = url
-        self._model = model
+        self.fileIndex = fileIndex
         self.index = index
+        self._imageViewModel = imageViewModel
 
+        print("reloading image")
         imageLoader.load(url:url)
     }
 
@@ -95,17 +99,17 @@ struct ImageView: View {
             let metadata = cgImageWithMetadata.metadata
             let imageURL = cgImageWithMetadata.url
 
-            if model.useMasterOrientation {
+            if imageViewModel.useMasterOrientation {
                 // ImageView objects are being recycled by the container, see if this one is up to date
                 if (url == imageURL && index == 0) {
                     baseOrientation = imageOrientation(metadata: metadata)
-                    if model.masterOrientation != baseOrientation {
+                    if imageViewModel.masterOrientation != baseOrientation {
                         DispatchQueue.main.async {
-                            model.setMasterOrientation(orientation: baseOrientation)
+                            imageViewModel.setMasterOrientation(orientation: baseOrientation)
                         }
                     }
                 } else {
-                    baseOrientation = model.masterOrientation
+                    baseOrientation = imageViewModel.masterOrientation
                 }
             } else {
                 baseOrientation = imageOrientation(metadata: metadata)
@@ -113,7 +117,7 @@ struct ImageView: View {
         } else {
             baseOrientation = .up
         }
-        return rotate(value: baseOrientation, by: model.orientation)
+        return rotate(value: baseOrientation, by: imageViewModel.orientation)
     }
 
     var body: some View {
@@ -129,7 +133,7 @@ struct ImageView: View {
 
                     var viewOffset = storedOffset(url: url)
 
-                    let scale = model.viewScaleFactor
+                    let scale = imageViewModel.viewScaleFactor
 
                     let swapDimensions = [.left, .right].contains(orientation)
                     let imageSize = swapDimensions ? CGSize(width: cgImage.height, height: cgImage.width) : CGSize(width: cgImage.width, height: cgImage.height)
@@ -139,7 +143,7 @@ struct ImageView: View {
 
                     let offset = scale == 0
                                ? CGPoint.zero
-                               : model.viewOffset * scale + model.viewOffsetInteractive + viewOffset + viewOffsetInteractive - viewPortOffset
+                               : imageViewModel.viewOffset * scale + imageViewModel.viewOffsetInteractive + viewOffset + viewOffsetInteractive - viewPortOffset
 
                     VStack {
                         Image(cgImage, scale: 1, orientation: orientation, label: Text(String(describing: orientation)))
@@ -148,7 +152,7 @@ struct ImageView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .overlay(alignment: .bottom) {
-                                    ImageViewCaption(url: url, index: model.fileIndex(file: url), metadata: metadata, viewInfoItems: $model.viewInfoItems)
+                                    ImageViewCaption(url: url, index: fileIndex, metadata: metadata, viewInfoItems: $imageViewModel.viewInfoItems)
                                 }
                     }
                     .frame(width: frameSize.width, height: frameSize.height, alignment: .center)
@@ -176,13 +180,13 @@ struct ImageView: View {
                         DragGesture()
                             .onChanged { gesture in
                                 if (scale > 0) {
-                                    model.viewOffsetInteractive = CGPoint(x: gesture.translation.width, y: gesture.translation.height)
+                                    imageViewModel.viewOffsetInteractive = CGPoint(x: gesture.translation.width, y: gesture.translation.height)
                                 }
                             }
                             .onEnded { value in
                                 if (scale > 0) {
-                                    model.viewOffset += model.viewOffsetInteractive / scale
-                                    model.viewOffsetInteractive = CGPoint.zero
+                                    imageViewModel.viewOffset += imageViewModel.viewOffsetInteractive / scale
+                                    imageViewModel.viewOffsetInteractive = CGPoint.zero
                                 }
                             }
                     )

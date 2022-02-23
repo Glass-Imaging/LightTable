@@ -17,6 +17,15 @@ extension FocusedValues {
         typealias Value = Binding<ImageBrowserModel>
     }
 
+    var focusedViewModel: Binding<ImageViewModel>? {
+        get { self[FocusedImageViewModelKey.self] }
+        set { self[FocusedImageViewModelKey.self] = newValue }
+    }
+
+    private struct FocusedImageViewModelKey: FocusedValueKey {
+        typealias Value = Binding<ImageViewModel>
+    }
+
     var focusedNavigatorModel: Binding<NavigatorModel>? {
         get { self[FocusedNavigatorModelKey.self] }
         set { self[FocusedNavigatorModelKey.self] = newValue }
