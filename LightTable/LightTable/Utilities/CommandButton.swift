@@ -8,18 +8,6 @@
 import SwiftUI
 import Combine
 
-func CommandButton<M>(model: M?, label:String, key: KeyEquivalent, modifiers: EventModifiers = [], action: @escaping (_ model: M) -> Void) -> some View {
-    return Button {
-        if let model = model {
-            action(model)
-        }
-    } label: {
-        Text(label)
-    }
-    .keyboardShortcut(key, modifiers: modifiers)
-    .disabled(model == nil)
-}
-
 func CommandButton(label:String, key: KeyEquivalent, modifiers: EventModifiers = [], action: @escaping () -> Void) -> some View {
     return Button {
         action()
@@ -27,5 +15,4 @@ func CommandButton(label:String, key: KeyEquivalent, modifiers: EventModifiers =
         Text(label)
     }
     .keyboardShortcut(key, modifiers: modifiers)
-    // .disabled(model == nil)
 }

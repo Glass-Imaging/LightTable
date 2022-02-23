@@ -76,36 +76,36 @@ struct LightTableView: View {
     }
 
     struct ContentCommands: Commands {
-        @FocusedBinding(\.focusedNavigatorModel) var model: NavigatorModel?
+        @FocusedBinding(\.focusedNavigatorModel) var navigatorModel: NavigatorModel?
 
         var body: some Commands {
             CommandGroup(after: CommandGroupPlacement.newItem) {
                 Button("Open...") {
                     var listing:[URL] = []
                     if let selectedDirectory = NSOpenPanelDirectoryListing(files: &listing) {
-                        model?.update(url: selectedDirectory)
+                        navigatorModel?.update(url: selectedDirectory)
                     }
                 }
                 .keyboardShortcut("O", modifiers: .command)
-                .disabled(model == nil)
+                .disabled(navigatorModel == nil)
             }
 
             CommandMenu("Go") {
                 CommandButton(label: "Back", key: "[", modifiers: [.command]) {
-                    model?.back()
-                }.disabled(model == nil || !model!.hasBackHistory())
+                    navigatorModel?.back()
+                }.disabled(navigatorModel == nil || !navigatorModel!.hasBackHistory())
 
                 CommandButton(label: "Forward", key: "]", modifiers: [.command]) {
-                    model?.forward()
-                }.disabled(model == nil || !model!.hasForwardHistory())
+                    navigatorModel?.forward()
+                }.disabled(navigatorModel == nil || !navigatorModel!.hasForwardHistory())
 
                 CommandButton(label: "Enclosing Folder", key: .upArrow, modifiers: [.command]) {
-                    model?.enclosingFolder()
-                }.disabled(model == nil)
+                    navigatorModel?.enclosingFolder()
+                }.disabled(navigatorModel == nil)
 
                 CommandButton(label: "Selected Folder", key: .downArrow, modifiers: [.command]) {
-                    model?.selectedFolder()
-                }.disabled(model == nil || !model!.hasSelection())
+                    navigatorModel?.selectedFolder()
+                }.disabled(navigatorModel == nil || !navigatorModel!.hasSelection())
             }
         }
     }

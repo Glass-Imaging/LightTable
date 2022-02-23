@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct NavigatorModel: Equatable, Hashable {
+struct NavigatorModel {
     // Directly accessed by FolderTreeNavigator
     /* private(set) */ var root:Folder? = nil
     /* private(set) */ var selection = Set<URL>()
