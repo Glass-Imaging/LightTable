@@ -14,8 +14,24 @@ extension KeyEquivalent: Equatable {
 }
 
 struct ImageBrowserModel {
-    private(set) var directories:[URL] = []
-    private(set) var files:[[URL]] = []
+    private(set) var folders = Set<Folder>()
+
+    var directories:[URL] {
+        var result:[URL] = []
+        for f in folders {
+            result.append(f.url)
+        }
+        return result
+    }
+
+    var files:[[URL]] {
+        var result:[[URL]] = []
+        for folder in folders {
+            result.append(folder.files)
+        }
+        return result
+    }
+
     /* private(set) */ var selection:[URL] = []
 
     // Keyboard movement computed location with multiple selections
@@ -30,28 +46,41 @@ struct ImageBrowserModel {
         return (0, 0)
     }
 
-    mutating func setDirectories(directories: [URL]) {
-        // Check removed directories
-        for d in self.directories {
-            if (!directories.contains(d)) {
-                removeDirectory(directory: d)
+    mutating func setDirectories(directories: Set<URL>) {
+        // Remove entries from selection
+        for folder in folders {
+            if !directories.contains(folder.url) {
+                for file in folder.files {
+                    if let index = selection.firstIndex(of: file) {
+                        selection.remove(at: index)
+                    }
+                }
             }
         }
-        // Check for added directories
-        for d in directories {
-            if (!self.directories.contains(d)) {
-                addDirectory(directory: d)
-            }
+
+        var newFolders = Set<Folder>()
+        for directory in directories {
+            newFolders.insert(Folder(url: directory))
         }
+        folders = newFolders
+
+//        // Check removed directories
+//        for d in self.directories {
+//            if (!directories.contains(d)) {
+//                removeDirectory(directory: d)
+//            }
+//        }
+//        // Check for added directories
+//        for d in directories {
+//            if (!self.directories.contains(d)) {
+//                addDirectory(directory: d)
+//            }
+//        }
     }
 
     mutating func addDirectory(directory: URL) {
-        if (!directories.contains(directory)) {
-            let fileListing = imageFileListingAt(url: directory)
-            directories.append(directory)
-            files.append(fileListing)
-
-            // resetImageViewSelection()
+        if (!folders.contains(where: { $0.url == directory })) {
+            folders.insert(Folder(url: directory))
         }
     }
 
@@ -68,16 +97,14 @@ struct ImageBrowserModel {
             selection.remove(at: fileIndex)
         }
 
-        // Remove files
-        files.remove(at: index)
-
         // Remove the directory entry
-        directories.remove(at: index)
+        if let folder = folders.first(where: { $0.url == directory }) {
+            folders.remove( folder )
+        }
     }
 
     mutating func reset() {
-        directories = []
-        files = []
+        folders = Set<Folder>()
         selection = []
     }
 

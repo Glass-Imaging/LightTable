@@ -23,7 +23,14 @@ struct LightTableView: View {
         let browserActive = !browserModel.directories.isEmpty
 
         VStack {
-            ZStack {
+            if viewModel.fullScreen {
+                ImageListView(browserModel: $browserModel, viewModel: $viewModel)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(backgroundColor)
+                    .toolbar {
+                        LightTableToolbar()
+                    }
+            } else {
                 NavigationView {
                     FolderTreeNavigator(navigatorModel: $navigatorModel)
                         .frame(minWidth: 250)
@@ -35,6 +42,18 @@ struct LightTableView: View {
                                 }
                             }
                         }
+                        .onChange(of: navigatorModel.selection) { newValue in
+                            browserModel.setDirectories(directories: newValue)
+                            viewModel.resetImageViewSelection()
+                        }
+                        .onChange(of: navigatorModel.root) { _ in
+                            // Reset navigator's selection
+                            navigatorModel.selection = Set<URL>()
+
+                            // Reset image browser state
+                            browserModel.reset()
+                            viewModel.resetImageViewSelection()
+                        }
 
                     if (browserActive) {
                         ImageBrowserView(browserModel: $browserModel, viewModel: $viewModel)
@@ -45,34 +64,12 @@ struct LightTableView: View {
                 }
                 .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
                 .onDrop(of: ["public.file-url"], delegate: self)
-
-                if viewModel.fullScreen {
-                    ImageListView(browserModel: $browserModel, viewModel: $viewModel)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(backgroundColor)
-                }
             }
         }
         .focusedSceneValue(\.focusedNavigatorModel, $navigatorModel)
         .focusedSceneValue(\.focusedBrowserModel, $browserModel)
         .focusedSceneValue(\.focusedViewModel, $viewModel)
         .background(backgroundColor)
-        .onChange(of: navigatorModel.selection) { newValue in
-            var directories:[URL] = []
-            for entry in navigatorModel.selection {
-                directories.append(entry)
-            }
-            browserModel.setDirectories(directories: directories)
-            viewModel.resetImageViewSelection()
-        }
-        .onChange(of: navigatorModel.root) { _ in
-            // Reset navigator's selection
-            navigatorModel.selection = Set<URL>()
-
-            // Reset image browser state
-            browserModel.reset()
-            viewModel.resetImageViewSelection()
-        }
     }
 
     struct ContentCommands: Commands {

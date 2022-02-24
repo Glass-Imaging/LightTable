@@ -25,6 +25,20 @@ class Folder: Equatable, Hashable {
         return cachedChildren!
     }()
 
+    private var cachedFiles: [URL]? = nil
+    lazy var files: [URL] = {
+        if let cachedFiles = cachedFiles {
+            return cachedFiles
+        }
+
+        cachedFiles = []
+        let listing = imageFileListingAt(url: url)
+        for url in listing {
+            cachedFiles!.append(url)
+        }
+        return cachedFiles!
+    }()
+
     init(url: URL) {
         self.url = url
     }
