@@ -17,10 +17,10 @@ struct ThumbnailGrid: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(0 ..< browserModel.directories.count, id: \.self) { directoryIndex in
-                if (!browserModel.files[directoryIndex].isEmpty) {
-                    let folderName = browserModel.directories[directoryIndex].lastPathComponent
-                    let folderListing = browserModel.files[directoryIndex]
+            ForEach(0 ..< browserModel.folders.count, id: \.self) { directoryIndex in
+                if (!browserModel.folders[directoryIndex].files.isEmpty) {
+                    let folderName = browserModel.folders[directoryIndex].url.lastPathComponent
+                    let folderListing = browserModel.folders[directoryIndex].files
 
                     Section(header: ZStack(alignment: .leading) {
                         Rectangle()
@@ -60,7 +60,7 @@ struct ThumbnailScrollView: View {
     @Binding var thumbnailSize:CGFloat
 
     var body: some View {
-        if (browserModel.files.count == 0 || browserModel.files[0].count == 0) {
+        if (browserModel.folders.count == 0 || browserModel.folders[0].files.count == 0) {
             Text("Select a folder with images")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
@@ -71,10 +71,10 @@ struct ThumbnailScrollView: View {
                             .frame(minWidth: geometry.size.width, minHeight: geometry.size.height)
                     }
                     .coordinateSpace(name: "scroll")
-                    .onChange(of: browserModel.files) { newFiles in
-                        if (newFiles.count == 1 && !newFiles[0].isEmpty) {
+                    .onChange(of: browserModel.folders) { newFiles in
+                        if (newFiles.count == 1 && !newFiles[0].files.isEmpty) {
                             DispatchQueue.main.async {
-                                scroller.scrollTo(newFiles[0][0])
+                                scroller.scrollTo(newFiles[0].files[0])
                             }
                         }
                     }

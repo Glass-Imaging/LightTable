@@ -14,97 +14,65 @@ extension KeyEquivalent: Equatable {
 }
 
 struct ImageBrowserModel {
-    private(set) var folders = Set<Folder>()
+    private(set) var folders:[Folder] = []
 
-    var directories:[URL] {
-        var result:[URL] = []
-        for f in folders {
-            result.append(f.url)
-        }
-        return result
-    }
-
-    var files:[[URL]] {
-        var result:[[URL]] = []
-        for folder in folders {
-            result.append(folder.files)
-        }
-        return result
-    }
-
+    // Accessed directly by the browser selection
     /* private(set) */ var selection:[URL] = []
 
     // Keyboard movement computed location with multiple selections
     private(set) var nextLocation:URL? = nil
 
     func fileIndex(file: URL) -> (Int, Int) {
-        for listing in files {
-            if let index = listing.firstIndex(of: file) {
-                return (index, listing.count)
+        for folder in folders {
+            if let index = folder.files.firstIndex(of: file) {
+                return (index, folder.files.count)
             }
         }
         return (0, 0)
     }
 
     mutating func setDirectories(directories: Set<URL>) {
-        // Remove entries from selection
+        // Check removed directories
         for folder in folders {
-            if !directories.contains(folder.url) {
+            if (!directories.contains(where: { $0 == folder.url })) {
                 for file in folder.files {
-                    if let index = selection.firstIndex(of: file) {
+                    if let index = selection.firstIndex(where: { $0 == file }) {
                         selection.remove(at: index)
                     }
                 }
             }
         }
+        folders.removeAll(where: { !directories.contains($0.url) })
 
-        var newFolders = Set<Folder>()
-        for directory in directories {
-            newFolders.insert(Folder(url: directory))
+        // Check for added directories
+        for d in directories {
+            if (!folders.contains(where: {$0.url == d})) {
+                addDirectory(directory: d)
+            }
         }
-        folders = newFolders
-
-//        // Check removed directories
-//        for d in self.directories {
-//            if (!directories.contains(d)) {
-//                removeDirectory(directory: d)
-//            }
-//        }
-//        // Check for added directories
-//        for d in directories {
-//            if (!self.directories.contains(d)) {
-//                addDirectory(directory: d)
-//            }
-//        }
     }
 
     mutating func addDirectory(directory: URL) {
         if (!folders.contains(where: { $0.url == directory })) {
-            folders.insert(Folder(url: directory))
+            folders.append(Folder(url: directory))
         }
     }
 
     mutating func removeDirectory(directory: URL) {
-        guard let index = directories.firstIndex(of: directory) else {
-            return
-        }
-
-        // Remove selections
-        for file in files[index] {
-            guard let fileIndex = selection.firstIndex(of: file) else {
-                continue
+        if let index = folders.firstIndex(where: { $0.url == directory }) {
+            // Remove selections
+            for folder in folders[index].children {
+                if let fileIndex = selection.firstIndex(of: folder.url) {
+                    selection.remove(at: fileIndex)
+                }
             }
-            selection.remove(at: fileIndex)
-        }
-
-        // Remove the directory entry
-        if let folder = folders.first(where: { $0.url == directory }) {
-            folders.remove( folder )
+            // Remove the directory entry
+            folders.remove(at: index)
         }
     }
 
     mutating func reset() {
-        folders = Set<Folder>()
+        folders = []
         selection = []
     }
 
@@ -143,12 +111,12 @@ struct ImageBrowserModel {
         }
     }
 
-    func selectionIndices(directory:Int) -> [(Int, Int)] { // selection index, file index
+    func selectionIndices(folder:Int) -> [(Int, Int)] { // selection index, file index
         var result:[(Int, Int)] = []
-        if (directory < directories.count) {
-            for i in 0..<selection.count {
+        if (folder < folders.count) {
+            for i in 0 ..< selection.count {
                 let file = selection[i]
-                guard let index = files[directory].firstIndex(of: file) else {
+                guard let index = folders[folder].files.firstIndex(of: file) else {
                     // This should not happen...
                     continue
                 }
@@ -161,8 +129,8 @@ struct ImageBrowserModel {
     func minSelectionIndex() -> Int {
         var indices:[(Int, Int)] = []
 
-        for d in 0 ..< directories.count {
-            indices.append(contentsOf: selectionIndices(directory: d))
+        for f in 0 ..< folders.count {
+            indices.append(contentsOf: selectionIndices(folder: f))
         }
         return indices.min(by: orderByFileIndex)!.0
     }
@@ -170,8 +138,8 @@ struct ImageBrowserModel {
     func maxSelectionIndex() -> Int {
         var indices:[(Int, Int)] = []
 
-        for d in 0 ..< directories.count {
-            indices.append(contentsOf: selectionIndices(directory: d))
+        for f in 0 ..< folders.count {
+            indices.append(contentsOf: selectionIndices(folder: f))
         }
         return indices.max(by: orderByFileIndex)!.0
     }
@@ -186,11 +154,11 @@ struct ImageBrowserModel {
 
     private mutating func processKey(key: KeyEquivalent) -> URL? {
         if (key == .rightArrow || key == .leftArrow) {
-            if (files.isEmpty || files[0].isEmpty) {
+            if (folders.isEmpty || folders[0].files.isEmpty) {
                 return nil
             }
-            if (selection.isEmpty && !files[0].isEmpty) {
-                updateSelection(file: files[0][0])
+            if (selection.isEmpty && !folders[0].files.isEmpty) {
+                updateSelection(file: folders[0].files[0])
                 return selection[0]
             }
             if selection.isEmpty {
@@ -198,8 +166,8 @@ struct ImageBrowserModel {
             }
 
             var steps:[Int] = []
-            for d in 0 ..< directories.count {
-                let indices = selectionIndices(directory: d)
+            for f in 0 ..< folders.count {
+                let indices = selectionIndices(folder: f)
 
                 if (indices.isEmpty) {
                     // Never used, just to keep the size of steps in sync with that of directories
@@ -212,7 +180,7 @@ struct ImageBrowserModel {
                 let step = max!.1 - min!.1 + 1
 
                 if (key == .rightArrow) {
-                    if (max!.1 >= files[d].count - step) {
+                    if (max!.1 >= folders[f].files.count - step) {
                         // never mind, we can't advance
                         NSSound.beep()
                         return nil
@@ -229,8 +197,8 @@ struct ImageBrowserModel {
             }
 
             // Step sizes are compatible with all selections, modify selections in place
-            for d in 0 ..< directories.count {
-                let indices = selectionIndices(directory: d)
+            for f in 0 ..< folders.count {
+                let indices = selectionIndices(folder: f)
 
                 if (indices.isEmpty) {
                     continue
@@ -238,7 +206,7 @@ struct ImageBrowserModel {
 
                 for i in 0 ..< indices.count {
                     let index = indices[i]
-                    selection[index.0] = files[d][index.1 + (key == .rightArrow ? steps[d] : -steps[d])]
+                    selection[index.0] = folders[f].files[index.1 + (key == .rightArrow ? steps[f] : -steps[f])]
                 }
             }
 

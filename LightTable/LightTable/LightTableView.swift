@@ -20,7 +20,7 @@ struct LightTableView: View {
     let backgroundColor = Color(red: 30.0/255.0, green: 30.0/255.0, blue: 30.0/255.0)
 
     var body: some View {
-        let browserActive = !browserModel.directories.isEmpty
+        let browserActive = !browserModel.folders.isEmpty
 
         VStack {
             if viewModel.fullScreen {
