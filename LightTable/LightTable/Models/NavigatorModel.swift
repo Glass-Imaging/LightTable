@@ -10,7 +10,7 @@ import Foundation
 struct NavigatorModel {
     // Directly accessed by FolderTreeNavigator
     /* private(set) */ var root:Folder? = nil
-    /* private(set) */ var selection = Set<URL>()
+    /* private(set) */ var selection = Set<Folder>()
 
     private(set) var historyBack:[URL] = []
     private(set) var historyForward:[URL] = []
@@ -32,24 +32,24 @@ struct NavigatorModel {
         return root != nil && root!.url != rootPath
     }
 
-    mutating func update(url: URL) {
+    mutating func update(folder: Folder) {
         if let root = root {
             historyBack.append(root.url)
         }
-        root = Folder(url: url)
+        root = folder
     }
 
     mutating func enclosingFolder() {
         if let root = root {
-            update(url: parentFolder(url: root.url))
+            update(folder: Folder(url: parentFolder(url: root.url)))
             // TODO: Selection gets lost...
-            selection = [root.url]
+            selection = [root]
         }
     }
 
     mutating func selectedFolder() {
         if let selection = selection.first {
-            update(url: selection)
+            update(folder: selection)
         }
     }
 

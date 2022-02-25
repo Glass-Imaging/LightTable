@@ -43,12 +43,12 @@ struct LightTableView: View {
                             }
                         }
                         .onChange(of: navigatorModel.selection) { newValue in
-                            browserModel.setDirectories(directories: newValue)
+                            browserModel.setFolders(folders: newValue)
                             viewModel.resetImageViewSelection()
                         }
                         .onChange(of: navigatorModel.root) { _ in
                             // Reset navigator's selection
-                            navigatorModel.selection = Set<URL>()
+                            navigatorModel.selection = Set<Folder>()
 
                             // Reset image browser state
                             browserModel.reset()
@@ -80,7 +80,7 @@ struct LightTableView: View {
                 Button("Open...") {
                     var listing:[URL] = []
                     if let selectedDirectory = NSOpenPanelDirectoryListing(files: &listing) {
-                        navigatorModel?.update(url: selectedDirectory)
+                        navigatorModel?.update(folder: Folder(url: selectedDirectory))
                     }
                 }
                 .keyboardShortcut("O", modifiers: .command)
@@ -114,7 +114,7 @@ extension LightTableView:DropDelegate {
         DropUtils.urlFromDropInfo(info) { url in
             if let url = url {
                 DispatchQueue.main.async {
-                    navigatorModel.update(url: url)
+                    navigatorModel.update(folder: Folder(url: url))
                 }
             }
         }

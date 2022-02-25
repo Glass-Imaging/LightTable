@@ -40,7 +40,7 @@ struct FolderTreeHeader: View {
                 Menu(content: {
                     ForEach(parents, id: \.self) { item in
                         Button(action: {
-                            navigatorModel.update(url: item)
+                            navigatorModel.update(folder: Folder(url: item))
                         }, label: {
                             HStack {
                                 Image(systemName: "folder.fill")

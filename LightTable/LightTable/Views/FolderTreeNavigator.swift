@@ -9,9 +9,9 @@ import SwiftUI
 
 struct FolderTreeDisclosure: View {
     let folder:Folder
-    @Binding var selection:Set<URL>
+    @Binding var selection:Set<Folder>
     @State var expanded = false
-    let doubleTapAction:(_ entry:URL) -> Void
+    let doubleTapAction:(_ folder: Folder) -> Void
 
     var body: some View {
         if folder.children.isEmpty {
@@ -19,23 +19,23 @@ struct FolderTreeDisclosure: View {
         } else {
             DisclosureGroup(isExpanded: $expanded, content: {
                 if expanded {
-                    ForEach(folder.children, id: \.self.url) { item in
+                    ForEach(folder.children, id: \.self) { item in
                         FolderTreeDisclosure(folder: item, selection: _selection, doubleTapAction: doubleTapAction)
                     }
                 }
             }, label: {
                 Label(folder.url.lastPathComponent, systemImage: folder.hasImages ? "folder.fill" : "folder")
                     .gesture(TapGesture(count: 2).onEnded {
-                        doubleTapAction(folder.url)
+                        doubleTapAction(folder)
                     })
                     .gesture(TapGesture(count: 1).modifiers([.shift]).onEnded {
-                        selection.insert(folder.url)
+                        selection.insert(folder)
                     })
                     .gesture(TapGesture(count: 1).modifiers([.command]).onEnded {
-                        selection.insert(folder.url)
+                        selection.insert(folder)
                     })
                     .gesture(TapGesture(count: 1).onEnded {
-                        selection = [folder.url]
+                        selection = [folder]
                     })
             })
         }
@@ -57,9 +57,9 @@ struct FolderTreeNavigator: View {
 
                 Divider()
 
-                List(root.children, id:\.self.url, selection: $navigatorModel.selection) { folder in
-                    FolderTreeDisclosure(folder: folder, selection: $navigatorModel.selection) { url in
-                        navigatorModel.update(url: url)
+                List(root.children, id:\.self, selection: $navigatorModel.selection) { folder in
+                    FolderTreeDisclosure(folder: folder, selection: $navigatorModel.selection) { folder in
+                        navigatorModel.update(folder: folder)
                     }
                 }
                 .focused($navigatorIsFocused)

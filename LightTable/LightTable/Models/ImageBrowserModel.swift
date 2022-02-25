@@ -31,43 +31,24 @@ struct ImageBrowserModel {
         return (0, 0)
     }
 
-    mutating func setDirectories(directories: Set<URL>) {
-        // Check removed directories
-        for folder in folders {
-            if (!directories.contains(where: { $0 == folder.url })) {
+    mutating func setFolders(folders: Set<Folder>) {
+        // Check removed folders
+        for folder in self.folders {
+            if (!folders.contains(folder)) {
                 for file in folder.files {
-                    if let index = selection.firstIndex(where: { $0 == file }) {
+                    if let index = selection.firstIndex(of: file) {
                         selection.remove(at: index)
                     }
                 }
             }
         }
-        folders.removeAll(where: { !directories.contains($0.url) })
+        self.folders.removeAll(where: { !folders.contains($0) })
 
-        // Check for added directories
-        for d in directories {
-            if (!folders.contains(where: {$0.url == d})) {
-                addDirectory(directory: d)
+        // Check for added folders
+        for d in folders {
+            if (!self.folders.contains(d)) {
+                self.folders.append(d)
             }
-        }
-    }
-
-    mutating func addDirectory(directory: URL) {
-        if (!folders.contains(where: { $0.url == directory })) {
-            folders.append(Folder(url: directory))
-        }
-    }
-
-    mutating func removeDirectory(directory: URL) {
-        if let index = folders.firstIndex(where: { $0.url == directory }) {
-            // Remove selections
-            for folder in folders[index].children {
-                if let fileIndex = selection.firstIndex(of: folder.url) {
-                    selection.remove(at: fileIndex)
-                }
-            }
-            // Remove the directory entry
-            folders.remove(at: index)
         }
     }
 
@@ -95,16 +76,6 @@ struct ImageBrowserModel {
             return
         }
         // If the file is already in the selection, remove it
-        selection.remove(at: index)
-        if nextLocation == file {
-            nextLocation = nil
-        }
-    }
-
-    mutating func removeFromSelection(file: URL) {
-        guard let index = selection.firstIndex(of: file) else {
-            return
-        }
         selection.remove(at: index)
         if nextLocation == file {
             nextLocation = nil
@@ -170,7 +141,7 @@ struct ImageBrowserModel {
                 let indices = selectionIndices(folder: f)
 
                 if (indices.isEmpty) {
-                    // Never used, just to keep the size of steps in sync with that of directories
+                    // Never used, just to keep the size of steps in sync with that of folders
                     steps.append(-1)
                     continue
                 }
