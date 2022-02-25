@@ -42,14 +42,11 @@ struct LightTableView: View {
                                 }
                             }
                         }
-                        .onChange(of: navigatorModel.selection) { newValue in
-                            browserModel.setFolders(folders: newValue)
+                        .onChange(of: navigatorModel.selection) { newSelection in
+                            browserModel.setFolders(folders: newSelection)
                             viewModel.resetImageViewSelection()
                         }
                         .onChange(of: navigatorModel.root) { _ in
-                            // Reset navigator's selection
-                            navigatorModel.selection = Set<Folder>()
-
                             // Reset image browser state
                             browserModel.reset()
                             viewModel.resetImageViewSelection()
