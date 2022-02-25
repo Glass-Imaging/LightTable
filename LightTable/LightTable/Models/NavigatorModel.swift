@@ -37,12 +37,12 @@ struct NavigatorModel {
             historyBack.append(root.url)
         }
         root = folder
+        selection = []
     }
 
     mutating func enclosingFolder() {
         if let root = root {
             update(folder: Folder(url: parentFolder(url: root.url)))
-            // TODO: Selection gets lost...
             selection = [root]
         }
     }
