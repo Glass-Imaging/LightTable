@@ -8,6 +8,16 @@
 import AppKit
 import QuickLookThumbnailing
 
+class CachedThumbnail {
+    let date:Date
+    let image:NSImage
+
+    init(date:Date, image:NSImage) {
+        self.date = date
+        self.image = image
+    }
+}
+
 /// Wrapper for QLThumbnailGenerator
 /// the class is ObservableObject and has a @Published var so
 /// a view can observe it and load a thumbnail as soon as it is ready
@@ -15,8 +25,8 @@ class ThumbnailLoader: ObservableObject {
     @Published var image = NSImage()
 
     // LRU Cache for thumbnails, avoids flashing redraws in the browser, cache up to 1000 thumbnails
-    static let lruCache:NSCache<NSString, NSImage> = {
-        let cache = NSCache<NSString, NSImage>()
+    static let lruCache:NSCache<NSString, CachedThumbnail> = {
+        let cache = NSCache<NSString, CachedThumbnail>()
         cache.countLimit = 1000
         return cache
     }()
@@ -26,9 +36,19 @@ class ThumbnailLoader: ObservableObject {
     ///   - url: URL of the image
     ///   - maxSize: maximum size (width/height) aspect ratio preserved
     func loadThumbnail(url: URL, maxSize: CGFloat) {
+        let timeStamp:Date
+        if let attributes = try? FileManager.default.attributesOfItem(atPath: url.path) as [FileAttributeKey: Any],
+           let modificationDate = attributes[FileAttributeKey.modificationDate] as? Date {
+            timeStamp = modificationDate
+        } else {
+            timeStamp = Date.now
+        }
+
         if let cachedData = ThumbnailLoader.lruCache.object(forKey: NSString(string: url.path)) {
-            image = cachedData
-            return
+            if (cachedData.date == timeStamp) {
+                image = cachedData.image
+                return
+            }
         }
 
         let size = CGSize(width: maxSize, height: maxSize)
@@ -47,7 +67,7 @@ class ThumbnailLoader: ObservableObject {
                 return
             }
             DispatchQueue.main.async {
-                ThumbnailLoader.lruCache.setObject(nsImage, forKey: NSString(string: url.path))
+                ThumbnailLoader.lruCache.setObject(CachedThumbnail(date: timeStamp, image: nsImage), forKey: NSString(string: url.path))
                 self.image = nsImage
             }
         }
