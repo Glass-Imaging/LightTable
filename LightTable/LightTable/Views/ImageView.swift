@@ -11,12 +11,12 @@ import SwiftUI
 struct ImageViewCaption: View {
     let url: URL
     let index: (Int, Int)
-    let metadata: NSDictionary
+    let metadata: NSDictionary?
     @Binding var viewInfoItems:Int
 
     func imageMetadata() -> String {
-        if let pixelWidth = metadata["PixelWidth"] as? Int {
-            if let pixelHeight = metadata["PixelHeight"] as? Int {
+        if let pixelWidth = metadata?["PixelWidth"] as? Int {
+            if let pixelHeight = metadata?["PixelHeight"] as? Int {
                 return "\(pixelWidth)w \(pixelHeight)h"
             }
         }
@@ -59,28 +59,30 @@ struct ImageViewCaption: View {
     }
 }
 
+struct OrientedImage: View {
+    let cgImage:CGImage
+    let orientation:Image.Orientation
+    let scaledToFit:Bool
+
+    var body: some View {
+        Image(cgImage, scale: 3, orientation: orientation, label: Text(String(describing: orientation)))
+            .interpolation(scaledToFit ? .high : .none)
+            .antialiased(scaledToFit ? true : false)
+            .resizable()
+            .scaledToFit()
+    }
+}
+
 struct ImageView: View {
     let url:URL
-    let index:Int
     let fileIndex:(Int, Int)
-
+    let index:Int
     @Binding var imageViewModel:ImageViewModel
 
     @ObservedObject var imageLoader = ImageLoader()
     @State var cgImageWithMetadata:CGImageWithMetadata? = nil
-
     @State var viewOffsetInteractive = CGPoint.zero
-
-    @State var showLoading = false
-
     static var offsetMap: [URL : CGPoint] = [:]
-
-    func storedOffset(url: URL) -> CGPoint {
-        if let storedOffset = ImageView.offsetMap[url] {
-            return storedOffset
-        }
-        return CGPoint.zero
-    }
 
     init(url:URL, fileIndex:(Int, Int), index:Int, imageViewModel:Binding<ImageViewModel>) {
         self.url = url
@@ -88,7 +90,6 @@ struct ImageView: View {
         self.index = index
         self._imageViewModel = imageViewModel
 
-        print("reloading image")
         imageLoader.load(url:url)
     }
 
@@ -120,89 +121,74 @@ struct ImageView: View {
         return rotate(value: baseOrientation, by: imageViewModel.orientation)
     }
 
+    func imageSize(image: CGImage, orientation: Image.Orientation) -> CGSize {
+        let swapDimensions = [.left, .right].contains(orientation)
+        return swapDimensions ? CGSize(width: image.height, height: image.width) : CGSize(width: image.width, height: image.height)
+    }
+
+    func imageOffset(scale: CGFloat, viewOffset: CGPoint, viewPortOffset: CGSize) -> CGPoint {
+        return scale == 0
+               ? CGPoint.zero
+               : imageViewModel.viewOffset * scale + imageViewModel.viewOffsetInteractive + viewOffset + viewOffsetInteractive - viewPortOffset
+    }
+
     var body: some View {
-        GeometryReader { geometry in
-            let geometryFrameSize = geometry.frame(in: .global).size
+        VStack {
+            if let cgImageWithMetadata = cgImageWithMetadata {
+                let scaleFactor = imageViewModel.viewScaleFactor
+                let orientation = viewOrientation()
+                let cgImage = cgImageWithMetadata.image
 
-            ScrollView([]) {
-                if let cgImageWithMetadata = cgImageWithMetadata {
-                    let cgImage = cgImageWithMetadata.image
-                    let metadata = cgImageWithMetadata.metadata
+                GeometryReader { geometry in
+                    let geometryFrameSize = geometry.frame(in: .global).size
+                    ScrollView([]) {
+                        if (scaleFactor == 0) {
+                            OrientedImage(cgImage: cgImage, orientation: orientation, scaledToFit: true)
+                                .frame(width: geometryFrameSize.width, height: geometryFrameSize.height, alignment: .center)
+                        } else {
+                            let imageSize = imageSize(image: cgImage, orientation: orientation)
+                            let frameSize = imageSize * scaleFactor
+                            var viewOffset = ImageView.offsetMap[url] ?? CGPoint.zero
+                            let imageOffset = imageOffset(scale: scaleFactor,
+                                                          viewOffset: viewOffset,
+                                                          viewPortOffset: (imageSize * scaleFactor - geometryFrameSize) / 2)
 
-                    let orientation = viewOrientation()
+                            OrientedImage(cgImage: cgImage, orientation: orientation, scaledToFit: false)
+                                .frame(width: frameSize.width, height: frameSize.height, alignment: .center)
+                                .offset(x: imageOffset.x, y: imageOffset.y)
+                                .gesture(
+                                    // Option-Click-Drag for individual image offset, made persistent in ImageView.offsetMap
+                                    DragGesture().modifiers(.option)
+                                        .onChanged { gesture in
+                                            viewOffsetInteractive = CGPoint(x: gesture.translation.width, y: gesture.translation.height)
+                                        }
+                                        .onEnded { value in
+                                            viewOffset += viewOffsetInteractive / scaleFactor
+                                            viewOffsetInteractive = CGPoint.zero
 
-                    var viewOffset = storedOffset(url: url)
-
-                    let scale = imageViewModel.viewScaleFactor
-
-                    let swapDimensions = [.left, .right].contains(orientation)
-                    let imageSize = swapDimensions ? CGSize(width: cgImage.height, height: cgImage.width) : CGSize(width: cgImage.width, height: cgImage.height)
-                    let frameSize = scale == 0 ? geometryFrameSize : imageSize * scale
-
-                    let viewPortOffset = (imageSize * scale - geometryFrameSize) / 2
-
-                    let offset = scale == 0
-                               ? CGPoint.zero
-                               : imageViewModel.viewOffset * scale + imageViewModel.viewOffsetInteractive + viewOffset + viewOffsetInteractive - viewPortOffset
-
-                    VStack {
-                        Image(cgImage, scale: 1, orientation: orientation, label: Text(String(describing: orientation)))
-                                .interpolation(scale == 0 ? .high : .none)
-                                .antialiased(scale == 0 ? true : false)
-                                .resizable()
-                                .scaledToFit()
-                                .overlay(alignment: .bottom) {
-                                    ImageViewCaption(url: url, index: fileIndex, metadata: metadata, viewInfoItems: $imageViewModel.viewInfoItems)
-                                }
-                    }
-                    .frame(width: frameSize.width, height: frameSize.height, alignment: .center)
-                    .offset(x: offset.x, y: offset.y)
-                    .gesture(
-                        // Option-Click-Drag for individual image offset, made persistent in ImageView.offsetMap
-                        DragGesture().modifiers(.option)
-                            .onChanged { gesture in
-                                if (scale > 0) {
-                                    viewOffsetInteractive = CGPoint(x: gesture.translation.width, y: gesture.translation.height)
-                                }
-                            }
-                            .onEnded { value in
-                                if (scale > 0) {
-                                    viewOffset += viewOffsetInteractive / scale
-                                    viewOffsetInteractive = CGPoint.zero
-
-                                    // Make viewOffset persistent
-                                    ImageView.offsetMap[url] = viewOffset
-                                }
-                            }
-                    )
-                    .gesture(
-                        // Click-Drag for global image offset
-                        DragGesture()
-                            .onChanged { gesture in
-                                if (scale > 0) {
-                                    imageViewModel.viewOffsetInteractive = CGPoint(x: gesture.translation.width, y: gesture.translation.height)
-                                }
-                            }
-                            .onEnded { value in
-                                if (scale > 0) {
-                                    imageViewModel.viewOffset += imageViewModel.viewOffsetInteractive / scale
-                                    imageViewModel.viewOffsetInteractive = CGPoint.zero
-                                }
-                            }
-                    )
-                } else {
-                    VStack {
-                        if showLoading {
-                            Text("Loading Image...")
-                        }
-                    }
-                    .frame(width: geometryFrameSize.width, height: geometryFrameSize.height, alignment: .center)
-                    .onAppear {
-                        withAnimation {
-                            showLoading = true
+                                            // Make viewOffset persistent
+                                            ImageView.offsetMap[url] = viewOffset
+                                        }
+                                )
+                                .gesture(
+                                    // Click-Drag for global image offset
+                                    DragGesture()
+                                        .onChanged { gesture in
+                                            imageViewModel.viewOffsetInteractive = CGPoint(x: gesture.translation.width, y: gesture.translation.height)
+                                        }
+                                        .onEnded { value in
+                                            imageViewModel.viewOffset += imageViewModel.viewOffsetInteractive / scaleFactor
+                                            imageViewModel.viewOffsetInteractive = CGPoint.zero
+                                        }
+                                )
                         }
                     }
                 }
+            }
+        }
+        .overlay(alignment: .bottom) {
+            if let cgImageWithMetadata = cgImageWithMetadata {
+                ImageViewCaption(url: url, index: fileIndex, metadata: cgImageWithMetadata.metadata, viewInfoItems: $imageViewModel.viewInfoItems)
             }
         }
         .onReceive(imageLoader.didChange) { cgImageWithMetadata in

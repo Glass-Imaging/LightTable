@@ -29,11 +29,7 @@ class ImageLoader: ObservableObject {
     }
 
     private func loadImage(fromURL url:URL) {
-        var timeStamp = Date.now
-        if let attributes = try? FileManager.default.attributesOfItem(atPath: url.path) as [FileAttributeKey: Any],
-           let modificationDate = attributes[FileAttributeKey.modificationDate] as? Date {
-            timeStamp = modificationDate
-        }
+        let timeStamp = timeStamp(url: url)
 
         if let cachedData = ImageLoader.lruCache.object(forKey: NSString(string: url.path)) {
             if (cachedData.date == timeStamp) {

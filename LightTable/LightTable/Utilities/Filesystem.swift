@@ -88,3 +88,7 @@ func fileListingAt(url:URL, filter:(_ entry:URL) -> Bool) -> [URL] {
         return []
     }
 }
+
+func timeStamp(url: URL) -> Date {
+    return (try? FileManager.default.attributesOfItem(atPath: url.path))?[.modificationDate] as? Date ?? Date()
+}

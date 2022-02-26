@@ -36,13 +36,7 @@ class ThumbnailLoader: ObservableObject {
     ///   - url: URL of the image
     ///   - maxSize: maximum size (width/height) aspect ratio preserved
     func loadThumbnail(url: URL, maxSize: CGFloat) {
-        let timeStamp:Date
-        if let attributes = try? FileManager.default.attributesOfItem(atPath: url.path) as [FileAttributeKey: Any],
-           let modificationDate = attributes[FileAttributeKey.modificationDate] as? Date {
-            timeStamp = modificationDate
-        } else {
-            timeStamp = Date.now
-        }
+        let timeStamp = timeStamp(url: url)
 
         if let cachedData = ThumbnailLoader.lruCache.object(forKey: NSString(string: url.path)) {
             if (cachedData.date == timeStamp) {
