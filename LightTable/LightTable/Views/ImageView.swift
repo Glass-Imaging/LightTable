@@ -39,7 +39,7 @@ struct ImageView: View {
     @Binding var imageViewModel:ImageViewModel
 
     @ObservedObject var imageLoader = ImageLoader()
-    @State var cgImageWithMetadata:ImageWithMetadata? = nil
+    @State var imageWithMetadata:ImageWithMetadata? = nil
     @State var viewOffsetInteractive = CGPoint.zero
     static var offsetMap: [URL : CGPoint] = [:]
 
@@ -55,9 +55,9 @@ struct ImageView: View {
     func viewOrientation() -> Image.Orientation {
         let baseOrientation:Image.Orientation
 
-        if let cgImageWithMetadata = cgImageWithMetadata {
-            let metadata = cgImageWithMetadata.metadata
-            let imageURL = cgImageWithMetadata.url
+        if let imageWithMetadata = imageWithMetadata {
+            let metadata = imageWithMetadata.metadata
+            let imageURL = imageWithMetadata.url
 
             if imageViewModel.useMasterOrientation {
                 // ImageView objects are being recycled by the container, see if this one is up to date
@@ -93,10 +93,10 @@ struct ImageView: View {
 
     var body: some View {
         VStack {
-            if let cgImageWithMetadata = cgImageWithMetadata {
+            if let imageWithMetadata = imageWithMetadata {
                 let scaleFactor = imageViewModel.viewScaleFactor
                 let orientation = viewOrientation()
-                let image = cgImageWithMetadata.image
+                let image = imageWithMetadata.image
                 let imageSize = imageSize(image: image, orientation: orientation)
 
                 GeometryReader { geometry in
@@ -150,12 +150,12 @@ struct ImageView: View {
             }
         }
         .overlay(alignment: .bottom) {
-            if let cgImageWithMetadata = cgImageWithMetadata {
-                ImageViewCaption(url: url, index: fileIndex, metadata: cgImageWithMetadata.metadata, viewInfoItems: $imageViewModel.viewInfoItems)
+            if let imageWithMetadata = imageWithMetadata {
+                ImageViewCaption(url: url, index: fileIndex, metadata: imageWithMetadata.metadata, viewInfoItems: $imageViewModel.viewInfoItems)
             }
         }
-        .onReceive(imageLoader.didChange) { cgImageWithMetadata in
-            self.cgImageWithMetadata = cgImageWithMetadata
+        .onReceive(imageLoader.didChange) { imageWithMetadata in
+            self.imageWithMetadata = imageWithMetadata
         }
     }
 }
