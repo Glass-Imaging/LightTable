@@ -39,6 +39,7 @@ struct ImageView: View {
     @Binding var imageViewModel:ImageViewModel
 
     @ObservedObject var imageLoader = ImageLoader()
+    @State var imageWithMetadata:ImageWithMetadata? = nil
     @State var viewOffsetInteractive = CGPoint.zero
     static var offsetMap: [URL : CGPoint] = [:]
 
@@ -87,7 +88,7 @@ struct ImageView: View {
 
     var body: some View {
         VStack {
-            if let imageWithMetadata = imageLoader.imageWithMetadata {
+            if let imageWithMetadata = imageWithMetadata {
                 let scaleFactor = imageViewModel.viewScaleFactor
                 let orientation = viewOrientation(imageWithMetadata: imageWithMetadata)
                 let image = imageWithMetadata.image
@@ -144,6 +145,11 @@ struct ImageView: View {
                 .overlay(alignment: .bottom) {
                     ImageViewCaption(url: url, index: fileIndex, metadata: imageWithMetadata.metadata, viewInfoItems: $imageViewModel.viewInfoItems)
                 }
+            }
+        }
+        .onChange(of: imageLoader.imageWithMetadata) { imageWithMetadata in
+            if let imageWithMetadata = imageWithMetadata {
+                self.imageWithMetadata = imageWithMetadata
             }
         }
     }
