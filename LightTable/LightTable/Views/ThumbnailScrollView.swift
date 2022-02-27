@@ -17,10 +17,10 @@ struct ThumbnailGrid: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(0 ..< browserModel.folders.count, id: \.self) { directoryIndex in
-                if (!browserModel.folders[directoryIndex].files.isEmpty) {
-                    let folderName = browserModel.folders[directoryIndex].url.lastPathComponent
-                    let folderListing = browserModel.folders[directoryIndex].files
+            ForEach(browserModel.folders) { folder in
+                if (!folder.files.isEmpty) {
+                    let folderName = folder.url.lastPathComponent
+                    let folderListing = folder.files
 
                     Section(header: ZStack(alignment: .leading) {
                         Rectangle()

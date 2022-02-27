@@ -7,9 +7,10 @@
 
 import Foundation
 
-class Folder: Equatable, Hashable {
+class Folder: Equatable, Hashable, Identifiable {
     let url: URL
     var hasImages = false
+    var id:URL { url }
 
     private var cachedChildren: [Folder]? = nil
     lazy var children: [Folder] = {
