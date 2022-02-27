@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CGImageWithMetadata {
+class ImageWithMetadata {
     let url:URL
     let date:Date
     let image:CGImage

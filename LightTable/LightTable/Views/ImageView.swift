@@ -7,17 +7,28 @@
 
 import SwiftUI
 
+//struct OrientedImage: View {
+//    let image:CGImage
+//    let orientation:Image.Orientation
+//    let scaledToFit:Bool
+//
+//    var body: some View {
+//        Image(image, scale: 1, orientation: orientation, label: Text(String(describing: orientation)))
+//            .interpolation(scaledToFit ? .high : .none)
+//            .antialiased(scaledToFit ? true : false)
+//    }
+//}
+
 struct OrientedImage: View {
-    let cgImage:CGImage
+    let image:CGImage
     let orientation:Image.Orientation
     let scaledToFit:Bool
 
     var body: some View {
-        Image(cgImage, scale: 3, orientation: orientation, label: Text(String(describing: orientation)))
+        Image(image, scale: 1, label: Text(""))
             .interpolation(scaledToFit ? .high : .none)
             .antialiased(scaledToFit ? true : false)
-            .resizable()
-            .scaledToFit()
+            .rotationEffect(orientationToAngle(orientation: orientation))
     }
 }
 
@@ -28,7 +39,7 @@ struct ImageView: View {
     @Binding var imageViewModel:ImageViewModel
 
     @ObservedObject var imageLoader = ImageLoader()
-    @State var cgImageWithMetadata:CGImageWithMetadata? = nil
+    @State var cgImageWithMetadata:ImageWithMetadata? = nil
     @State var viewOffsetInteractive = CGPoint.zero
     static var offsetMap: [URL : CGPoint] = [:]
 
@@ -85,24 +96,28 @@ struct ImageView: View {
             if let cgImageWithMetadata = cgImageWithMetadata {
                 let scaleFactor = imageViewModel.viewScaleFactor
                 let orientation = viewOrientation()
-                let cgImage = cgImageWithMetadata.image
+                let image = cgImageWithMetadata.image
+                let imageSize = imageSize(image: image, orientation: orientation)
 
                 GeometryReader { geometry in
                     let geometryFrameSize = geometry.frame(in: .global).size
                     ScrollView([]) {
+                        let scale = min(geometryFrameSize.width / imageSize.width, geometryFrameSize.height / imageSize.height)
+
                         if (scaleFactor == 0) {
-                            OrientedImage(cgImage: cgImage, orientation: orientation, scaledToFit: true)
+                            OrientedImage(image: image, orientation: orientation, scaledToFit: true)
                                 .frame(width: geometryFrameSize.width, height: geometryFrameSize.height, alignment: .center)
+                                .scaleEffect(x: scale, y: scale)
                         } else {
-                            let imageSize = imageSize(image: cgImage, orientation: orientation)
                             let frameSize = imageSize * scaleFactor
                             var viewOffset = ImageView.offsetMap[url] ?? CGPoint.zero
                             let imageOffset = imageOffset(scale: scaleFactor,
                                                           viewOffset: viewOffset,
                                                           viewPortOffset: (imageSize * scaleFactor - geometryFrameSize) / 2)
 
-                            OrientedImage(cgImage: cgImage, orientation: orientation, scaledToFit: false)
+                            OrientedImage(image: image, orientation: orientation, scaledToFit: false)
                                 .frame(width: frameSize.width, height: frameSize.height, alignment: .center)
+                                .scaleEffect(x: scaleFactor, y: scaleFactor)
                                 .offset(x: imageOffset.x, y: imageOffset.y)
                                 .gesture(
                                     // Option-Click-Drag for individual image offset, made persistent in ImageView.offsetMap

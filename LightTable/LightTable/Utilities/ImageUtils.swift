@@ -119,7 +119,7 @@ func rotateDown(value: Image.Orientation) -> Image.Orientation {
     case Image.Orientation.down:
         return Image.Orientation.up
     case Image.Orientation.left:
-        return Image.Orientation.up
+        return Image.Orientation.right
     default:
         print("Unexpected orientation: ", value)
         return value
