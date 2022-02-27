@@ -7,7 +7,7 @@
 
 import Foundation
 
-class ImageWithMetadata {
+class ImageWithMetadata: Equatable {
     let url:URL
     let date:Date
     let image:CGImage
@@ -18,5 +18,9 @@ class ImageWithMetadata {
         self.date = date
         self.image = image
         self.metadata = metadata
+    }
+
+    static func == (lhs: ImageWithMetadata, rhs: ImageWithMetadata) -> Bool {
+        return lhs.url == rhs.url && lhs.date == rhs.date
     }
 }

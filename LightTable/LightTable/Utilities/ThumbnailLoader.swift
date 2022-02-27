@@ -45,24 +45,26 @@ class ThumbnailLoader: ObservableObject {
             }
         }
 
-        let size = CGSize(width: maxSize, height: maxSize)
-        let scale = 3.0 // High resolution thumbnail
-        let request = QLThumbnailGenerator.Request(fileAt: url,
-                                                   size: size,
-                                                   scale: scale,
-                                                   representationTypes: [.thumbnail])
+        DispatchQueue.global(qos: .userInitiated).async {
+            let size = CGSize(width: maxSize, height: maxSize)
+            let scale = 3.0 // High resolution thumbnail
+            let request = QLThumbnailGenerator.Request(fileAt: url,
+                                                       size: size,
+                                                       scale: scale,
+                                                       representationTypes: [.thumbnail])
 
-        let generator = QLThumbnailGenerator.shared
-        generator.generateRepresentations(for: request) { (thumbnail, type, error) in
-            guard let nsImage = thumbnail?.nsImage else {
-                if let error = error {
-                    print("error while generating thumbnail \(error.localizedDescription)")
+            let generator = QLThumbnailGenerator.shared
+            generator.generateRepresentations(for: request) { (thumbnail, type, error) in
+                guard let nsImage = thumbnail?.nsImage else {
+                    if let error = error {
+                        print("error while generating thumbnail \(error.localizedDescription)")
+                    }
+                    return
                 }
-                return
-            }
-            DispatchQueue.main.async {
-                ThumbnailLoader.lruCache.setObject(CachedThumbnail(date: timeStamp, image: nsImage), forKey: NSString(string: url.path))
-                self.image = nsImage
+                DispatchQueue.main.async {
+                    ThumbnailLoader.lruCache.setObject(CachedThumbnail(date: timeStamp, image: nsImage), forKey: NSString(string: url.path))
+                    self.image = nsImage
+                }
             }
         }
     }

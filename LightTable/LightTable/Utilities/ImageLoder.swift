@@ -5,7 +5,6 @@
 //  Created by Fabio Riccardi on 1/30/22.
 //
 
-import Combine
 import SwiftUI
 
 class ImageLoader: ObservableObject {
@@ -15,14 +14,7 @@ class ImageLoader: ObservableObject {
         return cache
     }()
 
-    var didChange = PassthroughSubject<ImageWithMetadata, Never>()
-    var imageWithMetadata:ImageWithMetadata? = nil {
-        didSet {
-            if let imageWithMetadata = imageWithMetadata {
-                didChange.send(imageWithMetadata)
-            }
-        }
-    }
+    @Published var imageWithMetadata:ImageWithMetadata? = nil
 
     func load(url: URL) {
         loadImage(fromURL: url)
@@ -40,18 +32,20 @@ class ImageLoader: ObservableObject {
             }
         }
 
-        if let cgImageSource = CGImageSourceCreateWithURL(url as CFURL, nil) {
-            if let cgImage = CGImageSourceCreateImageAtIndex(cgImageSource, 0, nil) {
-                let cgImageProperties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil) ?? NSDictionary() as CFDictionary
+        DispatchQueue.global(qos: .userInitiated).async {
+            if let cgImageSource = CGImageSourceCreateWithURL(url as CFURL, nil) {
+                if let cgImage = CGImageSourceCreateImageAtIndex(cgImageSource, 0, nil) {
+                    let cgImageProperties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil) ?? NSDictionary() as CFDictionary
 
-                DispatchQueue.main.async {
-                    let newImageWithMetadata = ImageWithMetadata(url: url, date: timeStamp, image: cgImage, metadata: cgImageProperties)
-                    ImageLoader.lruCache.setObject(newImageWithMetadata, forKey: NSString(string: url.path))
-                    self.imageWithMetadata = newImageWithMetadata
+                    DispatchQueue.main.async {
+                        let newImageWithMetadata = ImageWithMetadata(url: url, date: timeStamp, image: cgImage, metadata: cgImageProperties)
+                        ImageLoader.lruCache.setObject(newImageWithMetadata, forKey: NSString(string: url.path))
+                        self.imageWithMetadata = newImageWithMetadata
+                    }
+                    return
                 }
-                return
             }
+            print("Problems reading image file:", url)
         }
-        print("Problems reading image file:", url)
     }
 }

@@ -39,7 +39,6 @@ struct ImageView: View {
     @Binding var imageViewModel:ImageViewModel
 
     @ObservedObject var imageLoader = ImageLoader()
-    @State var imageWithMetadata:ImageWithMetadata? = nil
     @State var viewOffsetInteractive = CGPoint.zero
     static var offsetMap: [URL : CGPoint] = [:]
 
@@ -52,30 +51,25 @@ struct ImageView: View {
         imageLoader.load(url:url)
     }
 
-    func viewOrientation() -> Image.Orientation {
+    func viewOrientation(imageWithMetadata:ImageWithMetadata) -> Image.Orientation {
+        let metadata = imageWithMetadata.metadata
+        let imageURL = imageWithMetadata.url
+
         let baseOrientation:Image.Orientation
-
-        if let imageWithMetadata = imageWithMetadata {
-            let metadata = imageWithMetadata.metadata
-            let imageURL = imageWithMetadata.url
-
-            if imageViewModel.useMasterOrientation {
-                // ImageView objects are being recycled by the container, see if this one is up to date
-                if (url == imageURL && index == 0) {
-                    baseOrientation = imageOrientation(metadata: metadata)
-                    if imageViewModel.masterOrientation != baseOrientation {
-                        DispatchQueue.main.async {
-                            imageViewModel.setMasterOrientation(orientation: baseOrientation)
-                        }
+        if imageViewModel.useMasterOrientation {
+            // ImageView objects are being recycled by the container, see if this one is up to date
+            if (url == imageURL && index == 0) {
+                baseOrientation = imageOrientation(metadata: metadata)
+                if imageViewModel.masterOrientation != baseOrientation {
+                    DispatchQueue.main.async {
+                        imageViewModel.setMasterOrientation(orientation: baseOrientation)
                     }
-                } else {
-                    baseOrientation = imageViewModel.masterOrientation
                 }
             } else {
-                baseOrientation = imageOrientation(metadata: metadata)
+                baseOrientation = imageViewModel.masterOrientation
             }
         } else {
-            baseOrientation = .up
+            baseOrientation = imageOrientation(metadata: metadata)
         }
         return rotate(value: baseOrientation, by: imageViewModel.orientation)
     }
@@ -93,9 +87,9 @@ struct ImageView: View {
 
     var body: some View {
         VStack {
-            if let imageWithMetadata = imageWithMetadata {
+            if let imageWithMetadata = imageLoader.imageWithMetadata {
                 let scaleFactor = imageViewModel.viewScaleFactor
-                let orientation = viewOrientation()
+                let orientation = viewOrientation(imageWithMetadata: imageWithMetadata)
                 let image = imageWithMetadata.image
                 let imageSize = imageSize(image: image, orientation: orientation)
 
@@ -147,15 +141,10 @@ struct ImageView: View {
                         }
                     }
                 }
+                .overlay(alignment: .bottom) {
+                    ImageViewCaption(url: url, index: fileIndex, metadata: imageWithMetadata.metadata, viewInfoItems: $imageViewModel.viewInfoItems)
+                }
             }
-        }
-        .overlay(alignment: .bottom) {
-            if let imageWithMetadata = imageWithMetadata {
-                ImageViewCaption(url: url, index: fileIndex, metadata: imageWithMetadata.metadata, viewInfoItems: $imageViewModel.viewInfoItems)
-            }
-        }
-        .onReceive(imageLoader.didChange) { imageWithMetadata in
-            self.imageWithMetadata = imageWithMetadata
         }
     }
 }
