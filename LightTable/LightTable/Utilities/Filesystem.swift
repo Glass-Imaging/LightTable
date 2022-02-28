@@ -21,7 +21,7 @@ func NSOpenPanelDirectoryListing(files:inout[URL]) -> URL? {
 }
 
 func isImage(file:URL) -> Bool {
-    let imageFileExtensions = ["jpg", "jpeg", "png", "heic", "heif", "dng", "cr3", "arw"]
+    let imageFileExtensions = ["jpg", "jpeg", "png", "heic", "heif", "dng", "cr3", "arw", "crw", "cr2"]
     let fileExtension = file.pathExtension.lowercased()
     return imageFileExtensions.contains(fileExtension)
 }

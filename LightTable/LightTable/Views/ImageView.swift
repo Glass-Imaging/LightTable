@@ -145,6 +145,8 @@ struct ImageView: View {
                 .overlay(alignment: .bottom) {
                     ImageViewCaption(url: url, index: fileIndex, metadata: imageWithMetadata.metadata, viewInfoItems: $imageViewModel.viewInfoItems)
                 }
+            } else {
+                ProgressView("Loading Image...")
             }
         }
         .onChange(of: imageLoader.imageWithMetadata) { imageWithMetadata in
