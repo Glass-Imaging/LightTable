@@ -121,35 +121,35 @@ struct ImageView: View {
                                                           viewOffset: viewOffset,
                                                           viewPortOffset: (imageSize * scaleFactor - geometryFrameSize) / 2)
 
+                            // Option-Click-Drag for individual image offset, made persistent in ImageView.offsetMap
+                            let optionClickDtagGesture = DragGesture().modifiers(.option)
+                                .onChanged { gesture in
+                                    viewOffsetInteractive = CGPoint(x: gesture.translation.width, y: gesture.translation.height)
+                                }
+                                .onEnded { _ in
+                                    viewOffset += viewOffsetInteractive / scaleFactor
+                                    viewOffsetInteractive = CGPoint.zero
+
+                                    // Make viewOffset persistent
+                                    ImageView.offsetMap[url] = viewOffset
+                                }
+
+                            // Click-Drag for global image offset
+                            let clickDragGesture = DragGesture()
+                                .onChanged { gesture in
+                                    viewState.viewOffsetInteractive = CGPoint(x: gesture.translation.width, y: gesture.translation.height)
+                                }
+                                .onEnded { _ in
+                                    viewState.viewOffset += viewState.viewOffsetInteractive / scaleFactor
+                                    viewState.viewOffsetInteractive = CGPoint.zero
+                                }
+
                             OrientedImage(image: image, orientation: orientation, scaledToFit: false)
                                 .frame(width: frameSize.width, height: frameSize.height, alignment: .center)
                                 .scaleEffect(x: scaleFactor, y: scaleFactor)
                                 .offset(x: imageOffset.x, y: imageOffset.y)
-                                .gesture(
-                                    // Option-Click-Drag for individual image offset, made persistent in ImageView.offsetMap
-                                    DragGesture().modifiers(.option)
-                                        .onChanged { gesture in
-                                            viewOffsetInteractive = CGPoint(x: gesture.translation.width, y: gesture.translation.height)
-                                        }
-                                        .onEnded { value in
-                                            viewOffset += viewOffsetInteractive / scaleFactor
-                                            viewOffsetInteractive = CGPoint.zero
-
-                                            // Make viewOffset persistent
-                                            ImageView.offsetMap[url] = viewOffset
-                                        }
-                                )
-                                .gesture(
-                                    // Click-Drag for global image offset
-                                    DragGesture()
-                                        .onChanged { gesture in
-                                            viewState.viewOffsetInteractive = CGPoint(x: gesture.translation.width, y: gesture.translation.height)
-                                        }
-                                        .onEnded { value in
-                                            viewState.viewOffset += viewState.viewOffsetInteractive / scaleFactor
-                                            viewState.viewOffsetInteractive = CGPoint.zero
-                                        }
-                                )
+                                .gesture(optionClickDtagGesture)
+                                .gesture(clickDragGesture)
                         }
                     }
                 }
