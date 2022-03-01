@@ -17,6 +17,17 @@
 
 import SwiftUI
 
+// User zoomed-in view dragging action state, the master instance is a @State variable in ImageListView
+class ImageViewOffset: ObservableObject {
+    @Published var viewOffset = CGPoint.zero
+    @Published var viewOffsetInteractive = CGPoint.zero
+
+    func reset() {
+        viewOffset = CGPoint.zero
+        viewOffsetInteractive = CGPoint.zero
+    }
+}
+
 struct ImageViewModel {
     // Multipe Image View layout (Horizontal/Vertical/Grid)
     var imageViewLayout:ImageListLayout = .Horizontal
@@ -108,15 +119,12 @@ struct ImageViewModel {
 
     var thumbnailSize:CGFloat = 150
 
-    // User dragging action
-    var viewOffset = CGPoint.zero
-    var viewOffsetInteractive = CGPoint.zero
+    // Reference to the ImageListView @State object, used to reset imageViewOffset without having a global handle on it
+    var imageViewOffset:ImageViewOffset? = nil
 
     mutating func resetInteractiveState() {
-        resetImageViewSelection()
-        // fullScreen = false
         viewScaleFactor = 0
-        viewOffset = CGPoint.zero
-        viewOffsetInteractive = CGPoint.zero
+        resetImageViewSelection()
+        imageViewOffset?.reset()
     }
 }

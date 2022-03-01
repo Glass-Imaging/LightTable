@@ -45,16 +45,18 @@ struct ImageView: View {
     let fileIndex:(Int, Int)
     let index:Int
     @Binding var imageViewModel:ImageViewModel
+    @ObservedObject var imageViewOffset:ImageViewOffset
 
     @ObservedObject var imageLoader = ImageLoader()
     @State var viewOffsetInteractive = CGPoint.zero
     static var offsetMap: [URL : CGPoint] = [:]
 
-    init(url:URL, fileIndex:(Int, Int), index:Int, imageViewModel:Binding<ImageViewModel>) {
+    init(url:URL, fileIndex:(Int, Int), index:Int, imageViewModel:Binding<ImageViewModel>, imageViewOffset:ImageViewOffset) {
         self.url = url
         self.fileIndex = fileIndex
         self.index = index
         self._imageViewModel = imageViewModel
+        self.imageViewOffset = imageViewOffset
 
         imageLoader.loadImage(url:url)
     }
@@ -90,7 +92,7 @@ struct ImageView: View {
     func imageOffset(scale: CGFloat, viewOffset: CGPoint, viewPortOffset: CGSize) -> CGPoint {
         return scale == 0
                ? CGPoint.zero
-               : imageViewModel.viewOffset * scale + imageViewModel.viewOffsetInteractive + viewOffset + viewOffsetInteractive - viewPortOffset
+               : imageViewOffset.viewOffset * scale + imageViewOffset.viewOffsetInteractive + viewOffset + viewOffsetInteractive - viewPortOffset
     }
 
     var body: some View {
@@ -141,11 +143,11 @@ struct ImageView: View {
                                     // Click-Drag for global image offset
                                     DragGesture()
                                         .onChanged { gesture in
-                                            imageViewModel.viewOffsetInteractive = CGPoint(x: gesture.translation.width, y: gesture.translation.height)
+                                            imageViewOffset.viewOffsetInteractive = CGPoint(x: gesture.translation.width, y: gesture.translation.height)
                                         }
                                         .onEnded { value in
-                                            imageViewModel.viewOffset += imageViewModel.viewOffsetInteractive / scaleFactor
-                                            imageViewModel.viewOffsetInteractive = CGPoint.zero
+                                            imageViewOffset.viewOffset += imageViewOffset.viewOffsetInteractive / scaleFactor
+                                            imageViewOffset.viewOffsetInteractive = CGPoint.zero
                                         }
                                 )
                         }

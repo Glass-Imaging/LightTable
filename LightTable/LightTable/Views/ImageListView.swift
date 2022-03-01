@@ -24,6 +24,13 @@ enum ImageListLayout {
 struct ImageListView: View {
     @Binding var browserModel:ImageBrowserModel
     @Binding var viewModel:ImageViewModel
+    // viewOffset is a local state variable, its changes won't trigger a view tree invalidation
+    @State var viewOffset = ImageViewOffset()
+
+    init(browserModel:Binding<ImageBrowserModel>, viewModel:Binding<ImageViewModel>) {
+        self._browserModel = browserModel
+        self._viewModel = viewModel
+    }
 
     func gridLayout(count:Int) -> [GridItem] {
         let gridItem = GridItem(.flexible())
@@ -66,7 +73,8 @@ struct ImageListView: View {
             } else {
                 if (viewModel.imageViewSelection >= 0 && viewModel.imageViewSelection < browserModel.selection.count) {
                     let file = browserModel.selection[viewModel.imageViewSelection]
-                    ImageView(url: file, fileIndex: browserModel.fileIndex(file: file), index: viewModel.imageViewSelection, imageViewModel: $viewModel)
+                    ImageView(url: file, fileIndex: browserModel.fileIndex(file: file), index: viewModel.imageViewSelection,
+                              imageViewModel: $viewModel, imageViewOffset: viewOffset)
                 } else {
                     let gridConstraints = gridSizeConstraints(count: browserModel.selection.count, layout: viewModel.imageViewLayout)
                     GeometryReader { geometry in
@@ -75,7 +83,8 @@ struct ImageListView: View {
                             let items = min(browserModel.selection.count, 16)
                             ForEach(0 ..< items, id: \.self) { index in
                                 let file = browserModel.selection[index]
-                                ImageView(url: file, fileIndex: browserModel.fileIndex(file: file), index: index, imageViewModel: $viewModel)
+                                ImageView(url: file, fileIndex: browserModel.fileIndex(file: file), index: index,
+                                          imageViewModel: $viewModel, imageViewOffset: viewOffset)
                                     .id(file)
                             }.frame(width: geometry.size.width / gridConstraints.width,
                                     height: geometry.size.height / gridConstraints.height)
@@ -83,6 +92,12 @@ struct ImageListView: View {
                     }
                 }
             }
+        }
+        .onAppear {
+            viewModel.imageViewOffset = viewOffset
+        }
+        .onDisappear {
+            viewModel.imageViewOffset = nil
         }
     }
 }
