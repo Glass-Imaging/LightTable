@@ -38,13 +38,15 @@ class ImageViewState: ObservableObject {
         orientation = LightTable.rotateRight(value: orientation)
     }
 
-    @Published private(set) var useMasterOrientation = false
+    @Published private(set) var masterOrientation:Image.Orientation? = nil
 
     func togglaMasterOrientation() {
-        useMasterOrientation = !useMasterOrientation
+        if masterOrientation == nil {
+            masterOrientation = .up
+        } else {
+            masterOrientation = nil
+        }
     }
-
-    @Published private(set) var masterOrientation:Image.Orientation = .up
 
     func setMasterOrientation(orientation:Image.Orientation) {
         masterOrientation = orientation
@@ -77,7 +79,6 @@ class ImageViewState: ObservableObject {
         viewOffset = other.viewOffset
         viewOffsetInteractive = other.viewOffsetInteractive
         orientation = other.orientation
-        useMasterOrientation = other.useMasterOrientation
         masterOrientation = other.masterOrientation
         viewScaleFactor = other.viewScaleFactor
         viewInfoItems = other.viewInfoItems

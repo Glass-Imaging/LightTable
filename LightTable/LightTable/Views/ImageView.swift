@@ -66,17 +66,17 @@ struct ImageView: View {
         let imageURL = imageWithMetadata.url
 
         let baseOrientation:Image.Orientation
-        if viewState.useMasterOrientation {
+        if let masterOrientation = viewState.masterOrientation {
             // ImageView objects are being recycled by the container, see if this one is up to date
             if (url == imageURL && index == 0) {
                 baseOrientation = imageOrientation(metadata: metadata)
-                if viewState.masterOrientation != baseOrientation {
+                if masterOrientation != baseOrientation {
                     DispatchQueue.main.async {
                         imageViewModel.setMasterOrientation(orientation: baseOrientation)
                     }
                 }
             } else {
-                baseOrientation = viewState.masterOrientation
+                baseOrientation = masterOrientation
             }
         } else {
             baseOrientation = imageOrientation(metadata: metadata)
