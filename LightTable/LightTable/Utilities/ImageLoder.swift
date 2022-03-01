@@ -40,18 +40,13 @@ class ImageLoader: ObservableObject {
 
     @Published var imageWithMetadata:ImageWithMetadata? = nil
 
-    func load(url: URL) {
-        loadImage(fromURL: url)
-    }
-
-    private func loadImage(fromURL url:URL) {
+    @MainActor
+    func loadImage(url:URL) {
         let timeStamp = timeStamp(url: url)
 
         if let cachedData = ImageLoader.lruCache.object(forKey: NSString(string: url.path)) {
             if (cachedData.date == timeStamp) {
-                DispatchQueue.main.async {
-                    self.imageWithMetadata = cachedData
-                }
+                self.imageWithMetadata = cachedData
                 return
             }
         }

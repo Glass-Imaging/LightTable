@@ -47,7 +47,6 @@ struct ImageView: View {
     @Binding var imageViewModel:ImageViewModel
 
     @ObservedObject var imageLoader = ImageLoader()
-    @State var imageWithMetadata:ImageWithMetadata? = nil
     @State var viewOffsetInteractive = CGPoint.zero
     static var offsetMap: [URL : CGPoint] = [:]
 
@@ -57,7 +56,7 @@ struct ImageView: View {
         self.index = index
         self._imageViewModel = imageViewModel
 
-        imageLoader.load(url:url)
+        imageLoader.loadImage(url:url)
     }
 
     func viewOrientation(imageWithMetadata:ImageWithMetadata) -> Image.Orientation {
@@ -96,7 +95,9 @@ struct ImageView: View {
 
     var body: some View {
         VStack {
-            if let imageWithMetadata = imageWithMetadata {
+            // If the image is already cached by imageLoader the ProgressView will never show
+
+            if let imageWithMetadata = imageLoader.imageWithMetadata {
                 let scaleFactor = imageViewModel.viewScaleFactor
                 let orientation = viewOrientation(imageWithMetadata: imageWithMetadata)
                 let image = imageWithMetadata.image
@@ -155,11 +156,6 @@ struct ImageView: View {
                 }
             } else {
                 ProgressView("Loading Image...")
-            }
-        }
-        .onChange(of: imageLoader.imageWithMetadata) { imageWithMetadata in
-            if let imageWithMetadata = imageWithMetadata {
-                self.imageWithMetadata = imageWithMetadata
             }
         }
     }

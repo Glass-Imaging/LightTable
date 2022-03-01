@@ -43,6 +43,7 @@ class ThumbnailLoader: ObservableObject {
     /// - Parameters:
     ///   - url: URL of the image
     ///   - maxSize: maximum size (width/height) aspect ratio preserved
+    @MainActor
     func loadThumbnail(url: URL, maxSize: CGFloat) {
         let timeStamp = timeStamp(url: url)
 
