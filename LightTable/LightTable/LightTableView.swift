@@ -35,9 +35,6 @@ struct LightTableView: View {
                 ImageListView(browserModel: $browserModel, viewModel: $viewModel)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(backgroundColor)
-                    .toolbar {
-                        LightTableToolbar()
-                    }
             } else {
                 NavigationView {
                     FolderTreeNavigator(navigatorModel: $navigatorModel)
@@ -62,9 +59,6 @@ struct LightTableView: View {
 
                     if (browserActive) {
                         ImageBrowserView(browserModel: $browserModel, viewModel: $viewModel)
-                            .toolbar {
-                                LightTableToolbar()
-                            }
                     }
                 }
                 .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)

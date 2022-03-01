@@ -1,5 +1,3 @@
-//
-//  ImageViewModel.swift
 // Copyright (c) 2022 Glass Imaging Inc.
 // Author: Fabio Riccardi <fabio@glass-imaging.com>
 //
@@ -17,7 +15,10 @@
 
 import SwiftUI
 
-// User zoomed-in view dragging action state, the master instance is a @State variable in ImageListView
+// ImegeView internal state. Held in a separate object from ImageViewModel
+// can be isolated in a @State variable within ImageListView so that its
+// changes won't trigger a view tree refresh, preventing ImegeView thrashing.
+
 class ImageViewState: ObservableObject {
     @Published var viewOffset = CGPoint.zero
     @Published var viewOffsetInteractive = CGPoint.zero
@@ -48,28 +49,42 @@ class ImageViewState: ObservableObject {
     func setMasterOrientation(orientation:Image.Orientation) {
         masterOrientation = orientation
     }
+
+    // View magnification factor: 0 -> scale to fit, 1x, 2x, 3x, ...
+    @Published private(set) var viewScaleFactor:CGFloat = 0
+
+    func zoomIn() {
+        viewScaleFactor += 1
+    }
+
+    func zoomOut() {
+        if (viewScaleFactor > 0) {
+            viewScaleFactor -= 1
+        }
+    }
+
+    func zoomToFit() {
+        viewScaleFactor = 0
+    }
+
+    @Published /* private(set) */ var viewInfoItems:Int = 3
+
+    func switchViewInfoItems() {
+        viewInfoItems = viewInfoItems == 0 ? 3 : viewInfoItems - 1
+    }
+
+    func copyState(from other:ImageViewState) {
+        viewOffset = other.viewOffset
+        viewOffsetInteractive = other.viewOffsetInteractive
+        orientation = other.orientation
+        useMasterOrientation = other.useMasterOrientation
+        masterOrientation = other.masterOrientation
+        viewScaleFactor = other.viewScaleFactor
+        viewInfoItems = other.viewInfoItems
+    }
 }
 
 struct ImageViewModel {
-    // Reference to the ImageListView @State object, used to reset imageViewOffset without having a global handle on it
-    var viewState:ImageViewState? = nil
-
-    mutating func rotateLeft() {
-        viewState?.rotateLeft()
-    }
-
-    mutating func rotateRight() {
-        viewState?.rotateRight()
-    }
-
-    mutating func togglaMasterOrientation() {
-        viewState?.togglaMasterOrientation()
-    }
-
-    mutating func setMasterOrientation(orientation:Image.Orientation) {
-        viewState?.setMasterOrientation(orientation: orientation)
-    }
-
     // Multipe Image View layout (Horizontal/Vertical/Grid)
     var imageViewLayout:ImageListLayout = .Horizontal
 
@@ -112,33 +127,43 @@ struct ImageViewModel {
         fullScreen = !fullScreen
     }
 
-    // View magnification factor: 0 -> scale to fit, 1x, 2x, 3x, ...
-    private(set) var viewScaleFactor:CGFloat = 0
+    // Reference to the ImageListView @State object, allows ImageViewModel to delegate to ImageViewState
+    var viewState:ImageViewState? = nil
 
-    mutating func zoomIn() {
-        viewScaleFactor += 1
+    func rotateLeft() {
+        viewState?.rotateLeft()
     }
 
-    mutating func zoomOut() {
-        if (viewScaleFactor > 0) {
-            viewScaleFactor -= 1
-        }
+    func rotateRight() {
+        viewState?.rotateRight()
     }
 
-    mutating func zoomToFit() {
-        viewScaleFactor = 0
+    func togglaMasterOrientation() {
+        viewState?.togglaMasterOrientation()
     }
 
-    mutating func switchViewInfoItems() {
-        viewInfoItems = viewInfoItems == 0 ? 3 : viewInfoItems - 1
+    func setMasterOrientation(orientation:Image.Orientation) {
+        viewState?.setMasterOrientation(orientation: orientation)
     }
 
-    /* private(set) */ var viewInfoItems:Int = 3
+    func zoomIn() {
+        viewState?.zoomIn()
+    }
 
-    var thumbnailSize:CGFloat = 150
+    func zoomOut() {
+        viewState?.zoomOut()
+    }
+
+    func zoomToFit() {
+        viewState?.zoomToFit()
+    }
+
+    func switchViewInfoItems() {
+        viewState?.switchViewInfoItems()
+    }
 
     mutating func resetInteractiveState() {
-        viewScaleFactor = 0
+        zoomToFit()
         resetImageViewSelection()
         viewState?.resetInteractiveOffset()
     }

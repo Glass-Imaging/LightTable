@@ -100,7 +100,7 @@ struct ImageView: View {
             // If the image is already cached by imageLoader the ProgressView will never show
 
             if let imageWithMetadata = imageLoader.imageWithMetadata {
-                let scaleFactor = imageViewModel.viewScaleFactor
+                let scaleFactor = viewState.viewScaleFactor
                 let orientation = viewOrientation(imageWithMetadata: imageWithMetadata)
                 let image = imageWithMetadata.image
                 let imageSize = imageSize(image: image, orientation: orientation)
@@ -154,7 +154,7 @@ struct ImageView: View {
                     }
                 }
                 .overlay(alignment: .bottom) {
-                    ImageViewCaption(url: url, index: fileIndex, metadata: imageWithMetadata.metadata, viewInfoItems: $imageViewModel.viewInfoItems)
+                    ImageViewCaption(url: url, index: fileIndex, metadata: imageWithMetadata.metadata, viewInfoItems: $viewState.viewInfoItems)
                 }
             } else {
                 ProgressView("Loading Image...")

@@ -15,10 +15,65 @@
 
 import SwiftUI
 
-extension LightTableView {
+struct ScaleFactorIndicator: View {
+    @ObservedObject var viewState:ImageViewState
 
-    @ToolbarContentBuilder
-    func LightTableToolbar() -> some ToolbarContent {
+    var body: some View {
+        Text(viewState.viewScaleFactor == 0 ? "Fit" : "\(Int(viewState.viewScaleFactor))X")
+            .foregroundColor(viewState.viewScaleFactor > 0 ? Color.blue : Color.gray)
+            .frame(width: 25)
+            .padding(2)
+            .overlay(
+                RoundedRectangle(cornerRadius: 5)
+                    .fill(Color.gray).opacity(0.1)
+            )
+    }
+}
+
+struct OrientationIconView: View {
+    @ObservedObject var viewState:ImageViewState
+
+    var body: some View {
+        let orientation = viewState.orientation
+
+        let orientationIconName =
+            orientation == .right ? "person.fill.turn.right" :
+            orientation == .left ? "person.fill.turn.left" :
+            orientation == .down ? "person.fill.turn.down" : "person.fill"
+
+        Image(systemName: orientationIconName)
+            .foregroundColor(orientation == .up ? Color.gray : Color.blue)
+            .font(Font.system(size: 14))
+            .frame(width: 20, height: 20)
+            .padding(2)
+            .overlay(
+                RoundedRectangle(cornerRadius: 5)
+                    .fill(Color.gray).opacity(0.1)
+            )
+    }
+}
+
+extension ImageListView {
+    @ToolbarContentBuilder func ImageViewToolbar() -> some ToolbarContent {
+        ToolbarItemGroup(placement: .automatic) {
+            Button(action: {
+                viewModel.rotateLeft()
+            }) {
+                Image(systemName: "rotate.left")
+                .help("Rotate Left")
+            }
+            Button(action: {
+                viewModel.rotateRight()
+            }) {
+                Image(systemName: "rotate.right")
+                .help("Rotate Right")
+            }
+
+            OrientationIconView(viewState: viewState)
+
+            Divider()
+        }
+
         ToolbarItemGroup(placement: .automatic) {
             Button(action: {
                 viewModel.zoomOut()
@@ -39,14 +94,7 @@ extension LightTableView {
                 .help("Zoom To Fit")
             }
 
-            Text(viewModel.viewScaleFactor == 0 ? "Fit" : "\(Int(viewModel.viewScaleFactor))X")
-                .foregroundColor(viewModel.viewScaleFactor > 0 ? Color.blue : Color.gray)
-                .frame(width: 25)
-                .padding(2)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 5)
-                        .fill(Color.gray).opacity(0.1)
-                )
+            ScaleFactorIndicator(viewState: viewState)
 
             Divider()
         }
@@ -89,8 +137,8 @@ extension LightTableView {
                 Image(systemName: "arrow.up.left.and.arrow.down.right")
                     .help("Full Screen View")
             })
-                .foregroundColor(viewModel.fullScreen ? .blue : .gray)
-                .toggleStyle(.button)
+            .foregroundColor(viewModel.fullScreen ? .blue : .gray)
+            .toggleStyle(.button)
         }
     }
 }

@@ -18,6 +18,7 @@ import SwiftUI
 struct ImageBrowserView: View {
     @Binding var browserModel:ImageBrowserModel
     @Binding var viewModel:ImageViewModel
+    @State var thumbnailSize:CGFloat = 150
 
     let backgroundColor = Color(red: 40.0/255.0, green: 40.0/255.0, blue: 40.0/255.0)
     let dividerColor = Color(red: 20.0/255.0, green: 20.0/255.0, blue: 20.0/255.0)
@@ -37,7 +38,7 @@ struct ImageBrowserView: View {
                         HStack {
                             Spacer()
 
-                            ThumbnailSizeSlider(value: $viewModel.thumbnailSize)
+                            ThumbnailSizeSlider(value: $thumbnailSize)
                                 .padding(.trailing, 10)
                         }
                     }
@@ -45,7 +46,7 @@ struct ImageBrowserView: View {
                 }
                 .layoutPriority(1)
 
-                ThumbnailScrollView(browserModel: $browserModel, thumbnailSize: $viewModel.thumbnailSize)
+                ThumbnailScrollView(browserModel: $browserModel, thumbnailSize: $thumbnailSize)
                     .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
                     .background(backgroundColor)
             }
