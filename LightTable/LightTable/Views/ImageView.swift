@@ -44,19 +44,18 @@ struct ImageView: View {
     let url:URL
     let fileIndex:(Int, Int)
     let index:Int
-    @Binding var imageViewModel:ImageViewModel
-    @ObservedObject var viewState:ImageViewState
+
+    // Singleton object shared by all ImageViews, managed by LightTableView
+    @EnvironmentObject var viewState:ImageViewState
 
     @ObservedObject var imageLoader = ImageLoader()
     @State var viewOffsetInteractive = CGPoint.zero
     static var offsetMap: [URL : CGPoint] = [:]
 
-    init(url:URL, fileIndex:(Int, Int), index:Int, imageViewModel:Binding<ImageViewModel>, viewState:ImageViewState) {
+    init(url:URL, fileIndex:(Int, Int), index:Int) {
         self.url = url
         self.fileIndex = fileIndex
         self.index = index
-        self._imageViewModel = imageViewModel
-        self.viewState = viewState
 
         imageLoader.loadImage(url:url)
     }
@@ -72,7 +71,7 @@ struct ImageView: View {
                 baseOrientation = imageOrientation(metadata: metadata)
                 if masterOrientation != baseOrientation {
                     DispatchQueue.main.async {
-                        imageViewModel.setMasterOrientation(orientation: baseOrientation)
+                        viewState.setMasterOrientation(orientation: baseOrientation)
                     }
                 }
             } else {

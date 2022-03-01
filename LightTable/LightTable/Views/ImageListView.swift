@@ -24,8 +24,6 @@ enum ImageListLayout {
 struct ImageListView: View {
     @Binding var browserModel:ImageBrowserModel
     @Binding var viewModel:ImageViewModel
-    // viewOffset is a local state variable, its changes won't trigger a view tree invalidation
-    @State var viewState = ImageViewState()
 
     init(browserModel:Binding<ImageBrowserModel>, viewModel:Binding<ImageViewModel>) {
         self._browserModel = browserModel
@@ -73,8 +71,7 @@ struct ImageListView: View {
             } else {
                 if (viewModel.imageViewSelection >= 0 && viewModel.imageViewSelection < browserModel.selection.count) {
                     let file = browserModel.selection[viewModel.imageViewSelection]
-                    ImageView(url: file, fileIndex: browserModel.fileIndex(file: file), index: viewModel.imageViewSelection,
-                              imageViewModel: $viewModel, viewState: viewState)
+                    ImageView(url: file, fileIndex: browserModel.fileIndex(file: file), index: viewModel.imageViewSelection)
                 } else {
                     let gridConstraints = gridSizeConstraints(count: browserModel.selection.count, layout: viewModel.imageViewLayout)
                     GeometryReader { geometry in
@@ -83,8 +80,7 @@ struct ImageListView: View {
                             let items = min(browserModel.selection.count, 16)
                             ForEach(0 ..< items, id: \.self) { index in
                                 let file = browserModel.selection[index]
-                                ImageView(url: file, fileIndex: browserModel.fileIndex(file: file), index: index,
-                                          imageViewModel: $viewModel, viewState: viewState)
+                                ImageView(url: file, fileIndex: browserModel.fileIndex(file: file), index: index)
                                     .id(file)
                             }.frame(width: geometry.size.width / gridConstraints.width,
                                     height: geometry.size.height / gridConstraints.height)
@@ -95,10 +91,6 @@ struct ImageListView: View {
         }
         .toolbar {
             ImageViewToolbar()
-        }
-        .onAppear {
-            // Bind our ImageViewState to the ImageViewModel
-            viewModel.setViewState(viewState: viewState)
         }
     }
 }

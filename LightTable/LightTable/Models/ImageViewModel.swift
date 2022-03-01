@@ -15,9 +15,10 @@
 
 import SwiftUI
 
-// ImegeView internal state. Held in a separate object from ImageViewModel
-// can be isolated in a @State variable within ImageListView so that its
-// changes won't trigger a view tree refresh, preventing ImegeView thrashing.
+// ImegeView internal state. Held in a separate object from ImageViewModel,
+// it can be passed through an @EnvironmentObject variable to all ImageView instances.
+// Changes toImageViewState won't trigger a view tree refresh upstream of ImageView,
+// preventing ImegeView thrashing on user interaction.
 
 class ImageViewState: ObservableObject {
     @Published var viewOffset = CGPoint.zero
@@ -85,6 +86,8 @@ class ImageViewState: ObservableObject {
     }
 }
 
+// ImageViewModel delegates most of the action to ImageViewState
+
 struct ImageViewModel {
     // Multipe Image View layout (Horizontal/Vertical/Grid)
     var imageViewLayout:ImageListLayout = .Horizontal
@@ -128,51 +131,44 @@ struct ImageViewModel {
         fullScreen = !fullScreen
     }
 
-    // Reference to the ImageListView @State object, allows ImageViewModel to delegate to ImageViewState
-    private(set) var viewState:ImageViewState? = nil
-
-    mutating func setViewState(viewState:ImageViewState) {
-        if let previousState = self.viewState {
-            viewState.copyState(from: previousState)
-        }
-        self.viewState = viewState
-    }
+    // Reference to the ImageListView object, allows ImageViewModel to delegate to ImageViewState
+    let imageViewState = ImageViewState()
 
     func rotateLeft() {
-        viewState?.rotateLeft()
+        imageViewState.rotateLeft()
     }
 
     func rotateRight() {
-        viewState?.rotateRight()
+        imageViewState.rotateRight()
     }
 
     func togglaMasterOrientation() {
-        viewState?.togglaMasterOrientation()
+        imageViewState.togglaMasterOrientation()
     }
 
     func setMasterOrientation(orientation:Image.Orientation) {
-        viewState?.setMasterOrientation(orientation: orientation)
+        imageViewState.setMasterOrientation(orientation: orientation)
     }
 
     func zoomIn() {
-        viewState?.zoomIn()
+        imageViewState.zoomIn()
     }
 
     func zoomOut() {
-        viewState?.zoomOut()
+        imageViewState.zoomOut()
     }
 
     func zoomToFit() {
-        viewState?.zoomToFit()
+        imageViewState.zoomToFit()
     }
 
     func switchViewInfoItems() {
-        viewState?.switchViewInfoItems()
+        imageViewState.switchViewInfoItems()
     }
 
     mutating func resetInteractiveState() {
         zoomToFit()
         resetImageViewSelection()
-        viewState?.resetInteractiveOffset()
+        imageViewState.resetInteractiveOffset()
     }
 }

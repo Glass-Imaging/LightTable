@@ -65,6 +65,8 @@ struct LightTableView: View {
                 .onDrop(of: ["public.file-url"], delegate: self)
             }
         }
+        // Set imageViewState @EnvironmentObject for ImageView
+        .environmentObject(viewModel.imageViewState)
         .focusedSceneValue(\.focusedNavigatorModel, $navigatorModel)
         .focusedSceneValue(\.focusedBrowserModel, $browserModel)
         .focusedSceneValue(\.focusedViewModel, $viewModel)

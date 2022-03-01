@@ -56,89 +56,85 @@ struct OrientationIconView: View {
 extension ImageListView {
     @ToolbarContentBuilder func ImageViewToolbar() -> some ToolbarContent {
         ToolbarItemGroup(placement: .automatic) {
-            Button(action: {
-                viewModel.rotateLeft()
-            }) {
-                Image(systemName: "rotate.left")
-                .help("Rotate Left")
-            }
-            Button(action: {
-                viewModel.rotateRight()
-            }) {
-                Image(systemName: "rotate.right")
-                .help("Rotate Right")
-            }
+            HStack {
+                Button(action: {
+                    viewModel.zoomOut()
+                }) {
+                    Image(systemName: "minus.magnifyingglass")
+                    .help("Zoom Out")
+                }
+                Button(action: {
+                    viewModel.zoomIn()
+                }) {
+                    Image(systemName: "plus.magnifyingglass")
+                    .help("Zoom In")
+                }
+                Button(action: {
+                    viewModel.zoomToFit()
+                }) {
+                    Image(systemName: "arrow.up.left.and.down.right.magnifyingglass")
+                    .help("Zoom To Fit")
+                }
 
-            OrientationIconView(viewState: viewState)
+                ScaleFactorIndicator(viewState: viewModel.imageViewState)
 
-            Divider()
+                Divider()
+
+                Button(action: {
+                    viewModel.rotateLeft()
+                }) {
+                    Image(systemName: "rotate.left")
+                    .help("Rotate Left")
+                }
+                Button(action: {
+                    viewModel.rotateRight()
+                }) {
+                    Image(systemName: "rotate.right")
+                    .help("Rotate Right")
+                }
+
+                OrientationIconView(viewState: viewModel.imageViewState)
+
+                Divider()
+            }
         }
 
         ToolbarItemGroup(placement: .automatic) {
-            Button(action: {
-                viewModel.zoomOut()
-            }) {
-                Image(systemName: "minus.magnifyingglass")
-                .help("Zoom Out")
+            HStack {
+                Picker("View Arrangement", selection: $viewModel.imageViewLayout) {
+                    Image(systemName: "rectangle.split.3x1")
+                        .help("Horizontal")
+                        .tag(ImageListLayout.Horizontal)
+
+                    Image(systemName: "rectangle.split.1x2")
+                        .help("Vertical")
+                        .tag(ImageListLayout.Vertical)
+
+                    Image(systemName: "rectangle.split.3x3")
+                        .help("Grid")
+                        .tag(ImageListLayout.Grid)
+                }
+                .pickerStyle(.inline)
+
+                Button(action: {
+                    viewModel.resetImageViewSelection()
+                }, label: {
+                    let caption = viewModel.imageViewSelection >= 0 ? "\(viewModel.imageViewSelection + 1)" : "—"
+                    Image(systemName: "viewfinder")
+                        .help("View Selection")
+                    Text(caption)
+                        .frame(width: 12)
+                }).foregroundColor(viewModel.imageViewSelection >= 0 ? .blue : .gray)
+
+                Divider()
+
+                Toggle(isOn: $viewModel.fullScreen, label: {
+                    Image(systemName: "arrow.up.left.and.arrow.down.right")
+                        .help("Full Screen View")
+                })
+                .foregroundColor(viewModel.fullScreen ? .blue : .gray)
+                .toggleStyle(.button)
             }
-            Button(action: {
-                viewModel.zoomIn()
-            }) {
-                Image(systemName: "plus.magnifyingglass")
-                .help("Zoom In")
-            }
-            Button(action: {
-                viewModel.zoomToFit()
-            }) {
-                Image(systemName: "arrow.up.left.and.down.right.magnifyingglass")
-                .help("Zoom To Fit")
-            }
-
-            ScaleFactorIndicator(viewState: viewState)
-
-            Divider()
-        }
-
-        ToolbarItemGroup(placement: .automatic) {
-            Button(action: {
-                viewModel.resetImageViewSelection()
-            }, label: {
-                let caption = viewModel.imageViewSelection >= 0 ? "\(viewModel.imageViewSelection + 1)" : "—"
-                Image(systemName: "viewfinder")
-                    .help("View Selection")
-                Text(caption)
-                    .frame(width: 12)
-            }).foregroundColor(viewModel.imageViewSelection >= 0 ? .blue : .gray)
-
-            Divider()
-        }
-
-        ToolbarItemGroup(placement: .automatic) {
-            Picker("View Arrangement", selection: $viewModel.imageViewLayout) {
-                Image(systemName: "rectangle.split.3x1")
-                    .help("Horizontal")
-                    .tag(ImageListLayout.Horizontal)
-
-                Image(systemName: "rectangle.split.1x2")
-                    .help("Vertical")
-                    .tag(ImageListLayout.Vertical)
-
-                Image(systemName: "rectangle.split.3x3")
-                    .help("Grid")
-                    .tag(ImageListLayout.Grid)
-            }
-            .pickerStyle(.inline)
-
-            Divider()
-        }
-
-        ToolbarItem(placement: .automatic) {
-            Toggle(isOn: $viewModel.fullScreen, label: {
-                Image(systemName: "arrow.up.left.and.arrow.down.right")
-                    .help("Full Screen View")
-            })
-            .foregroundColor(viewModel.fullScreen ? .blue : .gray)
-            .toggleStyle(.button)
         }
     }
 }
