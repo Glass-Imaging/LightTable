@@ -21,11 +21,34 @@ enum ImageListLayout {
     case Grid
 }
 
+struct OrientationIconView: View {
+    @ObservedObject var viewState:ImageViewState
+
+    var body: some View {
+        let orientation = viewState.orientation
+
+        let orientationIconName =
+            orientation == .right ? "person.fill.turn.right" :
+            orientation == .left ? "person.fill.turn.left" :
+            orientation == .down ? "person.fill.turn.down" : "person.fill"
+
+        Image(systemName: orientationIconName)
+            .foregroundColor(orientation == .up ? Color.gray : Color.blue)
+            .font(Font.system(size: 14))
+            .frame(width: 20, height: 20)
+            .padding(2)
+            .overlay(
+                RoundedRectangle(cornerRadius: 5)
+                    .fill(Color.gray).opacity(0.1)
+            )
+    }
+}
+
 struct ImageListView: View {
     @Binding var browserModel:ImageBrowserModel
     @Binding var viewModel:ImageViewModel
     // viewOffset is a local state variable, its changes won't trigger a view tree invalidation
-    @State var viewOffset = ImageViewOffset()
+    @State var viewState = ImageViewState()
 
     init(browserModel:Binding<ImageBrowserModel>, viewModel:Binding<ImageViewModel>) {
         self._browserModel = browserModel
@@ -74,7 +97,7 @@ struct ImageListView: View {
                 if (viewModel.imageViewSelection >= 0 && viewModel.imageViewSelection < browserModel.selection.count) {
                     let file = browserModel.selection[viewModel.imageViewSelection]
                     ImageView(url: file, fileIndex: browserModel.fileIndex(file: file), index: viewModel.imageViewSelection,
-                              imageViewModel: $viewModel, imageViewOffset: viewOffset)
+                              imageViewModel: $viewModel, viewState: viewState)
                 } else {
                     let gridConstraints = gridSizeConstraints(count: browserModel.selection.count, layout: viewModel.imageViewLayout)
                     GeometryReader { geometry in
@@ -84,7 +107,7 @@ struct ImageListView: View {
                             ForEach(0 ..< items, id: \.self) { index in
                                 let file = browserModel.selection[index]
                                 ImageView(url: file, fileIndex: browserModel.fileIndex(file: file), index: index,
-                                          imageViewModel: $viewModel, imageViewOffset: viewOffset)
+                                          imageViewModel: $viewModel, viewState: viewState)
                                     .id(file)
                             }.frame(width: geometry.size.width / gridConstraints.width,
                                     height: geometry.size.height / gridConstraints.height)
@@ -94,10 +117,30 @@ struct ImageListView: View {
             }
         }
         .onAppear {
-            viewModel.imageViewOffset = viewOffset
+            viewModel.viewState = viewState
         }
         .onDisappear {
-            viewModel.imageViewOffset = nil
+            viewModel.viewState = nil
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .navigation) {
+                Button(action: {
+                    viewModel.rotateLeft()
+                }) {
+                    Image(systemName: "rotate.left")
+                    .help("Rotate Left")
+                }
+                Button(action: {
+                    viewModel.rotateRight()
+                }) {
+                    Image(systemName: "rotate.right")
+                    .help("Rotate Right")
+                }
+
+                OrientationIconView(viewState: viewState)
+
+                Divider()
+            }
         }
     }
 }

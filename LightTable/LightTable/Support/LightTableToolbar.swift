@@ -15,45 +15,10 @@
 
 import SwiftUI
 
-func OrientationIcon(orientation: Image.Orientation) -> some View {
-    let orientationIconName =
-        orientation == .right ? "person.fill.turn.right" :
-        orientation == .left ? "person.fill.turn.left" :
-        orientation == .down ? "person.fill.turn.down" : "person.fill"
-
-    return Image(systemName: orientationIconName)
-        .foregroundColor(orientation == .up ? Color.gray : Color.blue)
-        .font(Font.system(size: 14))
-        .frame(width: 20, height: 20)
-        .padding(2)
-        .overlay(
-            RoundedRectangle(cornerRadius: 5)
-                .fill(Color.gray).opacity(0.1)
-        )
-}
-
 extension LightTableView {
 
     @ToolbarContentBuilder
     func LightTableToolbar() -> some ToolbarContent {
-        ToolbarItemGroup(placement: .automatic) {
-            Button(action: {
-                viewModel.rotateLeft()
-            }) {
-                Image(systemName: "rotate.left")
-                .help("Rotate Left")
-            }
-            Button(action: {
-                viewModel.rotateRight()
-            }) {
-                Image(systemName: "rotate.right")
-                .help("Rotate Right")
-            }
-
-            OrientationIcon(orientation: viewModel.orientation)
-
-            Divider()
-        }
         ToolbarItemGroup(placement: .automatic) {
             Button(action: {
                 viewModel.zoomOut()

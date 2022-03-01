@@ -45,18 +45,18 @@ struct ImageView: View {
     let fileIndex:(Int, Int)
     let index:Int
     @Binding var imageViewModel:ImageViewModel
-    @ObservedObject var imageViewOffset:ImageViewOffset
+    @ObservedObject var viewState:ImageViewState
 
     @ObservedObject var imageLoader = ImageLoader()
     @State var viewOffsetInteractive = CGPoint.zero
     static var offsetMap: [URL : CGPoint] = [:]
 
-    init(url:URL, fileIndex:(Int, Int), index:Int, imageViewModel:Binding<ImageViewModel>, imageViewOffset:ImageViewOffset) {
+    init(url:URL, fileIndex:(Int, Int), index:Int, imageViewModel:Binding<ImageViewModel>, viewState:ImageViewState) {
         self.url = url
         self.fileIndex = fileIndex
         self.index = index
         self._imageViewModel = imageViewModel
-        self.imageViewOffset = imageViewOffset
+        self.viewState = viewState
 
         imageLoader.loadImage(url:url)
     }
@@ -66,22 +66,22 @@ struct ImageView: View {
         let imageURL = imageWithMetadata.url
 
         let baseOrientation:Image.Orientation
-        if imageViewModel.useMasterOrientation {
+        if viewState.useMasterOrientation {
             // ImageView objects are being recycled by the container, see if this one is up to date
             if (url == imageURL && index == 0) {
                 baseOrientation = imageOrientation(metadata: metadata)
-                if imageViewModel.masterOrientation != baseOrientation {
+                if viewState.masterOrientation != baseOrientation {
                     DispatchQueue.main.async {
                         imageViewModel.setMasterOrientation(orientation: baseOrientation)
                     }
                 }
             } else {
-                baseOrientation = imageViewModel.masterOrientation
+                baseOrientation = viewState.masterOrientation
             }
         } else {
             baseOrientation = imageOrientation(metadata: metadata)
         }
-        return rotate(value: baseOrientation, by: imageViewModel.orientation)
+        return rotate(value: baseOrientation, by: viewState.orientation)
     }
 
     func imageSize(image: CGImage, orientation: Image.Orientation) -> CGSize {
@@ -92,7 +92,7 @@ struct ImageView: View {
     func imageOffset(scale: CGFloat, viewOffset: CGPoint, viewPortOffset: CGSize) -> CGPoint {
         return scale == 0
                ? CGPoint.zero
-               : imageViewOffset.viewOffset * scale + imageViewOffset.viewOffsetInteractive + viewOffset + viewOffsetInteractive - viewPortOffset
+               : viewState.viewOffset * scale + viewState.viewOffsetInteractive + viewOffset + viewOffsetInteractive - viewPortOffset
     }
 
     var body: some View {
@@ -143,11 +143,11 @@ struct ImageView: View {
                                     // Click-Drag for global image offset
                                     DragGesture()
                                         .onChanged { gesture in
-                                            imageViewOffset.viewOffsetInteractive = CGPoint(x: gesture.translation.width, y: gesture.translation.height)
+                                            viewState.viewOffsetInteractive = CGPoint(x: gesture.translation.width, y: gesture.translation.height)
                                         }
                                         .onEnded { value in
-                                            imageViewOffset.viewOffset += imageViewOffset.viewOffsetInteractive / scaleFactor
-                                            imageViewOffset.viewOffsetInteractive = CGPoint.zero
+                                            viewState.viewOffset += viewState.viewOffsetInteractive / scaleFactor
+                                            viewState.viewOffsetInteractive = CGPoint.zero
                                         }
                                 )
                         }

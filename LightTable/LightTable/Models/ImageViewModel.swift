@@ -18,17 +18,58 @@
 import SwiftUI
 
 // User zoomed-in view dragging action state, the master instance is a @State variable in ImageListView
-class ImageViewOffset: ObservableObject {
+class ImageViewState: ObservableObject {
     @Published var viewOffset = CGPoint.zero
     @Published var viewOffsetInteractive = CGPoint.zero
 
-    func reset() {
+    func resetInteractiveOffset() {
         viewOffset = CGPoint.zero
         viewOffsetInteractive = CGPoint.zero
+    }
+
+    @Published private(set) var orientation:Image.Orientation = .up
+
+    func rotateLeft() {
+        orientation = LightTable.rotateLeft(value: orientation)
+    }
+
+    func rotateRight() {
+        orientation = LightTable.rotateRight(value: orientation)
+    }
+
+    @Published private(set) var useMasterOrientation = false
+
+    func togglaMasterOrientation() {
+        useMasterOrientation = !useMasterOrientation
+    }
+
+    @Published private(set) var masterOrientation:Image.Orientation = .up
+
+    func setMasterOrientation(orientation:Image.Orientation) {
+        masterOrientation = orientation
     }
 }
 
 struct ImageViewModel {
+    // Reference to the ImageListView @State object, used to reset imageViewOffset without having a global handle on it
+    var viewState:ImageViewState? = nil
+
+    mutating func rotateLeft() {
+        viewState?.rotateLeft()
+    }
+
+    mutating func rotateRight() {
+        viewState?.rotateRight()
+    }
+
+    mutating func togglaMasterOrientation() {
+        viewState?.togglaMasterOrientation()
+    }
+
+    mutating func setMasterOrientation(orientation:Image.Orientation) {
+        viewState?.setMasterOrientation(orientation: orientation)
+    }
+
     // Multipe Image View layout (Horizontal/Vertical/Grid)
     var imageViewLayout:ImageListLayout = .Horizontal
 
@@ -41,17 +82,6 @@ struct ImageViewModel {
         case .Grid:
             imageViewLayout = .Horizontal
         }
-    }
-
-    // Image View Orientation
-    private(set) var orientation:Image.Orientation = .up
-
-    mutating func rotateLeft() {
-        orientation = LightTable.rotateLeft(value: orientation)
-    }
-
-    mutating func rotateRight() {
-        orientation = LightTable.rotateRight(value: orientation)
     }
 
     // Single Image view selection for ImageListView
@@ -105,26 +135,11 @@ struct ImageViewModel {
 
     /* private(set) */ var viewInfoItems:Int = 3
 
-    private(set) var useMasterOrientation = false
-
-    mutating func togglaMasterOrientation() {
-        useMasterOrientation = !useMasterOrientation
-    }
-
-    private(set) var masterOrientation:Image.Orientation = .up
-
-    mutating func setMasterOrientation(orientation:Image.Orientation) {
-        masterOrientation = orientation
-    }
-
     var thumbnailSize:CGFloat = 150
-
-    // Reference to the ImageListView @State object, used to reset imageViewOffset without having a global handle on it
-    var imageViewOffset:ImageViewOffset? = nil
 
     mutating func resetInteractiveState() {
         viewScaleFactor = 0
         resetImageViewSelection()
-        imageViewOffset?.reset()
+        viewState?.resetInteractiveOffset()
     }
 }
