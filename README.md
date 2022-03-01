@@ -1,2 +1,2 @@
 # LightTable
-A Fast and light weight photo sorting and comparing app.
+A Fast and lightweight photo sorting and comparing app.
