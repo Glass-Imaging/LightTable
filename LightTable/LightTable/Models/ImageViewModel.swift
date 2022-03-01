@@ -129,7 +129,14 @@ struct ImageViewModel {
     }
 
     // Reference to the ImageListView @State object, allows ImageViewModel to delegate to ImageViewState
-    var viewState:ImageViewState? = nil
+    private(set) var viewState:ImageViewState? = nil
+
+    mutating func setViewState(viewState:ImageViewState) {
+        if let previousState = self.viewState {
+            viewState.copyState(from: previousState)
+        }
+        self.viewState = viewState
+    }
 
     func rotateLeft() {
         viewState?.rotateLeft()

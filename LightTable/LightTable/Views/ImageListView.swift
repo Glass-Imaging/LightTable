@@ -97,10 +97,8 @@ struct ImageListView: View {
             ImageViewToolbar()
         }
         .onAppear {
-            if let previousState = viewModel.viewState {
-                viewState.copyState(from: previousState)
-            }
-            viewModel.viewState = viewState
+            // Bind our ImageViewState to the ImageViewModel
+            viewModel.setViewState(viewState: viewState)
         }
     }
 }
