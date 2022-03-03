@@ -181,7 +181,7 @@ extension ImageListView {
                     .help("Multiple Image Selection")
 
                 Picker("View Arrangement", selection: $viewModel.imageViewLayout) {
-                    Image(systemName: "rectangle.split.3x1")
+                    Image(systemName: "rectangle.split.2x1")
                         .help("Horizontal")
                         .tag(ImageListLayout.Horizontal)
 
@@ -189,7 +189,7 @@ extension ImageListView {
                         .help("Vertical")
                         .tag(ImageListLayout.Vertical)
 
-                    Image(systemName: "rectangle.split.3x3")
+                    Image(systemName: "rectangle.split.2x2")
                         .help("Grid")
                         .tag(ImageListLayout.Grid)
                 }

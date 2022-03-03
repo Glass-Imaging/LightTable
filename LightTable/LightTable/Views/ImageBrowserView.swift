@@ -15,12 +15,28 @@
 
 import SwiftUI
 
+extension View {
+    func innerShadow<S: Shape>(using shape: S, angle: Angle = .degrees(180), color: Color = .black, width: CGFloat = 3, blur: CGFloat = 3) -> some View {
+        let finalX = CGFloat(cos(angle.radians - .pi / 2))
+        let finalY = CGFloat(sin(angle.radians - .pi / 2))
+
+        return self
+            .overlay(
+                shape
+                    .stroke(color, lineWidth: width)
+                    .offset(x: finalX * width * 0.3, y: finalY * width * 0.3)
+                    .blur(radius: blur)
+                    .mask(shape)
+            )
+    }
+}
+
 struct ImageBrowserView: View {
     @Binding var browserModel:ImageBrowserModel
     @Binding var viewModel:ImageViewModel
     @State var thumbnailSize:CGFloat = 150
 
-    let backgroundColor = Color(red: 30.0/255.0, green: 30.0/255.0, blue: 30.0/255.0)
+    let backgroundColor = Color(red: 40.0/255.0, green: 40.0/255.0, blue: 40.0/255.0)
     let dividerColor = Color(red: 20.0/255.0, green: 20.0/255.0, blue: 20.0/255.0)
 
     let minPaneSize:CGFloat = 200
@@ -28,7 +44,7 @@ struct ImageBrowserView: View {
     var body: some View {
         GeometryReader { geometry in
             VSplitView {
-                VStack {
+                VStack(spacing: 0) {
                     ImageListView(browserModel: $browserModel, viewModel: $viewModel)
                         .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
 
@@ -50,6 +66,7 @@ struct ImageBrowserView: View {
                 ThumbnailScrollView(browserModel: $browserModel, thumbnailSize: $thumbnailSize)
                     .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
                     .background(backgroundColor)
+                    .innerShadow(using: Rectangle())
             }
         }
     }

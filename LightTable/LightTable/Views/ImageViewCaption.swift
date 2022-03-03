@@ -15,42 +15,13 @@
 
 import SwiftUI
 
-let exposureTimeTable:[(CGFloat, String)] = [
-    (1.0,       "1"),
-    (1.0/2,     "1/2"),
-    (1.0/4,     "1/4"),
-    (1.0/8,     "1/8"),
-    (1.0/15,    "1/15"),
-    (1.0/30,    "1/30"),
-    (1.0/60,    "1/60"),
-    (1.0/125,   "1/125"),
-    (1.0/250,   "1/250"),
-    (1.0/500,   "1/500"),
-    (1.0/1000,  "1/1000"),
-    (1.0/2000,  "1/2000"),
-    (1.0/4000,  "1/4000"),
-    (1.0/8000,  "1/8000"),
-    (1.0/16000, "1/16000"),
-    (1.0/32000, "1/32000"),
-]
-
 func formattedExposureTime(_ exposureTime: CGFloat) -> String {
     if exposureTime > 1 {
         return String(format: "%.1f", exposureTime)
     } else if exposureTime == 0 {
         return "0"
     } else {
-        var minDifference:CGFloat = 10.0
-        var minIndex = 0
-
-        for i in 0 ..< exposureTimeTable.count {
-            let difference = abs(exposureTime - exposureTimeTable[i].0)
-            if difference < minDifference {
-                minDifference = difference
-                minIndex = i
-            }
-        }
-        return exposureTimeTable[minIndex].1
+        return "1/\(String(format:"%.0f", 1.0/exposureTime))"
     }
 }
 
@@ -226,16 +197,24 @@ struct ImageViewCaption: View {
 
     func imageMetadata() -> String {
         if let metadata = metadata {
-            let ISO = ((metadata["{Exif}"] as? NSDictionary)?["ISOSpeedRatings"] as? [Int])?[0] ?? 0
-            let fNumber = (metadata["{Exif}"] as? NSDictionary)?["FNumber"]  as? CGFloat ??
-                          (metadata["{Exif}"] as? NSDictionary)?["ApertureValue"] as? CGFloat ?? 0
+            let ISO = ((metadata["{Exif}"] as? NSDictionary)?["ISOSpeedRatings"] as? [Int])?[0]
 
-            let exposureTime = (metadata["{Exif}"] as? NSDictionary)?["ExposureTime"] as? CGFloat ?? 0
+            let fNumber = (metadata["{Exif}"] as? NSDictionary)?["FNumber"]  as? CGFloat ??
+                          (metadata["{Exif}"] as? NSDictionary)?["ApertureValue"] as? CGFloat
+
+            let exposureTime = (metadata["{Exif}"] as? NSDictionary)?["ExposureTime"] as? CGFloat
 
             let pixelWidth = metadata["PixelWidth"] as? Int ?? 0
             let pixelHeight = metadata["PixelHeight"] as? Int ?? 0
 
-            return "ISO \(ISO), f/\(String(format: "%.1f", fNumber)), \(formattedExposureTime(exposureTime))s - \(pixelWidth) x \(pixelHeight)"
+            let isoFmt = ISO != nil ? "ISO \(ISO!), " : ""
+            let fNumberFmt = fNumber != nil ? "f/\(String(format: "%.1f", fNumber!)), " : ""
+            let exposureTimeFmt = exposureTime != nil ? "\(formattedExposureTime(exposureTime!))s" : ""
+
+            let exposure = isoFmt + fNumberFmt + exposureTimeFmt
+            let dimensions = "\(pixelWidth) x \(pixelHeight)"
+
+            return !exposure.isEmpty ? exposure + " - " + dimensions : dimensions
         }
 
         return "--"
