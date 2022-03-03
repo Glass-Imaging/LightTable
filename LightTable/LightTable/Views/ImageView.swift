@@ -65,17 +65,17 @@ struct ImageView: View {
         let imageURL = imageWithMetadata.url
 
         let baseOrientation:Image.Orientation
-        if let masterOrientation = viewState.masterOrientation {
+        if viewState.useMasterOrientation {
             // ImageView objects are being recycled by the container, see if this one is up to date
             if (url == imageURL && index == 0) {
                 baseOrientation = imageOrientation(metadata: metadata)
-                if masterOrientation != baseOrientation {
+                if viewState.masterOrientation != baseOrientation {
                     DispatchQueue.main.async {
                         viewState.setMasterOrientation(orientation: baseOrientation)
                     }
                 }
             } else {
-                baseOrientation = masterOrientation
+                baseOrientation = viewState.masterOrientation
             }
         } else {
             baseOrientation = imageOrientation(metadata: metadata)
@@ -152,8 +152,17 @@ struct ImageView: View {
                         }
                     }
                 }
+                .overlay(alignment: .top) {
+                    ImageViewExif(url: url, index: fileIndex,
+                                  fileDate: imageWithMetadata.date,
+                                  metadata: imageWithMetadata.metadata,
+                                  showEXIFMetadata: $viewState.showEXIFMetadata)
+                }
                 .overlay(alignment: .bottom) {
-                    ImageViewCaption(url: url, index: fileIndex, metadata: imageWithMetadata.metadata, viewInfoItems: $viewState.viewInfoItems)
+                    ImageViewCaption(url: url, index: fileIndex,
+                                     fileDate: imageWithMetadata.date,
+                                     metadata: imageWithMetadata.metadata,
+                                     viewInfoItems: $viewState.viewInfoItems)
                 }
             } else {
                 ProgressView("Loading Image...")

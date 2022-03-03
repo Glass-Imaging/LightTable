@@ -15,11 +15,21 @@
 
 import SwiftUI
 
-func CommandButton(label:String, key: KeyEquivalent, modifiers: EventModifiers = [], action: @escaping () -> Void) -> some View {
+func CommandButton(label:String, image:Image? = nil, key: KeyEquivalent, modifiers: EventModifiers = [], action: @escaping () -> Void) -> some View {
     return Button {
         action()
     } label: {
-        Text(label)
+        HStack {
+            Text(label)
+            image
+        }
     }
+    .keyboardShortcut(key, modifiers: modifiers)
+}
+
+func CommandToggle(label:String, key: KeyEquivalent, modifiers: EventModifiers = [], isOn: Binding<Bool>) -> some View {
+    return Toggle(isOn: isOn, label: {
+        Text(label)
+    })
     .keyboardShortcut(key, modifiers: modifiers)
 }

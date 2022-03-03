@@ -53,24 +53,14 @@ struct ImageBrowserView: View {
         }
     }
 
-    struct ViewCommands: Commands {
-
-        var body: some Commands {
-            CommandGroup(after: .sidebar) {
-                Group {
-                }
-            }
-        }
-    }
-
     struct BrowserCommands: Commands {
         @FocusedBinding(\.focusedBrowserModel) private var browserModel: ImageBrowserModel?
         @FocusedBinding(\.focusedViewModel) private var viewModel: ImageViewModel?
 
+        @State var viewSelection:Int = -1
+
         var body: some Commands {
-
             CommandGroup(after: .sidebar) {
-
                 Group {
                     CommandButton(label: "Rotate Left", key: "[") {
                         viewModel?.rotateLeft()
@@ -79,15 +69,20 @@ struct ImageBrowserView: View {
                         viewModel?.rotateRight()
                     }
 
-                    CommandButton(label: "Toggle Layout", key: "L") {
+                    CommandButton(label: "Switch Layout", key: "L") {
                         viewModel?.switchLayout()
                     }
-                    CommandButton(label: "Uniform Orientation", key: "O") {
-                        viewModel?.togglaMasterOrientation()
+
+                    if let viewModel = viewModel {
+                        ToggleMenuButton(label: "Uniform Orientation", key: "O", viewState: viewModel.imageViewState, field: \.useMasterOrientation)
                     }
 
                     CommandButton(label: "Toggle Image View Data", key: "V") {
                         viewModel?.switchViewInfoItems()
+                    }
+
+                    if let viewModel = viewModel {
+                        ToggleMenuButton(label: "Show Exif Metadata", key: "I", viewState: viewModel.imageViewState, field: \.showEXIFMetadata)
                     }
                 }
 
@@ -120,32 +115,62 @@ struct ImageBrowserView: View {
 
                 Divider()
 
-                Menu("View Selection") {
-                    let zero = Character("0")
-                    ForEach(1...9, id: \.self) { index in
-                        let c = Character(UnicodeScalar(Int(zero.asciiValue!) + index)!)
-                        CommandButton(label: "View " + String(c), key: KeyEquivalent(c)) {
-                            viewModel?.imageViewSelection(char: c, selection: browserModel!.selection)
+                if let viewSelection = viewModel?.imageViewSelection {
+                    Menu("View Selection") {
+                        let zero = Character("0")
+                        ForEach(0...9, id: \.self) { index in
+                            let c = Character(UnicodeScalar(Int(zero.asciiValue!) + index + 1)!)
+
+                            CommandToggle(label: "View \(index + 1)", key: index < 9 ? KeyEquivalent(c) : "0", isOn: Binding<Bool>(
+                                get: { viewSelection == index },
+                                set: {
+                                    if $0 {
+                                        viewModel?.imageViewSelection(char: index < 9 ? c : zero, selection: browserModel!.selection)
+                                    }
+                                }
+                            ))
                         }
+                        CommandToggle(label: "Show All", key: "`", isOn: Binding<Bool>(
+                            get: { viewSelection == -1 },
+                            set: {
+                                if $0 {
+                                    viewModel?.resetImageViewSelection()
+                                }
+                            }
+                        ))
                     }
-                    CommandButton(label: "View 10", key: "0") {
-                        viewModel?.imageViewSelection(char: "0", selection: browserModel!.selection)
-                    }
-                    CommandButton(label: "Show All", key: "`") {
-                        viewModel?.resetImageViewSelection()
-                    }
+                    .disabled(browserModel == nil)
                 }
-                .disabled(browserModel == nil)
 
                 Divider()
 
-                CommandButton(label: (viewModel != nil && viewModel!.fullScreen ? "Exit " : "Enter ") + "Full Screen Preview", key: "F") {
-                    viewModel?.toggleFullscreen()
-                }
-                .disabled(browserModel == nil)
+                CommandToggle(label: "Full Screen Preview", key: "F",
+                              isOn: Binding<Bool>(
+                                get: { viewModel?.fullScreen ?? false },
+                                set: { viewModel?.fullScreen = $0 }))
 
                 Divider()
             }
         }
+    }
+}
+
+struct ToggleMenuButton<State>: View where State : ObservableObject {
+    let label:String
+    let key: KeyEquivalent
+    let modifiers: EventModifiers = []
+
+    @ObservedObject var viewState:State
+    let field: KeyPath<State, Bool>
+
+    var body: some View {
+        CommandToggle(label: label, key: key, modifiers: modifiers, isOn: Binding<Bool>(
+            get: { self.viewState[keyPath: field] },
+            set: {
+                if let keyPath = field as? ReferenceWritableKeyPath<State, Bool> {
+                    self.viewState[keyPath: keyPath] = $0
+                }
+            }
+        ))
     }
 }

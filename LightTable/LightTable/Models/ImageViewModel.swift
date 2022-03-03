@@ -39,15 +39,9 @@ class ImageViewState: ObservableObject {
         orientation = LightTable.rotateRight(value: orientation)
     }
 
-    @Published private(set) var masterOrientation:Image.Orientation? = nil
+    @Published var useMasterOrientation = false
 
-    func togglaMasterOrientation() {
-        if masterOrientation == nil {
-            masterOrientation = .up
-        } else {
-            masterOrientation = nil
-        }
-    }
+    @Published private(set) var masterOrientation:Image.Orientation = .up
 
     func setMasterOrientation(orientation:Image.Orientation) {
         masterOrientation = orientation
@@ -75,6 +69,8 @@ class ImageViewState: ObservableObject {
     func switchViewInfoItems() {
         viewInfoItems = viewInfoItems == 0 ? 3 : viewInfoItems - 1
     }
+
+    @Published /* private(set) */ var showEXIFMetadata = false
 
     func copyState(from other:ImageViewState) {
         viewOffset = other.viewOffset
@@ -140,14 +136,6 @@ struct ImageViewModel {
 
     func rotateRight() {
         imageViewState.rotateRight()
-    }
-
-    func togglaMasterOrientation() {
-        imageViewState.togglaMasterOrientation()
-    }
-
-    func setMasterOrientation(orientation:Image.Orientation) {
-        imageViewState.setMasterOrientation(orientation: orientation)
     }
 
     func zoomIn() {

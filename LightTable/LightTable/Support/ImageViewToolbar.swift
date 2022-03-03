@@ -53,6 +53,65 @@ struct OrientationIconView: View {
     }
 }
 
+struct ImageInfoPicker: View {
+    @ObservedObject var viewState:ImageViewState
+
+    var body: some View {
+        Picker("Image Info Level", selection: $viewState.viewInfoItems) {
+            HStack {
+                Image(systemName: "text.bubble")
+                Text("0")
+            }
+                .help("No Info")
+                .tag(0)
+
+            HStack {
+                Image(systemName: "text.bubble")
+                Text("1")
+            }
+                .help("File Name")
+                .tag(1)
+
+            HStack {
+                Image(systemName: "text.bubble")
+                Text("2")
+            }
+                .help("File Name and Path")
+                .tag(2)
+
+            HStack {
+                Image(systemName: "text.bubble")
+                Text("3")
+            }
+                .help("Full Info")
+                .tag(3)
+        }
+        .pickerStyle(.menu)
+    }
+}
+
+struct ToggleButton<State>: View where State : ObservableObject {
+    let labelOn:String
+    let labelOff:String
+
+    @ObservedObject var viewState:State
+    let field: KeyPath<State, Bool>
+
+    var body: some View {
+        Toggle(isOn: Binding<Bool>(
+            get: { self.viewState[keyPath: field] },
+            set: {
+                if let field = field as? ReferenceWritableKeyPath<State, Bool> {
+                    self.viewState[keyPath: field] = $0
+                }
+            })) {
+                Image(systemName: self.viewState[keyPath: field] ? labelOn : labelOff)
+            }
+            .foregroundColor(self.viewState[keyPath: field] ? .blue : .gray)
+            .toggleStyle(.button)
+    }
+}
+
 extension ImageListView {
     @ToolbarContentBuilder func ImageViewToolbar() -> some ToolbarContent {
         ToolbarItemGroup(placement: .automatic) {
@@ -79,7 +138,10 @@ extension ImageListView {
                 ScaleFactorIndicator(viewState: viewModel.imageViewState)
 
                 Divider()
+            }}
 
+        ToolbarItemGroup(placement: .automatic) {
+            HStack {
                 Button(action: {
                     viewModel.rotateLeft()
                 }) {
@@ -96,11 +158,25 @@ extension ImageListView {
                 OrientationIconView(viewState: viewModel.imageViewState)
 
                 Divider()
+
+                ToggleButton(labelOn: "location.north.fill", labelOff: "location.slash.fill",
+                             viewState: viewModel.imageViewState, field: \.useMasterOrientation)
+                    .frame(width: 20)
+
+                Divider()
             }
         }
 
         ToolbarItemGroup(placement: .automatic) {
             HStack {
+                ToggleButton(labelOn: "info.circle.fill", labelOff: "info.circle",
+                             viewState: viewModel.imageViewState, field: \.showEXIFMetadata)
+                    .frame(width: 20)
+
+                ImageInfoPicker(viewState: viewModel.imageViewState)
+
+                Divider()
+
                 Picker("View Arrangement", selection: $viewModel.imageViewLayout) {
                     Image(systemName: "rectangle.split.3x1")
                         .help("Horizontal")
