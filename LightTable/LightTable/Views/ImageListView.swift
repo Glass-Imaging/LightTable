@@ -30,15 +30,6 @@ struct ImageListView: View {
         self._viewModel = viewModel
     }
 
-    func gridLayout(count:Int) -> [GridItem] {
-        let gridItem = GridItem(.flexible())
-        var gridItemLayout:[GridItem] = []
-        for _ in 0 ..< count {
-            gridItemLayout.append(gridItem)
-        }
-        return gridItemLayout
-    }
-
     func gridSizeConstraints(count:Int, layout: ImageListLayout) -> CGSize {
         switch layout {
         case .Horizontal:
@@ -75,8 +66,9 @@ struct ImageListView: View {
                 } else {
                     let gridConstraints = gridSizeConstraints(count: browserModel.selection.count, layout: viewModel.imageViewLayout)
                     GeometryReader { geometry in
-                        let gridItemLayout:[GridItem] = gridLayout(count: Int(gridConstraints.width))
-                        LazyVGrid(columns: gridItemLayout) {
+                        let gridItemLayout = [GridItem](repeating: GridItem(.flexible(), spacing: 1), count: Int(gridConstraints.width))
+
+                        LazyVGrid(columns: gridItemLayout, spacing: 1) {
                             let items = min(browserModel.selection.count, 16)
                             ForEach(0 ..< items, id: \.self) { index in
                                 let file = browserModel.selection[index]
