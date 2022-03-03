@@ -66,9 +66,9 @@ struct ImageListView: View {
                 } else {
                     let gridConstraints = gridSizeConstraints(count: browserModel.selection.count, layout: viewModel.imageViewLayout)
                     GeometryReader { geometry in
-                        let gridItemLayout = [GridItem](repeating: GridItem(.flexible(), spacing: 1), count: Int(gridConstraints.width))
+                        let gridItemLayout = [GridItem](repeating: GridItem(.flexible(), spacing: 8), count: Int(gridConstraints.width))
 
-                        LazyVGrid(columns: gridItemLayout, spacing: 1) {
+                        LazyVGrid(columns: gridItemLayout, spacing: 4) {
                             let items = min(browserModel.selection.count, 16)
                             ForEach(0 ..< items, id: \.self) { index in
                                 let file = browserModel.selection[index]
