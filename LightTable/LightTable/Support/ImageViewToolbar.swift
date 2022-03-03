@@ -58,33 +58,21 @@ struct ImageInfoPicker: View {
 
     var body: some View {
         Picker("Image Info Level", selection: $viewState.viewInfoItems) {
-            HStack {
-                Image(systemName: "text.bubble")
-                Text("0")
-            }
-                .help("No Info")
-                .tag(0)
+            Image(systemName: "bubble.left")
+            .help("No Info")
+            .tag(0)
 
-            HStack {
-                Image(systemName: "text.bubble")
-                Text("1")
-            }
-                .help("File Name")
-                .tag(1)
+            Image(systemName: "ellipsis.bubble")
+            .help("File Name")
+            .tag(1)
 
-            HStack {
-                Image(systemName: "text.bubble")
-                Text("2")
-            }
-                .help("File Name and Path")
-                .tag(2)
+            Image(systemName: "captions.bubble")
+            .help("File Name and Path")
+            .tag(2)
 
-            HStack {
-                Image(systemName: "text.bubble")
-                Text("3")
-            }
-                .help("Full Info")
-                .tag(3)
+            Image(systemName: "text.bubble")
+            .help("Full Info")
+            .tag(3)
         }
         .pickerStyle(.menu)
     }
@@ -177,6 +165,16 @@ extension ImageListView {
 
                 Divider()
 
+                Button(action: {
+                    viewModel.resetImageViewSelection()
+                }, label: {
+                    let caption = viewModel.imageViewSelection >= 0 ? "\(viewModel.imageViewSelection + 1)" : "—"
+                    Image(systemName: "viewfinder")
+                        .help("View Selection")
+                    Text(caption)
+                        .frame(width: 12)
+                }).foregroundColor(viewModel.imageViewSelection >= 0 ? .blue : .gray)
+
                 Picker("View Arrangement", selection: $viewModel.imageViewLayout) {
                     Image(systemName: "rectangle.split.3x1")
                         .help("Horizontal")
@@ -191,16 +189,6 @@ extension ImageListView {
                         .tag(ImageListLayout.Grid)
                 }
                 .pickerStyle(.inline)
-
-                Button(action: {
-                    viewModel.resetImageViewSelection()
-                }, label: {
-                    let caption = viewModel.imageViewSelection >= 0 ? "\(viewModel.imageViewSelection + 1)" : "—"
-                    Image(systemName: "viewfinder")
-                        .help("View Selection")
-                    Text(caption)
-                        .frame(width: 12)
-                }).foregroundColor(viewModel.imageViewSelection >= 0 ? .blue : .gray)
 
                 Divider()
 

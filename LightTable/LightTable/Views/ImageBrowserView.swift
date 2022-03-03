@@ -116,6 +116,7 @@ struct ImageBrowserView: View {
                 Divider()
 
                 if let viewSelection = viewModel?.imageViewSelection {
+                    let selectionCount = browserModel!.selection.count
                     Menu("View Selection") {
                         let zero = Character("0")
                         ForEach(0...9, id: \.self) { index in
@@ -128,7 +129,7 @@ struct ImageBrowserView: View {
                                         viewModel?.imageViewSelection(char: index < 9 ? c : zero, selection: browserModel!.selection)
                                     }
                                 }
-                            ))
+                            )).disabled(index >= selectionCount)
                         }
                         CommandToggle(label: "Show All", key: "`", isOn: Binding<Bool>(
                             get: { viewSelection == -1 },
