@@ -124,6 +124,7 @@ extension ImageListView {
                 }
 
                 ScaleFactorIndicator(viewState: viewModel.imageViewState)
+                    .help("Zoom Level")
 
                 Divider()
             }}
@@ -144,12 +145,14 @@ extension ImageListView {
                 }
 
                 OrientationIconView(viewState: viewModel.imageViewState)
+                    .help("Image Orientation")
 
                 Divider()
 
                 ToggleButton(labelOn: "location.north.fill", labelOff: "location.slash.fill",
                              viewState: viewModel.imageViewState, field: \.useMasterOrientation)
                     .frame(width: 20)
+                    .help("Uniform Orientation")
 
                 Divider()
             }
@@ -160,8 +163,10 @@ extension ImageListView {
                 ToggleButton(labelOn: "info.circle.fill", labelOff: "info.circle",
                              viewState: viewModel.imageViewState, field: \.showEXIFMetadata)
                     .frame(width: 20)
+                    .help("EXIF Info Panel")
 
                 ImageInfoPicker(viewState: viewModel.imageViewState)
+                    .help("Image Caption Detail")
 
                 Divider()
 
@@ -170,10 +175,10 @@ extension ImageListView {
                 }, label: {
                     let caption = viewModel.imageViewSelection >= 0 ? "\(viewModel.imageViewSelection + 1)" : "—"
                     Image(systemName: "viewfinder")
-                        .help("View Selection")
                     Text(caption)
                         .frame(width: 12)
                 }).foregroundColor(viewModel.imageViewSelection >= 0 ? .blue : .gray)
+                    .help("Multiple Image Selection")
 
                 Picker("View Arrangement", selection: $viewModel.imageViewLayout) {
                     Image(systemName: "rectangle.split.3x1")
@@ -189,13 +194,14 @@ extension ImageListView {
                         .tag(ImageListLayout.Grid)
                 }
                 .pickerStyle(.inline)
+                .help("Multiple Image Layout")
 
                 Divider()
 
                 Toggle(isOn: $viewModel.fullScreen, label: {
                     Image(systemName: "arrow.up.left.and.arrow.down.right")
-                        .help("Full Screen View")
                 })
+                .help("Full Screen View")
                 .foregroundColor(viewModel.fullScreen ? .blue : .gray)
                 .toggleStyle(.button)
             }

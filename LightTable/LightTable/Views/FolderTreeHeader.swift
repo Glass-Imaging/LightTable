@@ -28,6 +28,7 @@ struct FolderTreeHeader: View {
                         .imageScale(.large)
                 }
                 .buttonStyle(.borderless)
+                .help("Go Back")
 
                 Button {
                     navigatorModel.forward()
@@ -36,10 +37,11 @@ struct FolderTreeHeader: View {
                         .imageScale(.large)
                 }
                 .buttonStyle(.borderless)
+                .help("Go Forward")
 
                 Text(root.url.lastPathComponent)
                     .bold()
-                    .font(.title2)
+                    .font(.title3)
 
                 Spacer()
 
@@ -59,6 +61,7 @@ struct FolderTreeHeader: View {
                 }, label: {
                     Text("")
                 })
+                    .help("Current Folder Location")
                     .frame(width: 40)
                     .background(
                         Image(systemName: "list.bullet.indent")

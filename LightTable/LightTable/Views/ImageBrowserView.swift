@@ -20,7 +20,7 @@ struct ImageBrowserView: View {
     @Binding var viewModel:ImageViewModel
     @State var thumbnailSize:CGFloat = 150
 
-    let backgroundColor = Color(red: 40.0/255.0, green: 40.0/255.0, blue: 40.0/255.0)
+    let backgroundColor = Color(red: 30.0/255.0, green: 30.0/255.0, blue: 30.0/255.0)
     let dividerColor = Color(red: 20.0/255.0, green: 20.0/255.0, blue: 20.0/255.0)
 
     let minPaneSize:CGFloat = 200
@@ -40,6 +40,7 @@ struct ImageBrowserView: View {
 
                             ThumbnailSizeSlider(value: $thumbnailSize)
                                 .padding(.trailing, 10)
+                                .help("Thumbnail Size")
                         }
                     }
                     .frame(height: 20)
