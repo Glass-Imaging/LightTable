@@ -15,45 +15,12 @@
 
 import SwiftUI
 
-struct FolderTreeDisclosure: View {
-    let folder:Folder
-    @Binding var selection:Set<Folder>
-    @State var expanded = false
-    let doubleTapAction:(_ folder: Folder) -> Void
-
-    var body: some View {
-        if folder.children.isEmpty {
-            Label(folder.url.lastPathComponent, systemImage: folder.hasImages ? "folder.fill" : "folder")
-        } else {
-            DisclosureGroup(isExpanded: $expanded, content: {
-                if expanded {
-                    ForEach(folder.children, id: \.self) { item in
-                        FolderTreeDisclosure(folder: item, selection: _selection, doubleTapAction: doubleTapAction)
-                    }
-                }
-            }, label: {
-                Label(folder.url.lastPathComponent, systemImage: folder.hasImages ? "folder.fill" : "folder")
-                    .gesture(TapGesture(count: 2).onEnded {
-                        doubleTapAction(folder)
-                    })
-                    .gesture(TapGesture(count: 1).modifiers([.shift]).onEnded {
-                        selection.insert(folder)
-                    })
-                    .gesture(TapGesture(count: 1).modifiers([.command]).onEnded {
-                        selection.insert(folder)
-                    })
-                    .gesture(TapGesture(count: 1).onEnded {
-                        selection = [folder]
-                    })
-            })
-        }
-    }
-}
-
 struct FolderTreeNavigator: View {
     @Binding var navigatorModel:NavigatorModel
 
     @FocusState private var navigatorIsFocused: Bool
+
+    @State var listSelection = Set<URL>()
 
     var body: some View {
         if let root = navigatorModel.root {
@@ -65,9 +32,23 @@ struct FolderTreeNavigator: View {
 
                 Divider()
 
-                List(root.children, id:\.self, selection: $navigatorModel.selection) { folder in
-                    FolderTreeDisclosure(folder: folder, selection: $navigatorModel.selection) { folder in
-                        navigatorModel.update(folder: folder)
+                List(root.children!, id:\.self, selection: $navigatorModel.selection) { folder in
+                    RecursiveView(item: folder, id:\.self, children: \.children, selection: $navigatorModel.selection) { folder in
+                        Label(folder.url.lastPathComponent, systemImage: folder.hasImages ? "folder.fill" : "folder")
+                        .if(folder.children != nil, transform: { view in
+                            view.gesture(TapGesture(count: 2).onEnded {
+                                navigatorModel.update(folder: folder)
+                            })
+                            .gesture(TapGesture(count: 1).modifiers([.shift]).onEnded {
+                                navigatorModel.selection.insert(folder)
+                            })
+                            .gesture(TapGesture(count: 1).modifiers([.command]).onEnded {
+                                navigatorModel.selection.insert(folder)
+                            })
+                            .gesture(TapGesture(count: 1).onEnded {
+                                navigatorModel.selection = [folder]
+                            })
+                        })
                     }
                 }
                 .focused($navigatorIsFocused)

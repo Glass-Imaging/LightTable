@@ -21,9 +21,9 @@ class Folder: Equatable, Hashable, Identifiable {
     var id:URL { url }
 
     private var cachedChildren: [Folder]? = nil
-    lazy var children: [Folder] = {
+    lazy var children: [Folder]? = {
         if let cachedChildren = cachedChildren {
-            return cachedChildren
+            return cachedChildren.isEmpty ? nil : cachedChildren
         }
 
         cachedChildren = []
@@ -31,7 +31,7 @@ class Folder: Equatable, Hashable, Identifiable {
         for url in listing {
             cachedChildren!.append(Folder(url: url))
         }
-        return cachedChildren!
+        return cachedChildren!.isEmpty ? nil : cachedChildren!
     }()
 
     private var cachedFiles: [URL]? = nil

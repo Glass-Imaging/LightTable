@@ -38,6 +38,8 @@
 		E5DF6B1F27BDFA0100D191AF /* ImageUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5DF6B1E27BDFA0100D191AF /* ImageUtils.swift */; };
 		E5E3D35527AE433D00BA332D /* ImageListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E3D35427AE433D00BA332D /* ImageListView.swift */; };
 		E5E3D35727AE438A00BA332D /* ThumbnailScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E3D35627AE438A00BA332D /* ThumbnailScrollView.swift */; };
+		E5F3819527D4A4CE00777290 /* RecursiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F3819427D4A4CE00777290 /* RecursiveView.swift */; };
+		E5F3819727D4A51F00777290 /* ConditionalModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F3819627D4A51F00777290 /* ConditionalModifier.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -74,6 +76,8 @@
 		E5DF6B1E27BDFA0100D191AF /* ImageUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageUtils.swift; sourceTree = "<group>"; };
 		E5E3D35427AE433D00BA332D /* ImageListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageListView.swift; sourceTree = "<group>"; };
 		E5E3D35627AE438A00BA332D /* ThumbnailScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailScrollView.swift; sourceTree = "<group>"; };
+		E5F3819427D4A4CE00777290 /* RecursiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecursiveView.swift; sourceTree = "<group>"; };
+		E5F3819627D4A51F00777290 /* ConditionalModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionalModifier.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,6 +154,7 @@
 				E5A6F9CA27ACA70C00D9D305 /* CommandButton.swift */,
 				E5DF6B1C27BCB4E900D191AF /* CGOperations.swift */,
 				E5DF6B1E27BDFA0100D191AF /* ImageUtils.swift */,
+				E5F3819627D4A51F00777290 /* ConditionalModifier.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -168,6 +173,7 @@
 				E555C94727BAF64D00D77C08 /* CustomSliderView.swift */,
 				E555C94927BAF66900D77C08 /* ThumbnailSizeSlider.swift */,
 				E5D4D87A27CAF6D400F1D944 /* ImageViewCaption.swift */,
+				E5F3819427D4A4CE00777290 /* RecursiveView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -254,6 +260,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E51DB2F327A9B0E20046EFFA /* ImageView.swift in Sources */,
+				E5F3819727D4A51F00777290 /* ConditionalModifier.swift in Sources */,
 				E51DB2EC27A9B0E20046EFFA /* DropUtils.swift in Sources */,
 				E5E3D35727AE438A00BA332D /* ThumbnailScrollView.swift in Sources */,
 				E51DB2AE27A9ACAE0046EFFA /* LightTableView.swift in Sources */,
@@ -271,6 +278,7 @@
 				E5DF6B1D27BCB4E900D191AF /* CGOperations.swift in Sources */,
 				E5DF6B1F27BDFA0100D191AF /* ImageUtils.swift in Sources */,
 				E51DB2F427A9B0E20046EFFA /* ThumbnailView.swift in Sources */,
+				E5F3819527D4A4CE00777290 /* RecursiveView.swift in Sources */,
 				E5A6F9C927AC9B6400D9D305 /* Filesystem.swift in Sources */,
 				E54B33B227BF052E00455433 /* ImageWithMetadata.swift in Sources */,
 				E51DB2F127A9B0E20046EFFA /* ImageBrowserView.swift in Sources */,
