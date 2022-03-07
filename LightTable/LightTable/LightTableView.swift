@@ -25,7 +25,26 @@ struct LightTableView: View {
     @State var browserModel = ImageBrowserModel()
     @State var viewModel = ImageViewModel()
 
+    @AppStorage("navigatorModel.root") private var navigatorModelRoot:String?
+
     let backgroundColor = Color(red: 30.0/255.0, green: 30.0/255.0, blue: 30.0/255.0)
+
+    func restoreNavigatorState() {
+        if let navigatorModelRoot = navigatorModelRoot {
+            if navigatorModel.root == nil {
+                let url = URL(fileURLWithPath: navigatorModelRoot)
+                do {
+                    if try url.checkResourceIsReachable() {
+                        DispatchQueue.main.async {
+                            navigatorModel.update(url: url)
+                        }
+                    }
+                } catch {
+                    print("checkResourceIsReachable failed: \(error)")
+                }
+            }
+        }
+    }
 
     var body: some View {
         let browserActive = !browserModel.folders.isEmpty
@@ -47,13 +66,15 @@ struct LightTableView: View {
                                 }
                             }
                         }
-                        .onChange(of: navigatorModel.selection) { newSelection in
-                            browserModel.setFolders(folders: newSelection)
-                            viewModel.resetImageViewSelection()
-                        }
                         .onChange(of: navigatorModel.root) { _ in
                             // Reset image browser state
                             browserModel.reset()
+                            viewModel.resetImageViewSelection()
+
+                            navigatorModelRoot = navigatorModel.root?.path
+                        }
+                        .onChange(of: navigatorModel.selection) { selection in
+                            browserModel.setFolders(folders: Set(selection.map({ Folder(url: $0) })))
                             viewModel.resetImageViewSelection()
                         }
 
@@ -63,6 +84,9 @@ struct LightTableView: View {
                 }
                 .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
                 .onDrop(of: ["public.file-url"], delegate: self)
+                .onAppear {
+                    restoreNavigatorState()
+                }
             }
         }
         // Set imageViewState @EnvironmentObject for ImageView
@@ -81,7 +105,7 @@ struct LightTableView: View {
                 Button("Open...") {
                     var listing:[URL] = []
                     if let selectedDirectory = NSOpenPanelDirectoryListing(files: &listing) {
-                        navigatorModel?.update(folder: Folder(url: selectedDirectory))
+                        navigatorModel?.update(url: selectedDirectory)
                     }
                 }
                 .keyboardShortcut("O", modifiers: .command)
@@ -115,7 +139,7 @@ extension LightTableView:DropDelegate {
         DropUtils.urlFromDropInfo(info) { url in
             if let url = url {
                 DispatchQueue.main.async {
-                    navigatorModel.update(folder: Folder(url: url))
+                    navigatorModel.update(url: url)
                 }
             }
         }

@@ -30,21 +30,21 @@ struct FolderTreeNavigator: View {
 
                 Divider()
 
-                List(root.children!, id:\.self, selection: $navigatorModel.selection) { folder in
-                    RecursiveView(item: folder, id:\.self, children: \.children, expandedItems: $navigatorModel.expandedItems) { folder in
+                List(Folder(url: root).children!, id:\.id, selection: $navigatorModel.selection) { folder in
+                    RecursiveView(item: folder, id:\.id, children: \.children, expandedItems: $navigatorModel.expandedItems) { folder in
                         Label(folder.url.lastPathComponent, systemImage: folder.hasImages ? "folder.fill" : "folder")
                         .if(folder.children != nil, transform: { view in
                             view.gesture(TapGesture(count: 2).onEnded {
-                                navigatorModel.update(folder: folder)
+                                navigatorModel.update(url: folder.url)
                             })
                             .gesture(TapGesture(count: 1).modifiers([.shift]).onEnded {
-                                navigatorModel.selection.insert(folder)
+                                navigatorModel.selection.insert(folder.url)
                             })
                             .gesture(TapGesture(count: 1).modifiers([.command]).onEnded {
-                                navigatorModel.selection.insert(folder)
+                                navigatorModel.selection.insert(folder.url)
                             })
                             .gesture(TapGesture(count: 1).onEnded {
-                                navigatorModel.selection = [folder]
+                                navigatorModel.selection = [folder.url]
                             })
                         })
                     }

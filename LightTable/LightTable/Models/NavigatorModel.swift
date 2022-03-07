@@ -17,9 +17,9 @@ import Foundation
 
 struct NavigatorModel {
     // Directly accessed by FolderTreeNavigator
-    /* private(set) */ var root:Folder? = nil
-    /* private(set) */ var selection = Set<Folder>()
-    var expandedItems = Set<Folder>()
+    private(set) var root:URL? = nil
+    var selection = Set<URL>()
+    var expandedItems = Set<URL>()
 
     private(set) var historyBack:[URL] = []
     private(set) var historyForward:[URL] = []
@@ -38,27 +38,27 @@ struct NavigatorModel {
 
     func hasParentFolder() -> Bool {
         let rootPath = URL(string: "file:///")
-        return root != nil && root!.url != rootPath
+        return root != nil && root! != rootPath
     }
 
-    mutating func update(folder: Folder) {
+    mutating func update(url: URL) {
         if let root = root {
-            historyBack.append(root.url)
+            historyBack.append(root)
         }
-        root = folder
+        root = url
         selection = []
     }
 
     mutating func enclosingFolder() {
         if let root = root {
-            update(folder: Folder(url: parentFolder(url: root.url)))
+            update(url: parentFolder(url: root))
             selection = [root]
         }
     }
 
     mutating func selectedFolder() {
         if let selection = selection.first {
-            update(folder: selection)
+            update(url: selection)
         }
     }
 
@@ -66,9 +66,9 @@ struct NavigatorModel {
         if (!historyBack.isEmpty) {
             let item = historyBack.remove(at: historyBack.count - 1)
             if let root = root {
-                historyForward.append(root.url)
+                historyForward.append(root)
             }
-            root = Folder(url: item)
+            root = item
         }
     }
 
@@ -76,9 +76,9 @@ struct NavigatorModel {
         if (!historyForward.isEmpty) {
             let item = historyForward.remove(at: historyForward.count - 1)
             if let root = root {
-                historyBack.append(root.url)
+                historyBack.append(root)
             }
-            root = Folder(url: item)
+            root = item
         }
     }
 }

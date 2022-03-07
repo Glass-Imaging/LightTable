@@ -39,18 +39,18 @@ struct FolderTreeHeader: View {
                 .buttonStyle(.borderless)
                 .help("Go Forward")
 
-                Text(root.url.lastPathComponent)
+                Text(root.lastPathComponent)
                     .bold()
                     .font(.title3)
 
                 Spacer()
 
                 // "Custom Style" Menu Button with large icon B]
-                let parents = parentFoldersList(url: root.url)
+                let parents = parentFoldersList(url: root)
                 Menu(content: {
                     ForEach(parents, id: \.self) { item in
                         Button(action: {
-                            navigatorModel.update(folder: Folder(url: item))
+                            navigatorModel.update(url: item)
                         }, label: {
                             HStack {
                                 Image(systemName: "folder.fill")
