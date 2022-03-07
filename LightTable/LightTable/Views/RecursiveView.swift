@@ -15,11 +15,11 @@
 
 import SwiftUI
 
-struct RecursiveView<Item, ID, SelectionValue, RowContent>: View where Item: Identifiable, ID : Hashable, SelectionValue: Hashable, RowContent: View {
+struct RecursiveView<Item, ID, RowContent>: View where Item: Identifiable, Item: Hashable, ID : Hashable, RowContent: View {
     let item:Item
     let id:KeyPath<Item, ID>
     let children:KeyPath<Item, [Item]?>
-    var selection:Binding<Set<SelectionValue>>?
+    var expandedItems:Binding<Set<Item>>
     let rowContent:(Item) -> RowContent
 
     @State var expanded = false
@@ -29,12 +29,21 @@ struct RecursiveView<Item, ID, SelectionValue, RowContent>: View where Item: Ide
             DisclosureGroup(isExpanded: $expanded, content: {
                 if expanded {
                     ForEach(subChildren, id: id) { item in
-                        RecursiveView(item: item, id: id, children: children, selection: selection, rowContent: rowContent)
+                        RecursiveView(item: item, id: id, children: children, expandedItems: expandedItems, rowContent: rowContent)
                     }
                 }
             }, label: {
                 rowContent(item)
-            })
+            }).onChange(of: expanded) { isExpanded in
+                if isExpanded {
+                    expandedItems.wrappedValue.insert(item)
+                } else {
+                    expandedItems.wrappedValue.remove(item)
+                }
+            }
+            .onAppear {
+                expanded = expandedItems.wrappedValue.contains(item)
+            }
         } else {
             rowContent(item)
         }

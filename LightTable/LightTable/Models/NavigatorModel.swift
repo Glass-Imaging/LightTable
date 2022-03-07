@@ -19,6 +19,7 @@ struct NavigatorModel {
     // Directly accessed by FolderTreeNavigator
     /* private(set) */ var root:Folder? = nil
     /* private(set) */ var selection = Set<Folder>()
+    var expandedItems = Set<Folder>()
 
     private(set) var historyBack:[URL] = []
     private(set) var historyForward:[URL] = []

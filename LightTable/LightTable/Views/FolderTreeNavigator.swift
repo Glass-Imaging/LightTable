@@ -20,8 +20,6 @@ struct FolderTreeNavigator: View {
 
     @FocusState private var navigatorIsFocused: Bool
 
-    @State var listSelection = Set<URL>()
-
     var body: some View {
         if let root = navigatorModel.root {
             VStack(alignment: .leading) {
@@ -33,7 +31,7 @@ struct FolderTreeNavigator: View {
                 Divider()
 
                 List(root.children!, id:\.self, selection: $navigatorModel.selection) { folder in
-                    RecursiveView(item: folder, id:\.self, children: \.children, selection: $navigatorModel.selection) { folder in
+                    RecursiveView(item: folder, id:\.self, children: \.children, expandedItems: $navigatorModel.expandedItems) { folder in
                         Label(folder.url.lastPathComponent, systemImage: folder.hasImages ? "folder.fill" : "folder")
                         .if(folder.children != nil, transform: { view in
                             view.gesture(TapGesture(count: 2).onEnded {
