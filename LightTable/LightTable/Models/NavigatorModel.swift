@@ -41,7 +41,7 @@ struct NavigatorModel {
         return root != nil && root! != rootPath
     }
 
-    mutating func update(url: URL) {
+    mutating func update(url: URL?) {
         if let root = root {
             historyBack.append(root)
         }

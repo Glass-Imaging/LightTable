@@ -49,6 +49,18 @@ struct FolderTreeNavigator: View {
                         })
                     }
                 }
+                .onChange(of: navigatorModel.expandedItems, perform: { [expandedItems = navigatorModel.expandedItems] newExpandedItems in
+                    // Remove folder selections in collapsed disclosures
+                    if expandedItems.count > newExpandedItems.count {
+                        for remmoved in expandedItems.symmetricDifference(newExpandedItems) {
+                            for item in navigatorModel.selection {
+                                if item.path != remmoved.path && item.path.starts(with: remmoved.path) {
+                                    navigatorModel.selection.remove(item)
+                                }
+                            }
+                        }
+                    }
+                })
                 .focused($navigatorIsFocused)
                 .onAppear {
                     navigatorIsFocused = true
