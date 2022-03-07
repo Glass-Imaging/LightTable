@@ -28,7 +28,7 @@ func NSOpenPanelDirectoryListing(files:inout[URL]) -> URL? {
     return nil
 }
 
-private let imageFileExtensions = ["jpg", "jpeg", "png", "heic", "heif", "dng", "cr3", "arw", "crw", "cr2"]
+private let imageFileExtensions = ["jpg", "jpeg", "png", "heic", "heif", "dng", "cr3", "arw", "crw", "cr2", "raf"]
 
 func isImage(file:URL) -> Bool {
     let fileExtension = file.pathExtension.lowercased()
@@ -75,6 +75,17 @@ func parentFolder(url: URL) -> URL {
         return parent
     }
     return url
+}
+
+func resourceIsReachable(url: URL) -> Bool {
+    do {
+        if try url.checkResourceIsReachable() {
+            return true
+        }
+    } catch {
+        print("checkResourceIsReachable failed: \(error)")
+    }
+    return false
 }
 
 func fileListingAt(url:URL, filter:(_ entry:URL) -> Bool) -> [URL] {

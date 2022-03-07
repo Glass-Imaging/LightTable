@@ -23,6 +23,7 @@
 		E54B33B227BF052E00455433 /* ImageWithMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54B33B127BF052E00455433 /* ImageWithMetadata.swift */; };
 		E555C94827BAF64D00D77C08 /* CustomSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E555C94727BAF64D00D77C08 /* CustomSliderView.swift */; };
 		E555C94A27BAF66900D77C08 /* ThumbnailSizeSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E555C94927BAF66900D77C08 /* ThumbnailSizeSlider.swift */; };
+		E582E58127D6977C00796278 /* StringArrayRawRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E582E58027D6977C00796278 /* StringArrayRawRepresentable.swift */; };
 		E5A6F9C727AC8E4800D9D305 /* FocusedValues+LightTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9C627AC8E4800D9D305 /* FocusedValues+LightTable.swift */; };
 		E5A6F9C927AC9B6400D9D305 /* Filesystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9C827AC9B6400D9D305 /* Filesystem.swift */; };
 		E5A6F9CB27ACA70C00D9D305 /* CommandButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A6F9CA27ACA70C00D9D305 /* CommandButton.swift */; };
@@ -61,6 +62,7 @@
 		E54B33B127BF052E00455433 /* ImageWithMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageWithMetadata.swift; sourceTree = "<group>"; };
 		E555C94727BAF64D00D77C08 /* CustomSliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSliderView.swift; sourceTree = "<group>"; };
 		E555C94927BAF66900D77C08 /* ThumbnailSizeSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailSizeSlider.swift; sourceTree = "<group>"; };
+		E582E58027D6977C00796278 /* StringArrayRawRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringArrayRawRepresentable.swift; sourceTree = "<group>"; };
 		E5A6F9C627AC8E4800D9D305 /* FocusedValues+LightTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FocusedValues+LightTable.swift"; sourceTree = "<group>"; };
 		E5A6F9C827AC9B6400D9D305 /* Filesystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filesystem.swift; sourceTree = "<group>"; };
 		E5A6F9CA27ACA70C00D9D305 /* CommandButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandButton.swift; sourceTree = "<group>"; };
@@ -155,6 +157,7 @@
 				E5DF6B1C27BCB4E900D191AF /* CGOperations.swift */,
 				E5DF6B1E27BDFA0100D191AF /* ImageUtils.swift */,
 				E5F3819627D4A51F00777290 /* ConditionalModifier.swift */,
+				E582E58027D6977C00796278 /* StringArrayRawRepresentable.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -264,6 +267,7 @@
 				E51DB2EC27A9B0E20046EFFA /* DropUtils.swift in Sources */,
 				E5E3D35727AE438A00BA332D /* ThumbnailScrollView.swift in Sources */,
 				E51DB2AE27A9ACAE0046EFFA /* LightTableView.swift in Sources */,
+				E582E58127D6977C00796278 /* StringArrayRawRepresentable.swift in Sources */,
 				E51DB2EE27A9B0E20046EFFA /* ImageLoder.swift in Sources */,
 				E5A6F9CB27ACA70C00D9D305 /* CommandButton.swift in Sources */,
 				E555C94A27BAF66900D77C08 /* ThumbnailSizeSlider.swift in Sources */,
