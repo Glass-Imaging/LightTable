@@ -21,6 +21,7 @@ struct LightTableApp: App {
         WindowGroup {
             LightTableView()
         }
+        .windowToolbarStyle(UnifiedWindowToolbarStyle(showsTitle: false))
         .commands {
             LightTableView.BrowserCommands()
 

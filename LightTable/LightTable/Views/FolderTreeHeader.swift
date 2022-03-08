@@ -65,7 +65,7 @@ struct FolderTreeHeader: View {
                     .frame(width: 40)
                     .background(
                         Image(systemName: "list.bullet.indent")
-                            .font(.title2)
+                            .font(.title3)
                             .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 10))
                     )
                     .menuStyle(.borderlessButton)

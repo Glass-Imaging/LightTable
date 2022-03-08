@@ -102,6 +102,22 @@ struct ToggleButton<State>: View where State : ObservableObject {
 
 extension ImageListView {
     @ToolbarContentBuilder func ImageViewToolbar() -> some ToolbarContent {
+        ToolbarItemGroup(placement: .navigation) {
+            Text("LightTable by")
+                .font(.system(size: 16, weight: .semibold, design: .default))
+
+            Image("GlassLogo")
+                .interpolation(.high)
+                .antialiased(true)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 80)
+                .opacity(0.8)
+                .shadow(color: .white, radius: 3, x: 0, y: 0)
+
+            Spacer()
+        }
+
         ToolbarItemGroup(placement: .automatic) {
             HStack {
                 Button(action: {
