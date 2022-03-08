@@ -59,7 +59,6 @@ struct ImageBrowserView: View {
                             ThumbnailSizeSlider(value: $thumbnailSize)
                                 .padding(.trailing, 10)
                                 .help("Thumbnail Size")
-                                .opacity(windowState == .inactive ? 0.7 : 1.0)
                         }
                     }
                     .frame(height: 20)

@@ -25,20 +25,9 @@ struct ThumbnailSizeSlider: View {
             Image(systemName: "person.fill")
                 .font(Font.system(size: 12))
 
-            CustomSlider(value: $value,
-                         in: 50...200,
-                         track: {
-                Capsule()
-                    .foregroundColor(Color.gray)
-                    .frame(width: 150, height: 3)
-            }, fill: {
-                Capsule()
-                    .foregroundColor(.blue)
-            }, thumb: {
-                Circle()
-                    .foregroundColor(.white)
-                    .shadow(radius: thumbRadius / 1)
-            }, thumbSize: CGSize(width: thumbRadius, height: thumbRadius))
+            Slider(value: $value, in: 50...200)
+                .frame(width: 150, height: 3)
+                .controlSize(.mini)
 
             Image(systemName: "person.fill")
                 .font(Font.system(size: 18))
