@@ -103,17 +103,20 @@ struct ToggleButton<State>: View where State : ObservableObject {
 extension ImageListView {
     @ToolbarContentBuilder func ImageViewToolbar() -> some ToolbarContent {
         ToolbarItemGroup(placement: .navigation) {
-            Text("LightTable by")
-                .font(.system(size: 16, weight: .semibold, design: .default))
+            HStack {
+                Text("LightTable by")
+                    .font(.system(size: 16, weight: .semibold, design: .default))
 
-            Image("GlassLogo")
-                .interpolation(.high)
-                .antialiased(true)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 80)
-                .opacity(0.8)
-                .shadow(color: .white, radius: 3, x: 0, y: 0)
+                Image("GlassLogo")
+                    .interpolation(.high)
+                    .antialiased(true)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 80)
+                    .opacity(0.8)
+                    .shadow(color: .white, radius: 3, x: 0, y: 0)
+            }
+            .opacity(windowState == .inactive ? 0.7 : 1.0)
 
             Spacer()
         }
@@ -143,9 +146,8 @@ extension ImageListView {
                     .help("Zoom Level")
 
                 Divider()
-            }}
+            }
 
-        ToolbarItemGroup(placement: .automatic) {
             HStack {
                 Button(action: {
                     viewModel.rotateLeft()
@@ -172,9 +174,7 @@ extension ImageListView {
 
                 Divider()
             }
-        }
 
-        ToolbarItemGroup(placement: .automatic) {
             HStack {
                 ToggleButton(labelOn: "info.circle.fill", labelOff: "info.circle",
                              viewState: viewModel.imageViewState, field: \.showEXIFMetadata)

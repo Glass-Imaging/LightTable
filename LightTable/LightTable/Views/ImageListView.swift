@@ -25,6 +25,8 @@ struct ImageListView: View {
     @Binding var browserModel:ImageBrowserModel
     @Binding var viewModel:ImageViewModel
 
+    @Environment(\.controlActiveState) var windowState: ControlActiveState
+
     init(browserModel:Binding<ImageBrowserModel>, viewModel:Binding<ImageViewModel>) {
         self._browserModel = browserModel
         self._viewModel = viewModel

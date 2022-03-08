@@ -20,6 +20,8 @@ struct FolderTreeNavigator: View {
 
     @FocusState private var navigatorIsFocused: Bool
 
+    @Environment(\.controlActiveState) var windowState: ControlActiveState
+
     var body: some View {
         if let root = navigatorModel.root {
             VStack(alignment: .leading) {
@@ -27,6 +29,7 @@ struct FolderTreeNavigator: View {
 
                 FolderTreeHeader(navigatorModel: $navigatorModel)
                     .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
+                    .opacity(windowState == .inactive ? 0.7 : 1.0)
 
                 Divider()
 
