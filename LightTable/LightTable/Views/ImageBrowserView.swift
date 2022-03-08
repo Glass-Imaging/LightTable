@@ -36,8 +36,6 @@ struct ImageBrowserView: View {
     @Binding var viewModel:ImageViewModel
     @State var thumbnailSize:CGFloat = 150
 
-    @Environment(\.controlActiveState) var windowState: ControlActiveState
-
     let backgroundColor = Color(red: 40.0/255.0, green: 40.0/255.0, blue: 40.0/255.0)
     let dividerColor = Color(red: 20.0/255.0, green: 20.0/255.0, blue: 20.0/255.0)
 
@@ -69,7 +67,6 @@ struct ImageBrowserView: View {
                     .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
                     .background(backgroundColor)
                     .innerShadow(using: Rectangle())
-                    .opacity(windowState == .inactive ? 0.7 : 1.0)
 
             }
         }

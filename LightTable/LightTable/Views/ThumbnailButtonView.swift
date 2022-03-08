@@ -21,6 +21,8 @@ struct ThumbnailButtonView: View {
     @Binding var thumbnailSize:CGFloat
     let action: (_ modifiers: EventModifiers) -> Void
 
+    @Environment(\.controlActiveState) var windowState: ControlActiveState
+
     var body: some View {
         Button(action: {
             // Single Click
@@ -30,11 +32,12 @@ struct ThumbnailButtonView: View {
 
             VStack {
                 ThumbnailView(withURL: file)
-                    .border(selected ? Color.accentColor : Color.clear, width: 2)
+                    .border(selected ? (windowState == .inactive ? Color.gray : Color.accentColor) : Color.clear, width: 2)
                 Text(file.lastPathComponent)
                     .lineLimit(1)
                     .font(.caption)
-                    .background(selected ? Color.accentColor : nil)
+                    .padding(EdgeInsets(top: 1, leading: 4, bottom: 1, trailing: 4))
+                    .background(selected ? (windowState == .inactive ? Color.gray : Color.accentColor) : nil)
                     .cornerRadius(3)
                     .frame(width: thumbnailSize, height: 20)
             }

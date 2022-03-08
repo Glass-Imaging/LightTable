@@ -25,6 +25,7 @@ struct ImageListView: View {
     @Binding var browserModel:ImageBrowserModel
     @Binding var viewModel:ImageViewModel
 
+    // Used by toolbar
     @Environment(\.controlActiveState) var windowState: ControlActiveState
 
     init(browserModel:Binding<ImageBrowserModel>, viewModel:Binding<ImageViewModel>) {
