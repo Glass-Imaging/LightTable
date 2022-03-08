@@ -20,6 +20,20 @@ private func toggleSidebar() {
         .tryToPerform(#selector(NSSplitViewController.toggleSidebar(_:)), with: nil)
 }
 
+extension URL {
+    func starts(with url: URL) -> Bool {
+        if (url.pathComponents.count <= pathComponents.count) {
+            for i in 0 ..< url.pathComponents.count {
+                if url.pathComponents[i] != pathComponents[i] {
+                    return false
+                }
+            }
+            return true
+        }
+        return false
+    }
+}
+
 struct LightTableView: View {
     @StateObject var viewModel = ImageViewModel()
     @State var navigatorModel = NavigatorModel()
@@ -33,59 +47,60 @@ struct LightTableView: View {
 
     func restoreNavigatorState() {
         if navigatorModel.root == nil {
-            var restoredRoot:URL? = nil
-
             // Restore root folder
             if let navigatorModelRoot = navigatorModelRoot {
                 let url = URL(fileURLWithPath: navigatorModelRoot)
                 if resourceIsReachable(url: url) {
-                    restoredRoot = url
-                    DispatchQueue.main.async {
-                        navigatorModel.update(url: url)
-                    }
+                    navigatorModel.update(url: url)
                 }
             }
 
-            // Restore selection
-            var navigatorSelection = Set<URL>()
+            // Restore navigator selection
+            var navigatorSelection = Set<Folder>()
+
             if let navigatorModelSelection = navigatorModelSelection {
-                if let root = restoredRoot {
+                if let root = navigatorModel.root {
                     let savedSelection = navigatorModelSelection.map({ URL(fileURLWithPath: $0) })
 
-                    var expandedItems = Set<URL>()
-
+                    var expandedItems = Set<Folder>()
                     for item in savedSelection {
-                        if item.path.starts(with: root.path) && resourceIsReachable(url: item) {
-                            // If the selection is in a sub folder, add the path to the navigatorModel.expandedItems
-                            var parent = parentFolder(url: item)
-                            while (parent.path != root.path) {
-                                expandedItems.insert(parent)
-                                parent = parentFolder(url: parent)
+                        var currentFolder = root
+                        if item.starts(with: currentFolder.url) && resourceIsReachable(url: item) {
+                            while (currentFolder.url.path != item.path) {
+                                if let children = currentFolder.children {
+                                    for child in children {
+                                        if item.starts(with: child.url) {
+                                            currentFolder = child
+                                            if currentFolder.url.path == item.path {
+                                                navigatorSelection.insert(child)
+                                            } else {
+                                                expandedItems.insert(child)
+                                            }
+                                            break
+                                        }
+                                    }
+                                }
                             }
-                            navigatorSelection.insert(item)
                         }
                     }
-                    DispatchQueue.main.async {
-                        navigatorModel.selection = navigatorSelection
-                        navigatorModel.expandedItems = expandedItems
-                    }
+                    navigatorModel.selection = navigatorSelection
+                    navigatorModel.expandedItems = expandedItems
                 }
             }
 
+            // Restore image browser selection
             if let browserModelSelection = browserModelSelection {
                 let restoredSelection = browserModelSelection.map({ URL(fileURLWithPath: $0) })
                 var trimmedSelection:[URL] = []
 
                 // Validate selection entries
                 for item in restoredSelection {
-                    if resourceIsReachable(url: item) && navigatorSelection.contains(parentFolder(url: item)) {
+                    if resourceIsReachable(url: item) && navigatorSelection.contains(where: { $0.url == parentFolder(url: item) }) {
                         trimmedSelection.append(item)
                     }
                 }
 
-                DispatchQueue.main.async {
-                    browserModel.selection = trimmedSelection
-                }
+                browserModel.selection = trimmedSelection
             }
         }
     }
@@ -117,13 +132,13 @@ struct LightTableView: View {
                                 viewModel.resetImageViewSelection()
                             }
 
-                            navigatorModelRoot = navigatorModel.root?.path
+                            navigatorModelRoot = navigatorModel.root?.url.path
                         }
                         .onChange(of: navigatorModel.selection) { selection in
-                            browserModel.setFolders(folders: Set(selection.map({ Folder(url: $0) })))
+                            browserModel.setFolders(folders: Set(selection.map({ $0 })))
                             viewModel.resetImageViewSelection()
 
-                            navigatorModelSelection = selection.map({ $0.path })
+                            navigatorModelSelection = selection.map({ $0.url.path })
                         }
 
                     if (browserActive) {

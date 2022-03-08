@@ -17,9 +17,9 @@ import Foundation
 
 struct NavigatorModel {
     // Directly accessed by FolderTreeNavigator
-    private(set) var root:URL? = nil
-    var selection = Set<URL>()
-    var expandedItems = Set<URL>()
+    private(set) var root:Folder? = nil
+    var selection = Set<Folder>()
+    var expandedItems = Set<Folder>()
 
     private(set) var historyBack:[URL] = []
     private(set) var historyForward:[URL] = []
@@ -38,27 +38,31 @@ struct NavigatorModel {
 
     func hasParentFolder() -> Bool {
         let rootPath = URL(string: "file:///")
-        return root != nil && root! != rootPath
+        if let root = root {
+            return root.url != rootPath
+        }
+        return false
     }
 
     mutating func update(url: URL?) {
         if let root = root {
-            historyBack.append(root)
+            historyBack.append(root.url)
         }
-        root = url
+        // The only place where Folder objects are ever created
+        root = url != nil ? Folder(url: url!) : nil
         selection = []
     }
 
     mutating func enclosingFolder() {
         if let root = root {
-            update(url: parentFolder(url: root))
+            update(url: parentFolder(url: root.url))
             selection = [root]
         }
     }
 
     mutating func selectedFolder() {
         if let selection = selection.first {
-            update(url: selection)
+            update(url: selection.url)
         }
     }
 
@@ -66,9 +70,9 @@ struct NavigatorModel {
         if (!historyBack.isEmpty) {
             let item = historyBack.remove(at: historyBack.count - 1)
             if let root = root {
-                historyForward.append(root)
+                historyForward.append(root.url)
             }
-            root = item
+            update(url: item)
         }
     }
 
@@ -76,9 +80,9 @@ struct NavigatorModel {
         if (!historyForward.isEmpty) {
             let item = historyForward.remove(at: historyForward.count - 1)
             if let root = root {
-                historyBack.append(root)
+                historyBack.append(root.url)
             }
-            root = item
+            update(url: item)
         }
     }
 }

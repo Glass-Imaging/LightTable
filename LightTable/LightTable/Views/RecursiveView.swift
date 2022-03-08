@@ -19,7 +19,7 @@ struct RecursiveView<Item, ID, RowContent>: View where Item: Identifiable, Item:
     let item:Item
     let id:KeyPath<Item, ID>
     let children:KeyPath<Item, [Item]?>
-    var expandedItems:Binding<Set<Item.ID>>
+    var expandedItems:Binding<Set<Item>>
     let rowContent:(Item) -> RowContent
 
     @State var expanded = false
@@ -36,13 +36,13 @@ struct RecursiveView<Item, ID, RowContent>: View where Item: Identifiable, Item:
                 rowContent(item)
             }).onChange(of: expanded) { isExpanded in
                 if isExpanded {
-                    expandedItems.wrappedValue.insert(item.id)
+                    expandedItems.wrappedValue.insert(item)
                 } else {
-                    expandedItems.wrappedValue.remove(item.id)
+                    expandedItems.wrappedValue.remove(item)
                 }
             }
             .onAppear {
-                expanded = expandedItems.wrappedValue.contains(item.id)
+                expanded = expandedItems.wrappedValue.contains(item)
             }
         } else {
             rowContent(item)

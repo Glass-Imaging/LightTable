@@ -39,14 +39,14 @@ struct FolderTreeHeader: View {
                 .buttonStyle(.borderless)
                 .help("Go Forward")
 
-                Text(root.lastPathComponent)
+                Text(root.url.lastPathComponent)
                     .bold()
                     .font(.title3)
 
                 Spacer()
 
                 // "Custom Style" Menu Button with large icon B]
-                let parents = parentFoldersList(url: root)
+                let parents = parentFoldersList(url: root.url)
                 Menu(content: {
                     ForEach(parents, id: \.self) { item in
                         Button(action: {

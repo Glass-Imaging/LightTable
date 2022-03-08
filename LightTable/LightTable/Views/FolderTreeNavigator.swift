@@ -34,46 +34,47 @@ struct FolderTreeNavigator: View {
                 Divider()
 
                 ScrollViewReader { proxy in
-                    // TODO: Fixme, this will crash if the folder has no children
-                    List(Folder(url: root).children!, id:\.id, selection: $navigatorModel.selection) { folder in
-                        RecursiveView(item: folder, id:\.id, children: \.children, expandedItems: $navigatorModel.expandedItems) { folder in
-                            Label(folder.url.lastPathComponent, systemImage: folder.hasImages ? "folder.fill" : "folder")
-                            .if(folder.children != nil, transform: { view in
-                                view.gesture(TapGesture(count: 2).onEnded {
-                                    navigatorModel.update(url: folder.url)
+                    if let children = root.children {
+                        List(children, id:\.self, selection: $navigatorModel.selection) { folder in
+                            RecursiveView(item: folder, id:\.self, children: \.children, expandedItems: $navigatorModel.expandedItems) { folder in
+                                Label(folder.url.lastPathComponent, systemImage: folder.hasImages ? "folder.fill" : "folder")
+                                .if(folder.children != nil, transform: { view in
+                                    view.gesture(TapGesture(count: 2).onEnded {
+                                        navigatorModel.update(url: folder.url)
+                                    })
+                                    .gesture(TapGesture(count: 1).modifiers([.shift]).onEnded {
+                                        navigatorModel.selection.insert(folder)
+                                    })
+                                    .gesture(TapGesture(count: 1).modifiers([.command]).onEnded {
+                                        navigatorModel.selection.insert(folder)
+                                    })
+                                    .gesture(TapGesture(count: 1).onEnded {
+                                        navigatorModel.selection = [folder]
+                                    })
                                 })
-                                .gesture(TapGesture(count: 1).modifiers([.shift]).onEnded {
-                                    navigatorModel.selection.insert(folder.url)
-                                })
-                                .gesture(TapGesture(count: 1).modifiers([.command]).onEnded {
-                                    navigatorModel.selection.insert(folder.url)
-                                })
-                                .gesture(TapGesture(count: 1).onEnded {
-                                    navigatorModel.selection = [folder.url]
-                                })
-                            })
+                            }
                         }
-                    }
-                    .onChange(of: navigatorModel.expandedItems, perform: { [expandedItems = navigatorModel.expandedItems] newExpandedItems in
-                        // Remove folder selections in collapsed disclosures
-                        if expandedItems.count > newExpandedItems.count {
-                            for remmoved in expandedItems.symmetricDifference(newExpandedItems) {
-                                for item in navigatorModel.selection {
-                                    if item.path != remmoved.path && item.path.starts(with: remmoved.path) {
-                                        navigatorModel.selection.remove(item)
+                        .onChange(of: navigatorModel.expandedItems, perform: { [expandedItems = navigatorModel.expandedItems] newExpandedItems in
+                            // Remove folder selections in collapsed disclosures
+                            if expandedItems.count > newExpandedItems.count {
+                                for removed in expandedItems.symmetricDifference(newExpandedItems) {
+                                    for item in navigatorModel.selection {
+                                        if item.url.path != removed.url.path && item.url.path.starts(with: removed.url.path) {
+                                            navigatorModel.selection.remove(item)
+                                        }
                                     }
                                 }
                             }
-                        }
-                    })
-                    .focused($navigatorIsFocused)
-                    .onAppear {
-                        navigatorIsFocused = true
+                        })
+                        .focused($navigatorIsFocused)
+                        .onAppear {
+                            navigatorIsFocused = true
 
-                        if let selectionFirst = navigatorModel.selection.first {
-                            // Make sure that some of the selection is visible
-                            DispatchQueue.main.async {
-                                proxy.scrollTo(selectionFirst)
+                            if let selectionFirst = navigatorModel.selection.first {
+                                // Make sure that some of the selection is visible
+                                DispatchQueue.main.async {
+                                    proxy.scrollTo(selectionFirst)
+                                }
                             }
                         }
                     }

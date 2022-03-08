@@ -121,7 +121,7 @@ class ImageViewModel: ObservableObject {
     }
 
     // Fullscreen view presentation
-    var fullScreen = false
+    @Published var fullScreen = false
 
     func toggleFullscreen() {
         fullScreen = !fullScreen
