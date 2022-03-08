@@ -34,6 +34,7 @@ struct FolderTreeNavigator: View {
                 Divider()
 
                 ScrollViewReader { proxy in
+                    // TODO: Fixme, this will crash if the folder has no children
                     List(Folder(url: root).children!, id:\.id, selection: $navigatorModel.selection) { folder in
                         RecursiveView(item: folder, id:\.id, children: \.children, expandedItems: $navigatorModel.expandedItems) { folder in
                             Label(folder.url.lastPathComponent, systemImage: folder.hasImages ? "folder.fill" : "folder")

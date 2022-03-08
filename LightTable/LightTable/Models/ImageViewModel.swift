@@ -84,11 +84,11 @@ class ImageViewState: ObservableObject {
 
 // ImageViewModel delegates most of the action to ImageViewState
 
-struct ImageViewModel {
+class ImageViewModel: ObservableObject {
     // Multipe Image View layout (Horizontal/Vertical/Grid)
-    var imageViewLayout:ImageListLayout = .Horizontal
+    @Published var imageViewLayout:ImageListLayout = .Horizontal
 
-    mutating func switchLayout() {
+    func switchLayout() {
         switch (imageViewLayout) {
         case .Horizontal:
             imageViewLayout = .Vertical
@@ -100,9 +100,9 @@ struct ImageViewModel {
     }
 
     // Single Image view selection for ImageListView
-    private(set) var imageViewSelection = -1
+    @Published private(set) var imageViewSelection = -1
 
-    mutating func imageViewSelection(char:Character, selection:[URL]) {
+    func imageViewSelection(char:Character, selection:[URL]) {
         if (char >= "0" && char <= "9") {
             // Single image selection mode
             let zero = Character("0")
@@ -116,14 +116,14 @@ struct ImageViewModel {
         }
     }
 
-    mutating func resetImageViewSelection() {
+    func resetImageViewSelection() {
         imageViewSelection = -1
     }
 
     // Fullscreen view presentation
     var fullScreen = false
 
-    mutating func toggleFullscreen() {
+    func toggleFullscreen() {
         fullScreen = !fullScreen
     }
 
@@ -154,7 +154,7 @@ struct ImageViewModel {
         imageViewState.switchViewInfoItems()
     }
 
-    mutating func resetInteractiveState() {
+    func resetInteractiveState() {
         zoomToFit()
         resetImageViewSelection()
         imageViewState.resetInteractiveOffset()

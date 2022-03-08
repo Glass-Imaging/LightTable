@@ -33,7 +33,7 @@ extension View {
 
 struct ImageBrowserView: View {
     @Binding var browserModel:ImageBrowserModel
-    @Binding var viewModel:ImageViewModel
+    @ObservedObject var viewModel:ImageViewModel
     @State var thumbnailSize:CGFloat = 150
 
     let backgroundColor = Color(red: 40.0/255.0, green: 40.0/255.0, blue: 40.0/255.0)
@@ -45,7 +45,7 @@ struct ImageBrowserView: View {
         GeometryReader { geometry in
             VSplitView {
                 VStack(spacing: 0) {
-                    ImageListView(browserModel: $browserModel, viewModel: $viewModel)
+                    ImageListView(browserModel: $browserModel, viewModel: viewModel)
                         .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
 
                     ZStack {

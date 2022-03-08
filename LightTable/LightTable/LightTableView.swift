@@ -21,9 +21,9 @@ private func toggleSidebar() {
 }
 
 struct LightTableView: View {
+    @StateObject var viewModel = ImageViewModel()
     @State var navigatorModel = NavigatorModel()
     @State var browserModel = ImageBrowserModel()
-    @State var viewModel = ImageViewModel()
 
     @AppStorage("navigatorModel.root") private var navigatorModelRoot:String?
     @AppStorage("navigatorModel.selection") private var navigatorModelSelection:[String]?
@@ -95,7 +95,7 @@ struct LightTableView: View {
 
         VStack {
             if viewModel.fullScreen {
-                ImageListView(browserModel: $browserModel, viewModel: $viewModel)
+                ImageListView(browserModel: $browserModel, viewModel: viewModel)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(backgroundColor)
             } else {
@@ -127,7 +127,7 @@ struct LightTableView: View {
                         }
 
                     if (browserActive) {
-                        ImageBrowserView(browserModel: $browserModel, viewModel: $viewModel)
+                        ImageBrowserView(browserModel: $browserModel, viewModel: viewModel)
                     }
                 }
                 .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
@@ -142,9 +142,9 @@ struct LightTableView: View {
         }
         // Set imageViewState @EnvironmentObject for ImageView
         .environmentObject(viewModel.imageViewState)
+        .focusedSceneValue(\.focusedViewModel, Binding<ImageViewModel>.constant(viewModel))
         .focusedSceneValue(\.focusedNavigatorModel, $navigatorModel)
         .focusedSceneValue(\.focusedBrowserModel, $browserModel)
-        .focusedSceneValue(\.focusedViewModel, $viewModel)
         .background(backgroundColor)
     }
 

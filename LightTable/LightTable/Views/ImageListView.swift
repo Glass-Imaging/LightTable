@@ -23,14 +23,14 @@ enum ImageListLayout {
 
 struct ImageListView: View {
     @Binding var browserModel:ImageBrowserModel
-    @Binding var viewModel:ImageViewModel
+    @ObservedObject var viewModel:ImageViewModel
 
     // Used by toolbar
     @Environment(\.controlActiveState) var windowState: ControlActiveState
 
-    init(browserModel:Binding<ImageBrowserModel>, viewModel:Binding<ImageViewModel>) {
+    init(browserModel:Binding<ImageBrowserModel>, viewModel:ImageViewModel) {
         self._browserModel = browserModel
-        self._viewModel = viewModel
+        self.viewModel = viewModel
     }
 
     func gridSizeConstraints(count:Int, layout: ImageListLayout) -> CGSize {
