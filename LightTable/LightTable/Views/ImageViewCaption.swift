@@ -25,6 +25,20 @@ func formattedExposureTime(_ exposureTime: CGFloat) -> String {
     }
 }
 
+extension NSDictionary {
+    func value(section: String, key: String) -> Any? {
+        return (self[section] as? NSDictionary)?[key]
+    }
+
+    func value<T>(section: String, key: String) -> T? {
+        return (self[section] as? NSDictionary)?[key] as? T
+    }
+
+    func value<T>(_ type: T.Type, section: String, key: String) -> T? {
+        return (self[section] as? NSDictionary)?[key] as? T
+    }
+}
+
 struct MetadataValues {
     let fileName: String
     let filePath: String
@@ -47,31 +61,29 @@ struct MetadataValues {
     let software: String?
 
     init(url: URL, fileDate: Date, metadata: NSDictionary) {
-        // print("Metadata for", url, metadata)
-
         fileName = url.lastPathComponent
         filePath = parentFolder(url:url).lastPathComponent
         pixelWidth = metadata["PixelWidth"] as? Int ?? 0
         pixelHeight = metadata["PixelHeight"] as? Int ?? 0
         fileModificationTime = fileDate
 
-        captureTime = (metadata["{TIFF}"] as? NSDictionary)?["DateTime"] as? String
-        fNumber = (metadata["{Exif}"] as? NSDictionary)?["FNumber"] as? CGFloat ??
-                  (metadata["{Exif}"] as? NSDictionary)?["ApertureValue"] as? CGFloat ?? 0.0
-        exposureTime = (metadata["{Exif}"] as? NSDictionary)?["ExposureTime"] as? CGFloat
-        focalLength = (metadata["{Exif}"] as? NSDictionary)?["FocalLength"] as? Int
-        exposureBias = (metadata["{Exif}"] as? NSDictionary)?["ExposureBiasValue"] as? Int
-        isoSpeed = ((metadata["{Exif}"] as? NSDictionary)?["ISOSpeedRatings"] as? [Int])?[0]
-        flash = (metadata["{Exif}"] as? NSDictionary)?["Flash"] as? Int
-        exposureProgram = (metadata["{Exif}"] as? NSDictionary)?["ExposureProgram"] as? Int
-        meteringMode = (metadata["{Exif}"] as? NSDictionary)?["MeteringMode"] as? Int
-        make = (metadata["{TIFF}"] as? NSDictionary)?["Make"] as? String
-        model = (metadata["{TIFF}"] as? NSDictionary)?["Model"] as? String
-        serialNumber = (metadata["{ExifAux}"] as? NSDictionary)?["SerialNumber"] as? String ??
-                       (metadata["{Exif}"] as? NSDictionary)?["BodySerialNumber"] as? String
-        lens = (metadata["{Exif}"] as? NSDictionary)?["LensModel"] as? String ??
-               (metadata["{ExifAux}"] as? NSDictionary)?["LensModel"] as? String
-        software = (metadata["{TIFF}"] as? NSDictionary)?["Software"] as? String
+        captureTime = metadata.value(section: "{TIFF}", key: "DateTime")
+        fNumber = metadata.value(section: "{Exif}", key: "FNumber") ??
+                  metadata.value(section: "{Exif}", key: "ApertureValue") ?? 0
+        exposureTime = metadata.value(section: "{Exif}", key: "ExposureTime")
+        focalLength = metadata.value(section: "{Exif}", key: "FocalLength")
+        exposureBias = metadata.value(section: "{Exif}", key: "ExposureBiasValue")
+        isoSpeed = metadata.value([Int].self, section: "{Exif}", key: "ISOSpeedRatings")?[0]
+        flash = metadata.value(section: "{Exif}", key: "Flash")
+        exposureProgram = metadata.value(section: "{Exif}", key: "ExposureProgram")
+        meteringMode = metadata.value(section: "{Exif}", key: "MeteringMode")
+        make = metadata.value(section: "{TIFF}", key: "Make")
+        model = metadata.value(section: "{TIFF}", key: "Model")
+        serialNumber = metadata.value(section: "{ExifAux}", key: "SerialNumber") ??
+                       metadata.value(section: "{Exif}", key: "BodySerialNumber")
+        lens = metadata.value(section: "{Exif}", key: "LensModel") ??
+               metadata.value(section: "{ExifAux}", key: "LensModel")
+        software = metadata.value(section: "{TIFF}", key: "Software")
     }
 }
 
@@ -197,12 +209,12 @@ struct ImageViewCaption: View {
 
     func imageMetadata() -> String {
         if let metadata = metadata {
-            let ISO = ((metadata["{Exif}"] as? NSDictionary)?["ISOSpeedRatings"] as? [Int])?[0]
+            let ISO = metadata.value([Int].self, section: "{Exif}", key: "ISOSpeedRatings")?[0]
 
-            let fNumber = (metadata["{Exif}"] as? NSDictionary)?["FNumber"]  as? CGFloat ??
-                          (metadata["{Exif}"] as? NSDictionary)?["ApertureValue"] as? CGFloat
+            let fNumber:CGFloat? = metadata.value(section: "{Exif}", key: "FNumber") ??
+                                   metadata.value(section: "{Exif}", key: "ApertureValue")
 
-            let exposureTime = (metadata["{Exif}"] as? NSDictionary)?["ExposureTime"] as? CGFloat
+            let exposureTime:CGFloat? = metadata.value(section: "{Exif}", key: "ExposureTime")
 
             let pixelWidth = metadata["PixelWidth"] as? Int ?? 0
             let pixelHeight = metadata["PixelHeight"] as? Int ?? 0

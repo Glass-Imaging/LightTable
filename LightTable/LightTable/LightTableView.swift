@@ -138,7 +138,6 @@ struct LightTableView: View {
             }
         }
         .onChange(of: browserModel.selection) { selection in
-            print("Saving browser selection", selection)
             browserModelSelection = selection.map({ $0.path })
         }
         // Set imageViewState @EnvironmentObject for ImageView

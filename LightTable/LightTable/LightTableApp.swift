@@ -20,6 +20,7 @@ struct LightTableApp: App {
     var body: some Scene {
         WindowGroup {
             LightTableView()
+                .preferredColorScheme(.dark)
         }
         .windowToolbarStyle(UnifiedWindowToolbarStyle(showsTitle: false))
         .commands {
