@@ -153,14 +153,22 @@ struct ImageView: View {
                     }
                 }
                 .overlay(alignment: .top) {
+                    let imageSize = CGSize(width: imageWithMetadata.image.width,
+                                           height: imageWithMetadata.image.height)
+
                     ImageViewExif(url: url, index: fileIndex,
                                   fileDate: imageWithMetadata.date,
+                                  imageSize: imageSize,
                                   metadata: imageWithMetadata.metadata,
                                   showEXIFMetadata: $viewState.showEXIFMetadata)
                 }
                 .overlay(alignment: .bottom) {
+                    let imageSize = CGSize(width: imageWithMetadata.image.width,
+                                           height: imageWithMetadata.image.height)
+
                     ImageViewCaption(url: url, index: fileIndex,
                                      fileDate: imageWithMetadata.date,
+                                     imageSize: imageSize,
                                      metadata: imageWithMetadata.metadata,
                                      viewInfoItems: $viewState.viewInfoItems)
                 }

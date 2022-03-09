@@ -42,14 +42,12 @@ extension NSDictionary {
 struct MetadataValues {
     let fileName: String
     let filePath: String
-    let pixelWidth: Int
-    let pixelHeight: Int
     let fileModificationTime: Date
     let captureTime: String?
     let fNumber: CGFloat?
     let exposureTime: CGFloat?
     let focalLength: Int?
-    let exposureBias: Int?
+    let exposureBias: CGFloat?
     let isoSpeed: Int?
     let flash: Int?
     let exposureProgram: Int?
@@ -63,8 +61,6 @@ struct MetadataValues {
     init(url: URL, fileDate: Date, metadata: NSDictionary) {
         fileName = url.lastPathComponent
         filePath = parentFolder(url:url).lastPathComponent
-        pixelWidth = metadata["PixelWidth"] as? Int ?? 0
-        pixelHeight = metadata["PixelHeight"] as? Int ?? 0
         fileModificationTime = fileDate
 
         captureTime = metadata.value(section: "{TIFF}", key: "DateTime")
@@ -96,6 +92,7 @@ struct ImageViewExif: View {
     let url: URL
     let index: (Int, Int)
     let fileDate: Date
+    let imageSize: CGSize
     let metadata: NSDictionary?
     @Binding var showEXIFMetadata:Bool
 
@@ -120,7 +117,7 @@ struct ImageViewExif: View {
                     ExifText("\(metadataValues.filePath)")
 
                     Text("Dimensions:")
-                    ExifText("\(metadataValues.pixelWidth) x \(metadataValues.pixelHeight)")
+                    ExifText("\(Int(imageSize.width)) x \(Int(imageSize.height))")
 
                     Text("Modification Date:")
                     ExifText("\(dateFormatter.string(from: metadataValues.fileModificationTime))")
@@ -200,6 +197,7 @@ struct ImageViewCaption: View {
     let url: URL
     let index: (Int, Int)
     let fileDate: Date
+    let imageSize: CGSize
     let metadata: NSDictionary?
     @Binding var viewInfoItems:Int
 
@@ -216,15 +214,12 @@ struct ImageViewCaption: View {
 
             let exposureTime:CGFloat? = metadata.value(section: "{Exif}", key: "ExposureTime")
 
-            let pixelWidth = metadata["PixelWidth"] as? Int ?? 0
-            let pixelHeight = metadata["PixelHeight"] as? Int ?? 0
-
             let isoFmt = ISO != nil ? "ISO \(ISO!), " : ""
             let fNumberFmt = fNumber != nil ? "f/\(String(format: "%.1f", fNumber!)), " : ""
             let exposureTimeFmt = exposureTime != nil ? "\(formattedExposureTime(exposureTime!))s" : ""
 
             let exposure = isoFmt + fNumberFmt + exposureTimeFmt
-            let dimensions = "\(pixelWidth) x \(pixelHeight)"
+            let dimensions = "\(Int(imageSize.width)) x \(Int(imageSize.height))"
 
             return !exposure.isEmpty ? exposure + " - " + dimensions : dimensions
         }
