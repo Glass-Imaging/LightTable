@@ -233,7 +233,7 @@ struct ImageViewCaption: View {
 
         if viewInfoItems > 0 {
             VStack(spacing: 1) {
-                Text("\(filename) (\(index.0)/\(index.1))")
+                Text("\(filename) (\(index.0 + 1)/\(index.1))")
                     .bold()
                     .font(.subheadline)
 
