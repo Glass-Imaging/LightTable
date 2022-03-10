@@ -47,60 +47,15 @@ struct LightTableView: View {
 
     func restoreNavigatorState() {
         if navigatorModel.root == nil {
-            // Restore root folder
-            if let navigatorModelRoot = navigatorModelRoot {
-                let url = URL(fileURLWithPath: navigatorModelRoot)
-                if resourceIsReachable(url: url) {
-                    navigatorModel.update(url: url)
-                }
-            }
-
-            // Restore navigator selection
-            var navigatorSelection = Set<Folder>()
-
-            if let navigatorModelSelection = navigatorModelSelection {
-                if let root = navigatorModel.root {
-                    let savedSelection = navigatorModelSelection.map({ URL(fileURLWithPath: $0) })
-
-                    var expandedItems = Set<Folder>()
-                    for item in savedSelection {
-                        var currentFolder = root
-                        if item.starts(with: currentFolder.url) && resourceIsReachable(url: item) {
-                            while (currentFolder.url.path != item.path) {
-                                if let children = currentFolder.children {
-                                    for child in children {
-                                        if item.starts(with: child.url) {
-                                            currentFolder = child
-                                            if currentFolder.url.path == item.path {
-                                                navigatorSelection.insert(child)
-                                            } else {
-                                                expandedItems.insert(child)
-                                            }
-                                            break
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    navigatorModel.selection = navigatorSelection
-                    navigatorModel.expandedItems = expandedItems
-                }
-            }
+            // Restore Navigator state
+            navigatorModel.resetWith(storedRoot: navigatorModelRoot, storedSelection: navigatorModelSelection)
 
             // Restore image browser selection
             if let browserModelSelection = browserModelSelection {
-                let restoredSelection = browserModelSelection.map({ URL(fileURLWithPath: $0) })
-                var trimmedSelection:[URL] = []
-
-                // Validate selection entries
-                for item in restoredSelection {
-                    if resourceIsReachable(url: item) && navigatorSelection.contains(where: { $0.url == parentFolder(url: item) }) {
-                        trimmedSelection.append(item)
-                    }
+                browserModel.selection = browserModelSelection.map({ URL(fileURLWithPath: $0) }).filter { item in
+                    // Validate selection entries
+                    resourceIsReachable(url: item) && navigatorModel.selection.contains(where: { $0.url == parentFolder(url: item) })
                 }
-
-                browserModel.selection = trimmedSelection
             }
         }
     }

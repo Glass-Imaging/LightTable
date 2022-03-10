@@ -42,7 +42,9 @@ struct RecursiveView<Item, ID, RowContent>: View where Item: Identifiable, Item:
                 }
             }
             .onAppear {
-                expanded = expandedItems.wrappedValue.contains(item)
+                DispatchQueue.main.async {
+                    expanded = expandedItems.wrappedValue.contains(item)
+                }
             }
         } else {
             rowContent(item)

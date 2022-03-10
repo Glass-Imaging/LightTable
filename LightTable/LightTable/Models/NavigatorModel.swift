@@ -85,4 +85,43 @@ struct NavigatorModel {
             update(url: item)
         }
     }
+
+    mutating func resetWith(storedRoot:String?, storedSelection:[String]?) {
+        // Restore root folder
+        guard let storedRoot = storedRoot else {
+            return
+        }
+
+        let url = URL(fileURLWithPath: storedRoot)
+        if !resourceIsReachable(url: url) {
+            return
+        }
+        update(url: url)
+
+        // Restore navigator selection
+        var newSelection = Set<Folder>()
+        var newExpandedItems = Set<Folder>()
+
+        if let storedSelection = storedSelection {
+            if let root = root {
+                for item in storedSelection.map({ URL(fileURLWithPath: $0) }) {
+                    var currentFolder = root
+                    if resourceIsReachable(url: item) && item.starts(with: currentFolder.url) {
+                        while (currentFolder.url != item) {
+                            if let match = currentFolder.children?.first(where: { item.starts(with: $0.url) }) {
+                                currentFolder = match
+                                if currentFolder.url == item {
+                                    newSelection.insert(match)
+                                } else {
+                                    newExpandedItems.insert(match)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        selection = newSelection
+        expandedItems = newExpandedItems
+    }
 }
