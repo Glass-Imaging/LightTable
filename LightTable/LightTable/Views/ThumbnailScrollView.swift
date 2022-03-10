@@ -86,8 +86,8 @@ struct ThumbnailScrollView: View {
                             }
                         }
                     }
-                    .onChange(of: browserModel.selection) { selection in
-                        if (!selection.isEmpty) {
+                    .onChange(of: browserModel.selection) { [previousSelection = browserModel.selection] newSelection in
+                        if (!newSelection.isEmpty && Set(previousSelection).intersection(Set(newSelection)).isEmpty) {
                             if (browserModel.nextLocation != nil) {
                                 DispatchQueue.main.async {
                                     withAnimation(.linear) {

@@ -59,7 +59,7 @@ struct FolderTreeNavigator: View {
                             if expandedItems.count > newExpandedItems.count {
                                 for removed in expandedItems.symmetricDifference(newExpandedItems) {
                                     for item in navigatorModel.selection {
-                                        if item.url.path != removed.url.path && item.url.path.starts(with: removed.url.path) {
+                                        if item.url != removed.url && item.url.starts(with: removed.url) {
                                             navigatorModel.selection.remove(item)
                                         }
                                     }

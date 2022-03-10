@@ -19,9 +19,19 @@ class Folder: Equatable, Hashable, Identifiable {
     let url: URL
     var id:URL { url }
     private(set) var hasImages = false
+    private(set) var timeStamp = Date()
 
-    private var cachedChildren: [Folder]? = nil
-    lazy var children: [Folder]? = {
+    func checkFolderModificationDate() {
+        let folderModificationDate = LightTable.timeStamp(url: url)
+        if folderModificationDate != timeStamp {
+            cachedChildren = nil
+            cachedFiles = nil
+        }
+    }
+
+    var children: [Folder]? {
+        checkFolderModificationDate()
+
         if let cachedChildren = cachedChildren {
             return cachedChildren.isEmpty ? nil : cachedChildren
         }
@@ -31,11 +41,14 @@ class Folder: Equatable, Hashable, Identifiable {
         for url in listing {
             cachedChildren!.append(Folder(url: url))
         }
+        timeStamp = LightTable.timeStamp(url: url)
         return cachedChildren!.isEmpty ? nil : cachedChildren!
-    }()
+    }
+    private var cachedChildren: [Folder]? = nil
 
-    private var cachedFiles: [URL]? = nil
-    lazy var files: [URL] = {
+    var files: [URL] {
+        checkFolderModificationDate()
+
         if let cachedFiles = cachedFiles {
             return cachedFiles
         }
@@ -45,8 +58,10 @@ class Folder: Equatable, Hashable, Identifiable {
         for url in listing {
             cachedFiles!.append(url)
         }
+        timeStamp = LightTable.timeStamp(url: url)
         return cachedFiles!
-    }()
+    }
+    private var cachedFiles: [URL]? = nil
 
     init(url: URL) {
         self.url = url
