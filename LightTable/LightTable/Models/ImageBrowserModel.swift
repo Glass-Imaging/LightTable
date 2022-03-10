@@ -21,14 +21,14 @@ extension KeyEquivalent: Equatable {
     }
 }
 
-struct ImageBrowserModel {
-    private(set) var folders:[Folder] = []
+class ImageBrowserModel: ObservableObject {
+    @Published private(set) var folders:[Folder] = []
 
     // Accessed directly by the browser selection
-    /* private(set) */ var selection:[URL] = []
+    @Published var selection:[URL] = []
 
     // Keyboard movement computed location with multiple selections
-    private(set) var nextLocation:URL? = nil
+    @Published private(set) var nextLocation:URL? = nil
 
     func fileIndex(file: URL) -> (Int, Int) {
         for folder in folders {
@@ -39,7 +39,7 @@ struct ImageBrowserModel {
         return (0, 0)
     }
 
-    mutating func setFolders(folders: Set<Folder>) {
+    func setFolders(folders: Set<Folder>) {
         // Check removed folders
         for folder in self.folders {
             if (!folders.contains(folder)) {
@@ -60,7 +60,7 @@ struct ImageBrowserModel {
         }
     }
 
-    mutating func reset() {
+    func reset() {
         folders = []
         selection = []
     }
@@ -69,7 +69,7 @@ struct ImageBrowserModel {
         return selection.contains(file)
     }
 
-    mutating func updateSelection(file: URL) {
+    func updateSelection(file: URL) {
         // don't update the selection gratuitously
         if (!(selection.count == 1 && selection[0] == file)) {
             selection = [file]
@@ -77,7 +77,7 @@ struct ImageBrowserModel {
         }
     }
 
-    mutating func addToSelection(file: URL) {
+    func addToSelection(file: URL) {
         guard let index = selection.firstIndex(of: file) else {
             selection.append(file)
             nextLocation = file
@@ -123,7 +123,7 @@ struct ImageBrowserModel {
         return indices.max(by: orderByFileIndex)!.0
     }
 
-    mutating func processKey(key: KeyEquivalent) {
+    func processKey(key: KeyEquivalent) {
         nextLocation = processKey(key: key)
     }
 
@@ -131,7 +131,7 @@ struct ImageBrowserModel {
         return a.1 < b.1
     }
 
-    private mutating func processKey(key: KeyEquivalent) -> URL? {
+    private func processKey(key: KeyEquivalent) -> URL? {
         if (key == .rightArrow || key == .leftArrow) {
             if (folders.isEmpty || folders[0].files.isEmpty) {
                 return nil

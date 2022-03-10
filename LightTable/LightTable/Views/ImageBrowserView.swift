@@ -32,7 +32,7 @@ extension View {
 }
 
 struct ImageBrowserView: View {
-    @Binding var browserModel:ImageBrowserModel
+    @ObservedObject var browserModel:ImageBrowserModel
     @ObservedObject var viewModel:ImageViewModel
     @State var thumbnailSize:CGFloat = 150
 
@@ -45,7 +45,7 @@ struct ImageBrowserView: View {
         GeometryReader { geometry in
             VSplitView {
                 VStack(spacing: 0) {
-                    ImageListView(browserModel: $browserModel, viewModel: viewModel)
+                    ImageListView(browserModel: browserModel, viewModel: viewModel)
                         .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
 
                     ZStack {
@@ -63,7 +63,7 @@ struct ImageBrowserView: View {
                 }
                 .layoutPriority(1)
 
-                ThumbnailScrollView(browserModel: $browserModel, thumbnailSize: $thumbnailSize)
+                ThumbnailScrollView(browserModel: browserModel, thumbnailSize: $thumbnailSize)
                     .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
                     .background(backgroundColor)
                     .innerShadow(using: Rectangle())

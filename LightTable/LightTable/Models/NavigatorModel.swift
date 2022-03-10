@@ -15,14 +15,14 @@
 
 import Foundation
 
-struct NavigatorModel {
+class NavigatorModel: ObservableObject {
+    @Published private(set) var root:Folder? = nil
     // Directly accessed by FolderTreeNavigator
-    private(set) var root:Folder? = nil
-    var selection = Set<Folder>()
-    var expandedItems = Set<Folder>()
+    @Published var selection = Set<Folder>()
+    @Published var expandedItems = Set<Folder>()
 
-    private(set) var historyBack:[URL] = []
-    private(set) var historyForward:[URL] = []
+    private var historyBack:[URL] = []
+    private var historyForward:[URL] = []
 
     func hasBackHistory() -> Bool {
         !historyBack.isEmpty
@@ -44,7 +44,7 @@ struct NavigatorModel {
         return false
     }
 
-    mutating func update(url: URL?) {
+    func update(url: URL?) {
         if let root = root {
             historyBack.append(root.url)
         }
@@ -53,20 +53,20 @@ struct NavigatorModel {
         selection = []
     }
 
-    mutating func enclosingFolder() {
+    func enclosingFolder() {
         if let root = root {
             update(url: parentFolder(url: root.url))
             selection = [root]
         }
     }
 
-    mutating func selectedFolder() {
+    func selectedFolder() {
         if let selection = selection.first {
             update(url: selection.url)
         }
     }
 
-    mutating func back() {
+    func back() {
         if (!historyBack.isEmpty) {
             let item = historyBack.remove(at: historyBack.count - 1)
             if let root = root {
@@ -76,7 +76,7 @@ struct NavigatorModel {
         }
     }
 
-    mutating func forward() {
+    func forward() {
         if (!historyForward.isEmpty) {
             let item = historyForward.remove(at: historyForward.count - 1)
             if let root = root {
@@ -86,7 +86,7 @@ struct NavigatorModel {
         }
     }
 
-    mutating func resetWith(storedRoot:String?, storedSelection:[String]?) {
+    func resetWith(storedRoot:String?, storedSelection:[String]?) {
         // Restore root folder
         guard let storedRoot = storedRoot else {
             return

@@ -22,14 +22,14 @@ enum ImageListLayout {
 }
 
 struct ImageListView: View {
-    @Binding var browserModel:ImageBrowserModel
+    @ObservedObject var browserModel:ImageBrowserModel
     @ObservedObject var viewModel:ImageViewModel
 
     // Used by toolbar
     @Environment(\.controlActiveState) var windowState: ControlActiveState
 
-    init(browserModel:Binding<ImageBrowserModel>, viewModel:ImageViewModel) {
-        self._browserModel = browserModel
+    init(browserModel:ImageBrowserModel, viewModel:ImageViewModel) {
+        self.browserModel = browserModel
         self.viewModel = viewModel
     }
 

@@ -16,7 +16,7 @@
 import SwiftUI
 
 struct FolderTreeHeader: View {
-    @Binding var navigatorModel:NavigatorModel
+    @ObservedObject var navigatorModel:NavigatorModel
 
     var body: some View {
         HStack {

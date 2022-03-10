@@ -36,8 +36,8 @@ extension URL {
 
 struct LightTableView: View {
     @StateObject var viewModel = ImageViewModel()
-    @State var navigatorModel = NavigatorModel()
-    @State var browserModel = ImageBrowserModel()
+    @StateObject var navigatorModel = NavigatorModel()
+    @StateObject var browserModel = ImageBrowserModel()
 
     @AppStorage("navigatorModel.root") private var navigatorModelRoot:String?
     @AppStorage("navigatorModel.selection") private var navigatorModelSelection:[String]?
@@ -65,12 +65,12 @@ struct LightTableView: View {
 
         VStack {
             if viewModel.fullScreen {
-                ImageListView(browserModel: $browserModel, viewModel: viewModel)
+                ImageListView(browserModel: browserModel, viewModel: viewModel)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(backgroundColor)
             } else {
                 NavigationView {
-                    FolderTreeNavigator(navigatorModel: $navigatorModel)
+                    FolderTreeNavigator(navigatorModel: navigatorModel)
                         .frame(minWidth: 250)
                         .toolbar {
                             ToolbarItem(placement: .automatic) {
@@ -97,7 +97,7 @@ struct LightTableView: View {
                         }
 
                     if (browserActive) {
-                        ImageBrowserView(browserModel: $browserModel, viewModel: viewModel)
+                        ImageBrowserView(browserModel: browserModel, viewModel: viewModel)
                     }
                 }
                 .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
@@ -113,8 +113,8 @@ struct LightTableView: View {
         // Set imageViewState @EnvironmentObject for ImageView
         .environmentObject(viewModel.imageViewState)
         .focusedSceneValue(\.focusedViewModel, Binding<ImageViewModel>.constant(viewModel))
-        .focusedSceneValue(\.focusedNavigatorModel, $navigatorModel)
-        .focusedSceneValue(\.focusedBrowserModel, $browserModel)
+        .focusedSceneValue(\.focusedNavigatorModel, Binding<NavigatorModel>.constant(navigatorModel))
+        .focusedSceneValue(\.focusedBrowserModel, Binding<ImageBrowserModel>.constant(browserModel))
         .background(backgroundColor)
     }
 

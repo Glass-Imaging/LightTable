@@ -16,7 +16,7 @@
 import SwiftUI
 
 struct ThumbnailGrid: View {
-    @Binding var browserModel:ImageBrowserModel
+    @ObservedObject var browserModel:ImageBrowserModel
     @Binding var thumbnailSize:CGFloat
 
     @State private var scrollViewOffset = CGPoint.zero
@@ -64,7 +64,7 @@ struct ThumbnailGrid: View {
 }
 
 struct ThumbnailScrollView: View {
-    @Binding var browserModel:ImageBrowserModel
+    @ObservedObject var browserModel:ImageBrowserModel
     @Binding var thumbnailSize:CGFloat
 
     var body: some View {
@@ -75,7 +75,7 @@ struct ThumbnailScrollView: View {
             GeometryReader { geometry in
                 ScrollViewReader { scroller in
                     ScrollView([.vertical, .horizontal], showsIndicators: true) {
-                        ThumbnailGrid(browserModel: $browserModel, thumbnailSize: $thumbnailSize)
+                        ThumbnailGrid(browserModel: browserModel, thumbnailSize: $thumbnailSize)
                             .frame(minWidth: geometry.size.width, minHeight: geometry.size.height)
                     }
                     .coordinateSpace(name: "scroll")
