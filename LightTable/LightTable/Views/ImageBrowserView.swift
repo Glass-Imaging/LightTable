@@ -42,34 +42,30 @@ struct ImageBrowserView: View {
     let minPaneSize:CGFloat = 200
 
     var body: some View {
-        GeometryReader { geometry in
-            VSplitView {
-                VStack(spacing: 0) {
-                    ImageListView(browserModel: browserModel, viewModel: viewModel)
-                        .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
+        VSplitView(minSize: minPaneSize, first: {
+            VStack(spacing: 0) {
+                ImageListView(browserModel: browserModel, viewModel: viewModel)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                    ZStack {
-                        Rectangle()
-                            .foregroundColor(dividerColor)
-                        HStack {
-                            Spacer()
+                ZStack {
+                    Rectangle()
+                        .foregroundColor(dividerColor)
+                    HStack {
+                        Spacer()
 
-                            ThumbnailSizeSlider(value: $thumbnailSize)
-                                .padding(.trailing, 10)
-                                .help("Thumbnail Size")
-                        }
+                        ThumbnailSizeSlider(value: $thumbnailSize)
+                            .padding(.trailing, 10)
+                            .help("Thumbnail Size")
                     }
-                    .frame(height: 20)
                 }
-                .layoutPriority(1)
-
-                ThumbnailScrollView(browserModel: browserModel, thumbnailSize: $thumbnailSize)
-                    .frame(maxWidth: .infinity, minHeight: minPaneSize, maxHeight: .infinity)
-                    .background(backgroundColor)
-                    .innerShadow(using: Rectangle())
-
+                .frame(height: 20)
             }
-        }
+        }, second: {
+            ThumbnailScrollView(browserModel: browserModel, thumbnailSize: $thumbnailSize)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(backgroundColor)
+                .innerShadow(using: Rectangle())
+        })
     }
 
     struct BrowserCommands: Commands {

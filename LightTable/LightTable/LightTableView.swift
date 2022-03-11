@@ -61,8 +61,6 @@ struct LightTableView: View {
     }
 
     var body: some View {
-        let browserActive = !browserModel.folders.isEmpty
-
         VStack {
             if viewModel.fullScreen {
                 ImageListView(browserModel: browserModel, viewModel: viewModel)
@@ -96,9 +94,7 @@ struct LightTableView: View {
                             navigatorModelSelection = selection.map({ $0.url.path })
                         }
 
-                    if (browserActive) {
-                        ImageBrowserView(browserModel: browserModel, viewModel: viewModel)
-                    }
+                    ImageBrowserView(browserModel: browserModel, viewModel: viewModel)
                 }
                 .frame(minWidth: 800, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
                 .onDrop(of: ["public.file-url"], delegate: self)
