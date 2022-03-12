@@ -61,7 +61,7 @@ struct ImageListView: View {
     var body: some View {
         HStack {
             if (browserModel.selection.count == 0) {
-                Text("Make a selection.")
+                Text("Make a selection")
             } else {
                 if (viewModel.imageViewSelection >= 0 && viewModel.imageViewSelection < browserModel.selection.count) {
                     let file = browserModel.selection[viewModel.imageViewSelection]

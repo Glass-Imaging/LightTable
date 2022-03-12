@@ -91,7 +91,7 @@ struct ImageView: View {
     func imageOffset(scale: CGFloat, viewOffset: CGPoint, viewPortOffset: CGSize) -> CGPoint {
         return scale == 0
                ? CGPoint.zero
-               : viewState.viewOffset * scale + viewState.viewOffsetInteractive + viewOffset + viewOffsetInteractive - viewPortOffset
+               : viewState.viewOffset * scale + viewState.viewOffsetInteractive + viewOffset * scale + viewOffsetInteractive - viewPortOffset
     }
 
     var body: some View {

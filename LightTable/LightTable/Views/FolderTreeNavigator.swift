@@ -81,7 +81,7 @@ struct FolderTreeNavigator: View {
                 }
             }
         } else {
-            Text("Drop a folder here.")
+            Text("Drop a folder here")
         }
     }
 }
