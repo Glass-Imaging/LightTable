@@ -116,14 +116,7 @@ struct LightTableView: View {
                 window = NSApplication.shared.windows.last
             }
         })
-        .onChange(of: viewModel.fullScreen, perform: { _ in
-            if appDelegate.fullScreen != viewModel.fullScreen {
-                DispatchQueue.main.async {
-                    window?.toolbar?.isVisible = !viewModel.fullScreen
-                    window?.toggleFullScreen(nil)
-                }
-            }
-        })
+        // On full window screen zoom, switch to app full screen and no Toolbar mode
         .onChange(of: appDelegate.fullScreen, perform: { _ in
             viewModel.fullScreen = appDelegate.fullScreen
             DispatchQueue.main.async {
