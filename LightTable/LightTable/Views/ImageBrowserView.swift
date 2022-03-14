@@ -16,7 +16,7 @@
 import SwiftUI
 
 extension View {
-    func innerShadow<S: Shape>(using shape: S, angle: Angle = .degrees(270), color: Color = .black, width: CGFloat = 3, blur: CGFloat = 3) -> some View {
+    func innerShadow<S: Shape>(using shape: S, angle: Angle = .degrees(180), color: Color = .black, width: CGFloat = 3, blur: CGFloat = 3) -> some View {
         let finalX = CGFloat(cos(angle.radians - .pi / 2))
         let finalY = CGFloat(sin(angle.radians - .pi / 2))
 
