@@ -17,16 +17,43 @@ import SwiftUI
 
 @main
 struct LightTableApp: App {
+    // AppDelegate available as @EnvironmentObject to the rest of the app
+    @NSApplicationDelegateAdaptor private var appDelegate: AppDelegate
+
     var body: some Scene {
         WindowGroup {
             LightTableView()
                 .preferredColorScheme(.dark)
         }
-        .windowToolbarStyle(UnifiedWindowToolbarStyle(showsTitle: false))
+        .windowStyle(.hiddenTitleBar)
+        .windowToolbarStyle(.unified(showsTitle: false))
         .commands {
             LightTableView.BrowserCommands()
 
             ImageBrowserView.BrowserCommands()
+
+            ToolbarCommands()
+
+            SidebarCommands()
         }
+
+    }
+}
+
+// AppDelegate to keep track of fullScreen state
+class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
+    @Published var fullScreen = false
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        NotificationCenter.default.addObserver(self, selector: #selector(fullScreenHandler(notification:)),
+                                               name: NSWindow.willEnterFullScreenNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(fullScreenHandler(notification:)),
+                                               name: NSWindow.willExitFullScreenNotification,
+                                               object: nil)
+    }
+
+    @objc func fullScreenHandler(notification: Notification) {
+        fullScreen = notification.name == NSWindow.willEnterFullScreenNotification
     }
 }

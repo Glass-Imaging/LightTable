@@ -39,11 +39,16 @@ struct LightTableView: View {
     @StateObject var navigatorModel = NavigatorModel()
     @StateObject var browserModel = ImageBrowserModel()
 
+    @EnvironmentObject private var appDelegate: AppDelegate
+
     @AppStorage("navigatorModel.root") private var navigatorModelRoot:String?
     @AppStorage("navigatorModel.selection") private var navigatorModelSelection:[String]?
     @AppStorage("browserModel.selection") private var browserModelSelection:[String]?
 
     let backgroundColor = Color(red: 30.0/255.0, green: 30.0/255.0, blue: 30.0/255.0)
+
+    // Used to toggle fullScreen mode and sidebar visibility
+    @State var window:NSWindow? = nil
 
     func restoreNavigatorState() {
         if navigatorModel.root == nil {
@@ -106,6 +111,25 @@ struct LightTableView: View {
         .onChange(of: browserModel.selection) { selection in
             browserModelSelection = selection.map({ $0.path })
         }
+        .onAppear(perform: {
+            DispatchQueue.main.async {
+                window = NSApplication.shared.windows.last
+            }
+        })
+        .onChange(of: viewModel.fullScreen, perform: { _ in
+            if appDelegate.fullScreen != viewModel.fullScreen {
+                DispatchQueue.main.async {
+                    window?.toolbar?.isVisible = !viewModel.fullScreen
+                    window?.toggleFullScreen(nil)
+                }
+            }
+        })
+        .onChange(of: appDelegate.fullScreen, perform: { _ in
+            viewModel.fullScreen = appDelegate.fullScreen
+            DispatchQueue.main.async {
+                window?.toolbar?.isVisible = !viewModel.fullScreen
+            }
+        })
         // Set imageViewState @EnvironmentObject for ImageView
         .environmentObject(viewModel.imageViewState)
         .focusedSceneValue(\.focusedViewModel, Binding<ImageViewModel>.constant(viewModel))
@@ -161,11 +185,5 @@ extension LightTableView:DropDelegate {
             }
         }
         return true
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        LightTableView()
     }
 }

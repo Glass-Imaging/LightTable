@@ -52,18 +52,17 @@ public struct SlideableDivider: View {
     }
 }
 
-struct VSplitView<First: View, Second: View>: View {
+struct VSplitView<FirstView: View, SecondView: View>: View {
     let minSize:CGFloat
-    let first:First
-    let second:Second
+    let firstView:FirstView
+    let secondView:SecondView
 
-    @State var initialized = false
     @AppStorage("ImageBrowserView.dividerOffset") private var dividerOffset = 0.0
 
-    init(minSize: CGFloat, @ViewBuilder first: @escaping () -> First, @ViewBuilder second: @escaping () -> Second) {
+    init(minSize: CGFloat, @ViewBuilder first: @escaping () -> FirstView, @ViewBuilder second: @escaping () -> SecondView) {
         self.minSize = minSize
-        self.first = first()
-        self.second = second()
+        self.firstView = first()
+        self.secondView = second()
     }
 
     func clamp(_ value: CGFloat, to: CGFloat) -> CGFloat {
@@ -73,28 +72,22 @@ struct VSplitView<First: View, Second: View>: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
-                first
+                firstView
 
                 SlideableDivider(dimension: $dividerOffset)
 
-                second
+                secondView
                     .frame(height: max(geometry.size.height/2 - dividerOffset, 0))
             }
-            .onAppear {
-                // The geometry size changes a few times when the view is initialized
-                DispatchQueue.main.async {
-                    initialized = true
-                }
-            }
             .onChange(of: dividerOffset) { _ in
-                if initialized {
-                    dividerOffset = clamp(dividerOffset, to: geometry.size.height)
-                }
+                dividerOffset = clamp(dividerOffset, to: geometry.size.height)
             }
             .onChange(of: geometry.size, perform: { [oldSize = geometry.size] newSize in
-                // Maintain the bottom pane height constant when the view size changes
-                if initialized {
-                    dividerOffset = clamp(dividerOffset + (newSize.height - oldSize.height) / 2, to: newSize.height)
+                if let window = NSApplication.shared.windows.last {
+                    if window.inLiveResize || window.isZoomed {
+                        // Maintain the bottom pane height constant when the view size changes
+                        dividerOffset = dividerOffset + (newSize.height - oldSize.height) / 2
+                    }
                 }
             })
         }
